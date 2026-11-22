@@ -1,0 +1,31 @@
+{% extends "base/public.html" %}
+{% load static %}
+{% block title %}About · {{ BRAND.name }}{% endblock %}
+{% block content %}
+{% include "public/_page_head.html" with crumb="About" heading="Beauty, with a plan." lede="We opened to give women in Melur the kind of salon that used to mean a trip to the city." %}
+<section class="intro">
+  <div class="intro-art" data-reveal="clip"><img class="big" src="{% static 'images/hero-portrait.jpg' %}" alt="" data-parallax="-0.05"></div>
+  <div class="intro-copy" data-reveal>
+    <h2>Our story</h2>
+    <p>{{ BRAND.name }} began with a simple idea: skin, hair, makeup and training should live together, run by people who explain what they do and why.</p>
+    <p>Our grand opening on Monday, 16 November marked Melur’s first large-scale salon for women.</p>
+  </div>
+</section>
+<section class="section section-mist">
+  <div class="three" >
+    <div data-reveal style="--i:0"><h3>Mission</h3><p>Make confident, well-explained care available to every woman in town.</p></div>
+    <div data-reveal style="--i:1"><h3>Vision</h3><p>A salon and academy that trains the next generation of local artists.</p></div>
+    <div data-reveal style="--i:2"><h3>Philosophy</h3><p>Consult first, recommend honestly, and never upsell what you don’t need.</p></div>
+  </div>
+</section>
+<section class="section" id="team">
+  <div class="section-head" data-reveal><h2>The team</h2></div>
+  <div class="team-row">
+    {% for p in staff %}
+    <figure class="person" data-reveal style="--i:{{ forloop.counter0 }}">
+      <div class="person-img">{% if p.photo %}<img src="{{ p.photo.url }}" alt="" loading="lazy">{% endif %}</div>
+      <figcaption><b>{{ p.name }}</b><span>{{ p.title }}{% if p.years_experience %} · {{ p.years_experience }} yrs{% endif %}</span><em>{{ p.bio }}</em></figcaption>
+    </figure>{% endfor %}
+  </div>
+</section>
+{% endblock %}

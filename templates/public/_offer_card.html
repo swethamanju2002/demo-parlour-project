@@ -1,0 +1,7 @@
+<article class="offer" data-reveal style="--i:{{ forloop.counter0 }}">
+  <span class="offer-badge">{{ o.badge }}</span>
+  <h3>{{ o.title }}</h3>
+  <p>{{ o.summary }}</p>
+  <p class="offer-valid">Valid until {{ o.valid_to|date:"j F Y" }}</p>
+  {% if o.coupon_code %}<button type="button" class="coupon" data-copy="{{ o.coupon_code }}"><span>{{ o.coupon_code }}</span><em>Copy code</em></button>{% endif %}
+</article>

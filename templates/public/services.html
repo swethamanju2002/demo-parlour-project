@@ -1,0 +1,21 @@
+{% extends "base/public.html" %}
+{% block title %}Services · {{ BRAND.name }}{% endblock %}
+{% block content %}
+{% include "public/_page_head.html" with crumb="Services" heading="Treatments, chosen with you." lede="Prices and durations are shown up front. Pick a category or scroll through everything." %}
+<nav class="cat-tabs" aria-label="Service categories">
+  {% for c, items in groups %}<a href="#{{ c.slug }}">{{ c.name }}</a>{% endfor %}
+</nav>
+{% for c, items in groups %}
+<section class="section cat-block" id="{{ c.slug }}">
+  <div class="cat-intro" data-reveal>
+    <h2>{{ c.name }}</h2>
+    <p>{{ c.description }}</p>
+  </div>
+  <div class="svc-grid">
+    {% for s in items %}{% include "public/_service_card.html" %}{% endfor %}
+  </div>
+</section>
+{% empty %}
+<section class="section"><p class="empty">No services are listed yet. Please check back soon.</p></section>
+{% endfor %}
+{% endblock %}
