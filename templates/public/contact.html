@@ -1,0 +1,34 @@
+{% extends "base/public.html" %}
+{% block title %}Contact · {{ BRAND.name }}{% endblock %}
+{% block content %}
+{% include "public/_page_head.html" with crumb="Contact" heading="Let’s talk." lede="Ask about a treatment, the academy or a bridal date. We reply by phone or WhatsApp." %}
+<section class="section contact-grid">
+  <div class="contact-card" data-reveal>
+    <h2>Send an enquiry</h2>
+    <form id="enquiry-form" method="post" novalidate>{% csrf_token %}
+      {% for f in form %}
+        <div class="field{% if f.name == 'website' %} hp{% endif %}">
+          <label for="{{ f.id_for_label }}">{{ f.label }}</label>{{ f }}
+          <p class="field-error" data-err="{{ f.name }}">{% for e in f.errors %}{{ e }}{% endfor %}</p>
+        </div>
+      {% endfor %}
+      <button class="btn btn-primary" type="submit"><span>Send message</span></button>
+    </form>
+  </div>
+  <div class="contact-side" data-reveal style="--i:1">
+    <h3>Find us</h3>
+    <address>{{ BRAND.address }}</address>
+    <p><a href="tel:+91{{ BRAND.phone|cut:' ' }}">{{ BRAND.phone }}</a><br><a href="https://wa.me/{{ BRAND.whatsapp }}">WhatsApp</a>{% if BRAND.email %}<br><a href="mailto:{{ BRAND.email }}">{{ BRAND.email }}</a>{% endif %}</p>
+    <h3>Opening hours</h3>
+    {% include "public/_hours.html" %}
+    {% if BRAND.map_embed_url %}<iframe class="map" src="{{ BRAND.map_embed_url }}" loading="lazy" title="Map to {{ BRAND.name }}"></iframe>
+    {% else %}<p class="help">Map appears here once a Google Maps embed link is added in site settings.</p>{% endif %}
+  </div>
+</section>
+{% if faqs %}
+<section class="section section-mist">
+  <div class="section-head" data-reveal><h2>Common questions</h2></div>
+  <div class="faq">{% for f in faqs %}<details data-reveal style="--i:{{ forloop.counter0 }}"><summary>{{ f.question }}</summary><p>{{ f.answer }}</p></details>{% endfor %}</div>
+</section>
+{% endif %}
+{% endblock %}

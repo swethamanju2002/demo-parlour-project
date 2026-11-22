@@ -1,0 +1,27 @@
+{% extends "base/public.html" %}
+{% block title %}Gallery · {{ BRAND.name }}{% endblock %}
+{% block content %}
+{% include "public/_page_head.html" with crumb="Gallery" heading="Our work." lede="Filter by speciality. Tap any image to look closer. Demonstration artwork until real photos are uploaded." %}
+<section class="section">
+  <div class="filters" role="group" aria-label="Filter gallery">
+    <button class="chip-btn on" data-filter="all">All</button>
+    {% for c in categories %}<button class="chip-btn" data-filter="{{ c.slug }}">{{ c.name }}</button>{% endfor %}
+  </div>
+  <div class="masonry" id="masonry">
+    {% for g in items %}
+    <figure class="m-item" data-cat="{{ g.category.slug }}" data-reveal style="--i:{{ forloop.counter0|add:0 }}">
+      <button class="m-open" type="button" data-full="{{ g.image.url }}" data-before="{% if g.before_image %}{{ g.before_image.url }}{% endif %}" data-title="{{ g.title }}">
+        <img src="{{ g.image.url }}" alt="{{ g.title }}" loading="lazy">
+        {% if g.before_image %}<span class="m-badge">Before / after</span>{% endif %}
+        <figcaption>{{ g.title }}</figcaption>
+      </button>
+    </figure>
+    {% empty %}<p class="empty">Photos are on the way.</p>{% endfor %}
+  </div>
+</section>
+<dialog class="lightbox" id="lightbox" aria-label="Image preview">
+  <button class="lb-close" type="button" aria-label="Close">×</button>
+  <div class="lb-stage"></div>
+  <p class="lb-title"></p>
+</dialog>
+{% endblock %}

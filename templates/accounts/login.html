@@ -1,0 +1,16 @@
+{% extends "base/public.html" %}
+{% block title %}Sign in · {{ BRAND.name }}{% endblock %}
+{% block content %}
+<div class="auth">
+  <aside><h2>Welcome back.</h2><p>Book, reschedule and view your invoices in one place.</p></aside>
+  <main>
+    <h1>Sign in</h1>
+    <form method="post" novalidate>{% csrf_token %}
+      {% include "accounts/_form_fields.html" %}
+      <input type="hidden" name="next" value="{{ next }}">
+      <button class="btn btn-primary" type="submit">Sign in</button>
+    </form>
+    <p class="help" style="margin-top:1.2rem"><a href="{% url 'accounts:password_reset' %}">Forgot your password?</a> · New here? <a href="{% url 'accounts:register' %}">Create an account</a></p>
+  </main>
+</div>
+{% endblock %}

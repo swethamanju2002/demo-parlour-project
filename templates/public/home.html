@@ -1,0 +1,164 @@
+{% extends "base/public.html" %}
+{% load static %}
+{% block title %}{{ BRAND.name }} — Skin, hair and bridal care in {{ BRAND.city }}{% endblock %}
+{% block content %}
+<section class="hero">
+  <div>
+    <p class="rise eyebrow-plain">Melur’s first large-scale salon for women</p>
+    <h1 class="rise">Care that looks like you, <em>only more radiant.</em></h1>
+    <p class="rise lede">Skin and hair care, PMU, bridal makeup and a training academy, under one roof on Therkupatty Road.</p>
+    <div class="cta rise">
+      <a class="btn btn-primary" href="{% url 'client:dashboard' %}">Book an appointment</a>
+      <a class="btn btn-ghost" href="#services">Explore services</a>
+    </div>
+  </div>
+  <div class="hero-frame" data-parallax="0.06">
+    <div class="arch"><img src="{% static 'images/hero-portrait.jpg' %}" alt="Portrait of a woman with soft waves in dark hair"></div>
+    <div class="hero-badge"><strong>Grand opening</strong>Monday, 16 November, 10:30 am</div>
+    <span class="orbit" aria-hidden="true"></span>
+  </div>
+</section>
+
+<div class="marquee" aria-hidden="true"><div class="marquee-track">
+  {% for i in "12" %}{% for c in categories %}<span>{{ c.name }}</span><i></i>{% endfor %}{% endfor %}
+</div></div>
+
+<section class="intro">
+  <div class="intro-art" data-reveal="clip">
+    {% with c=categories.0 %}{% if c.image %}<img class="big" src="{{ c.image.url }}" alt="" data-parallax="-0.05">{% endif %}{% endwith %}
+    {% with c=categories.3 %}{% if c.image %}<img class="small" src="{{ c.image.url }}" alt="" data-parallax="0.08">{% endif %}{% endwith %}
+  </div>
+  <div class="intro-copy" data-reveal>
+    <h2>A salon built around a proper consultation.</h2>
+    <p>Every visit begins with a conversation about your skin, your hair and the occasion. We recommend what will work, explain why, and tell you plainly what it will cost.</p>
+    <p>From a first facial to a full bridal day, you get one team, one plan and one bill.</p>
+    <a class="link-arrow" href="{% url 'core:about' %}">Our story</a>
+  </div>
+</section>
+
+<section class="section" id="services">
+  <div class="section-head" data-reveal>
+    <h2>Featured services</h2>
+    <a class="link-arrow" href="{% url 'services:list' %}">All services</a>
+  </div>
+  <div class="feature-grid">
+    {% for s in featured %}
+    <article class="feature feature-{{ forloop.counter }}" data-reveal="clip" style="--i:{{ forloop.counter0 }}">
+      {% if s.image %}<img src="{{ s.image.url }}" alt="" loading="lazy">{% endif %}
+      <div class="feature-info">
+        <span class="chip">{{ s.category.name }}</span>
+        <h3>{{ s.name }}</h3>
+        <p>{{ s.duration_label }} · ₹{{ s.price|floatformat:"-2" }}</p>
+        <a class="btn btn-primary btn-small" href="{% if s.is_bookable %}{% url 'client:dashboard' %}?service={{ s.pk }}{% else %}{% url 'core:contact' %}{% endif %}">{% if s.is_bookable %}Book now{% else %}Enquire{% endif %}</a>
+      </div>
+    </article>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="section section-mist">
+  <div class="section-head" data-reveal><h2>Most-loved treatments</h2></div>
+  <ul class="popular">
+    {% for s in popular %}
+    <li data-reveal style="--i:{{ forloop.counter0 }}">
+      <a href="{% url 'services:list' %}#{{ s.category.slug }}">
+        <span class="pop-name">{{ s.name }}</span>
+        <span class="pop-cat">{{ s.category.name }}</span>
+        <span class="pop-dur">{{ s.duration_label }}</span>
+        <span class="pop-price">₹{{ s.price|floatformat:"-2" }}</span>
+      </a>
+    </li>
+    {% endfor %}
+  </ul>
+</section>
+
+{% if ba_item %}
+<section class="section ba-section">
+  <div class="ba-copy" data-reveal>
+    <h2>See the difference.</h2>
+    <p>Drag the handle to compare before and after. Demonstration artwork stands in for real client photos, which are added from the admin panel.</p>
+    <a class="link-arrow" href="{% url 'gallery:list' %}">Full gallery</a>
+  </div>
+  <div class="ba" data-ba data-reveal="clip">
+    <img src="{{ ba_item.image.url }}" alt="After: {{ ba_item.title }}">
+    <div class="ba-before"><img src="{{ ba_item.before_image.url }}" alt="Before: {{ ba_item.title }}"></div>
+    <span class="ba-tag ba-tag-l">Before</span><span class="ba-tag ba-tag-r">After</span>
+    <input class="ba-range" type="range" min="0" max="100" value="50" aria-label="Compare before and after">
+    <span class="ba-handle" aria-hidden="true"></span>
+  </div>
+</section>
+{% endif %}
+
+{% if offers %}
+<section class="section">
+  <div class="section-head" data-reveal><h2>Offers this month</h2><a class="link-arrow" href="{% url 'offers:list' %}">All offers</a></div>
+  <div class="offer-row">
+    {% for o in offers %}{% include "public/_offer_card.html" %}{% endfor %}
+  </div>
+</section>
+{% endif %}
+
+<section class="why">
+  <div class="why-inner">
+    <h2 data-reveal>Why women choose us</h2>
+    <div class="why-grid">
+      <div data-reveal style="--i:0"><b data-count="{{ stats.services }}">0</b><span>services across {{ stats.categories }} specialities</span></div>
+      <div data-reveal style="--i:1"><b data-count="{{ stats.specialists }}">0</b><span>specialists on the floor</span></div>
+      <div data-reveal style="--i:2"><b data-count="{{ stats.experience }}" data-suffix="+">0</b><span>combined years of experience</span></div>
+      <div data-reveal style="--i:3"><b>1</b><span>team, one plan, one clear bill</span></div>
+    </div>
+  </div>
+</section>
+
+{% if testimonials %}
+<section class="section">
+  <div class="section-head" data-reveal><h2>Kind words</h2></div>
+  <div class="quotes" data-carousel>
+    {% for t in testimonials %}
+    <blockquote class="quote{% if forloop.first %} is-active{% endif %}">
+      <p>{{ t.quote }}</p>
+      <footer><b>{{ t.name }}</b>{% if t.service_name %}<span>{{ t.service_name }}</span>{% endif %}<span class="stars" aria-label="{{ t.rating }} out of 5">{% for _ in "12345"|slice:t.rating %}★{% endfor %}</span></footer>
+    </blockquote>
+    {% endfor %}
+    <div class="quote-dots" role="tablist">{% for t in testimonials %}<button type="button" aria-label="Show review {{ forloop.counter }}"{% if forloop.first %} class="on"{% endif %}></button>{% endfor %}</div>
+  </div>
+  <p class="help center">Sample reviews for the demonstration.</p>
+</section>
+{% endif %}
+
+{% if staff %}
+<section class="section section-mist">
+  <div class="section-head" data-reveal><h2>Meet your beauticians</h2><a class="link-arrow" href="{% url 'core:about' %}#team">The team</a></div>
+  <div class="team-row">
+    {% for p in staff %}
+    <figure class="person" data-reveal style="--i:{{ forloop.counter0 }}">
+      <div class="person-img">{% if p.photo %}<img src="{{ p.photo.url }}" alt="" loading="lazy">{% endif %}</div>
+      <figcaption><b>{{ p.name }}</b><span>{{ p.title }}</span></figcaption>
+    </figure>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+
+{% if gallery %}
+<section class="section">
+  <div class="section-head" data-reveal><h2>From the studio</h2>{% if BRAND.instagram_url %}<a class="link-arrow" href="{{ BRAND.instagram_url }}">Follow on Instagram</a>{% else %}<a class="link-arrow" href="{% url 'gallery:list' %}">Gallery</a>{% endif %}</div>
+  <div class="social-grid">
+    {% for g in gallery %}<a href="{% url 'gallery:list' %}" data-reveal style="--i:{{ forloop.counter0 }}"><img src="{{ g.image.url }}" alt="{{ g.title }}" loading="lazy"></a>{% endfor %}
+  </div>
+</section>
+{% endif %}
+
+<section class="visit">
+  <div class="visit-copy" data-reveal>
+    <h2>Come and see us.</h2>
+    <address>{{ BRAND.address }}</address>
+    <p><a class="btn btn-primary" href="https://wa.me/{{ BRAND.whatsapp }}?text=Hello%20{{ BRAND.name|urlencode }}%2C%20I%27d%20like%20to%20book%20an%20appointment">WhatsApp us</a>
+       <a class="btn btn-ghost" href="tel:+91{{ BRAND.phone|cut:' ' }}">Call {{ BRAND.phone }}</a></p>
+  </div>
+  <div class="hours" data-reveal>
+    <h3>Opening hours</h3>
+    {% include "public/_hours.html" %}
+  </div>
+</section>
+{% endblock %}

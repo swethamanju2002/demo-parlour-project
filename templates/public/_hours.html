@@ -1,0 +1,6 @@
+<ul class="hours-list">
+  {% for h in hours %}
+  <li{% if h.weekday == today %} class="today"{% endif %}><span>{{ h.day_name }}</span><span>{% if h.is_closed %}Closed{% else %}{{ h.opens|time:"g:i A" }} – {{ h.closes|time:"g:i A" }}{% endif %}</span></li>
+  {% empty %}<li><span>Hours will be announced soon.</span></li>
+  {% endfor %}
+</ul>

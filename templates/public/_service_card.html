@@ -1,0 +1,13 @@
+<article class="svc-card" data-reveal style="--i:{{ forloop.counter0 }}">
+  <a class="svc-media" href="{% url 'services:list' %}#{{ s.category.slug }}" tabindex="-1" aria-hidden="true">
+    {% if s.image %}<img src="{{ s.image.url }}" alt="" loading="lazy">{% endif %}
+    <span class="svc-cat">{{ s.category.name }}</span>
+  </a>
+  <div class="svc-body">
+    <h3>{{ s.name }}</h3>
+    <p>{{ s.description }}</p>
+    <div class="svc-meta"><span class="price">₹{{ s.price|floatformat:"-2" }}</span><span class="dur">{{ s.duration_label }}</span></div>
+    {% if s.is_bookable %}<a class="btn btn-ink btn-small" href="{% url 'client:dashboard' %}?service={{ s.pk }}">Book now</a>
+    {% else %}<a class="btn btn-ghost btn-small" href="{% url 'core:contact' %}?interest={{ s.name|urlencode }}">Enquire</a>{% endif %}
+  </div>
+</article>

@@ -1,0 +1,49 @@
+{% extends "base/base.html" %}
+{% load static %}
+{% block css %}<link rel="stylesheet" href="{% static 'css/public/site.css' %}"><link rel="stylesheet" href="{% static 'css/public/sections.css' %}">{% endblock %}
+{% block body %}
+<div class="announce">{{ BRAND.announcement|default:"Now open in Melur, the town's first large-scale salon for women." }} <a href="{% url 'offers:list' %}">See offers</a></div>
+<header class="site-header">
+  <div class="bar">
+    <a class="logo" href="{% url 'core:home' %}" aria-label="{{ BRAND.name }} home"><b>DQ</b><span>aesthetic</span></a>
+    <button class="menu-toggle" aria-expanded="false" aria-controls="nav">Menu</button>
+    <nav class="nav" id="nav" aria-label="Main">
+      {% with n=request.resolver_match.url_name %}
+      <a href="{% url 'core:home' %}" {% if n == 'home' %}aria-current="page"{% endif %}>Home</a>
+      <a href="{% url 'core:about' %}" {% if n == 'about' %}aria-current="page"{% endif %}>About</a>
+      <a href="{% url 'services:list' %}" {% if request.resolver_match.namespace == 'services' %}aria-current="page"{% endif %}>Services</a>
+      <a href="{% url 'gallery:list' %}" {% if request.resolver_match.namespace == 'gallery' %}aria-current="page"{% endif %}>Gallery</a>
+      <a href="{% url 'offers:list' %}" {% if request.resolver_match.namespace == 'offers' %}aria-current="page"{% endif %}>Offers</a>
+      <a href="{% url 'core:contact' %}" {% if n == 'contact' %}aria-current="page"{% endif %}>Contact</a>
+      {% endwith %}
+      {% if user.is_authenticated %}
+        <a href="{% url 'accounts:post_login' %}">My account</a>
+      {% else %}
+        <a href="{% url 'accounts:login' %}">Sign in</a>
+      {% endif %}
+      <a class="btn btn-primary btn-small" href="{% url 'client:dashboard' %}">Book an appointment</a>
+    </nav>
+  </div>
+</header>
+{% block content %}{% endblock %}
+<footer class="site-footer" id="visit">
+  <div class="footer-grid">
+    <div>
+      <h4>{{ BRAND.name }}</h4>
+      <p>{{ BRAND.tagline }}</p>
+      <p>{{ BRAND.address }}</p>
+    </div>
+    <div>
+      <h4>Visit</h4>
+      <p><a href="tel:+91{{ BRAND.phone|cut:' ' }}">{{ BRAND.phone }}</a><br>
+      <a href="https://wa.me/{{ BRAND.whatsapp }}">Message on WhatsApp</a>{% if BRAND.instagram_url %}<br><a href="{{ BRAND.instagram_url }}">Instagram</a>{% endif %}</p>
+    </div>
+    <div>
+      <h4>Account</h4>
+      <p><a href="{% url 'services:list' %}">Services</a><br><a href="{% url 'offers:list' %}">Offers</a><br><a href="{% url 'accounts:register' %}">Create an account</a><br><a href="{% url 'accounts:login' %}">Sign in</a></p>
+    </div>
+  </div>
+  {% if BRAND.demo_mode %}<p class="fine">Demonstration build. Sample services, prices and customers are placeholders until the salon confirms its own.</p>{% endif %}
+</footer>
+{% endblock %}
+{% block js %}<script src="{% static 'js/public/nav.js' %}"></script><script src="{% static 'js/public/motion.js' %}"></script>{% endblock %}

@@ -1,0 +1,18 @@
+{% extends "base/public.html" %}
+{% block title %}Offers · {{ BRAND.name }}{% endblock %}
+{% block content %}
+{% include "public/_page_head.html" with crumb="Offers" heading="Current offers." lede="Only live offers are shown. Use a code when you book or at the counter." %}
+<section class="section">
+  <div class="offer-row offer-row-wide">
+    {% for o in offers %}
+      {% include "public/_offer_card.html" %}
+    {% empty %}
+      <p class="empty">There are no live offers right now. Follow us or message us on WhatsApp to hear about the next one.</p>
+    {% endfor %}
+  </div>
+  {% for o in offers %}{% if o.terms %}
+  <details class="terms" data-reveal><summary>Terms for “{{ o.title }}”</summary><p>{{ o.terms }}</p>
+    {% if o.services.exists %}<p>Applies to: {% for s in o.services.all %}{{ s.name }}{% if not forloop.last %}, {% endif %}{% endfor %}.</p>{% else %}<p>Applies to all services.</p>{% endif %}</details>
+  {% endif %}{% endfor %}
+</section>
+{% endblock %}

@@ -1,0 +1,84 @@
+/* DQ Aesthetic design tokens — shared by public, client and admin surfaces.
+   Palette is taken from the salon's own signage: ink navy, powder blue, ribbon red. */
+:root {
+  --ink: #1F2740;          /* logo navy */
+  --ink-soft: #46506B;
+  --powder: #8FB2C9;       /* "aesthetic" wordmark blue */
+  --mist: #E3ECF2;         /* date-band blue */
+  --paper: #F7F9FB;
+  --white: #FFFFFF;
+  --ribbon: #D2364E;       /* ribbon / script red */
+  --ribbon-deep: #A82640;
+  --sage: #7C9A8E;
+  --line: rgba(31, 39, 64, .12);
+
+  --font-display: "Cormorant Garamond", Georgia, serif;
+  --font-body: "DM Sans", system-ui, sans-serif;
+  --font-script: "Pinyon Script", "Cormorant Garamond", cursive;
+
+  --step--1: clamp(.82rem, .8rem + .1vw, .9rem);
+  --step-0: clamp(1rem, .96rem + .2vw, 1.1rem);
+  --step-1: clamp(1.25rem, 1.15rem + .5vw, 1.5rem);
+  --step-2: clamp(1.7rem, 1.4rem + 1.4vw, 2.5rem);
+  --step-3: clamp(2.4rem, 1.7rem + 3.2vw, 4.4rem);
+  --step-4: clamp(3.2rem, 2rem + 6vw, 7rem);
+
+  --space-1: .5rem; --space-2: 1rem; --space-3: 1.5rem; --space-4: 2.5rem; --space-5: 4rem; --space-6: 7rem;
+  --radius-s: 4px; --radius-m: 10px; --arch: 999px 999px 6px 6px;
+  --shadow-s: 0 1px 2px rgba(31,39,64,.08);
+  --shadow-m: 0 18px 40px -20px rgba(31,39,64,.35);
+  --ease: cubic-bezier(.2, .7, .2, 1);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; overflow-x: clip; }
+body {
+  margin: 0; font-family: var(--font-body); font-size: var(--step-0); line-height: 1.6;
+  color: var(--ink); background: var(--paper); -webkit-font-smoothing: antialiased; overflow-x: clip;
+}
+img { max-width: 100%; display: block; }
+a { color: inherit; }
+h1, h2, h3, h4 { font-family: var(--font-display); font-weight: 500; line-height: 1.04; margin: 0 0 .5em; letter-spacing: -.01em; }
+p { margin: 0 0 1em; max-width: 62ch; }
+:focus-visible { outline: 2px solid var(--ribbon); outline-offset: 3px; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* Buttons */
+.btn {
+  display: inline-flex; align-items: center; gap: .6rem; padding: .85rem 1.6rem;
+  font: 500 .95rem var(--font-body); text-decoration: none; border: 1px solid transparent;
+  border-radius: 999px; cursor: pointer; transition: transform .25s var(--ease), background .25s, color .25s, border-color .25s;
+}
+.btn:hover { transform: translateY(-2px); }
+.btn-primary { background: var(--ribbon); color: #fff; }
+.btn-primary:hover { background: var(--ribbon-deep); }
+.btn-ink { background: var(--ink); color: #fff; }
+.btn-ghost { border-color: var(--ink); color: var(--ink); background: transparent; }
+.btn-ghost:hover { background: var(--ink); color: #fff; }
+.btn-small { padding: .5rem 1rem; font-size: .85rem; }
+
+/* Forms */
+.field { margin-bottom: 1.1rem; }
+.field label { display: block; font-size: .85rem; color: var(--ink-soft); margin-bottom: .3rem; }
+.field-input, .field-file {
+  width: 100%; padding: .8rem .9rem; font: inherit; color: var(--ink); background: var(--white);
+  border: 1px solid var(--line); border-radius: var(--radius-s); transition: border-color .2s, box-shadow .2s;
+}
+.field-input:focus { border-color: var(--powder); box-shadow: 0 0 0 4px rgba(143,178,201,.3); outline: none; }
+.field-error, .errorlist { color: var(--ribbon-deep); font-size: .85rem; margin: .3rem 0 0; padding: 0; list-style: none; }
+.help { font-size: .8rem; color: var(--ink-soft); }
+
+/* Toasts (Django messages) */
+.toasts { position: fixed; right: 1rem; bottom: 1rem; z-index: 200; display: grid; gap: .6rem; }
+.toast {
+  background: var(--ink); color: #fff; padding: .9rem 1.2rem; border-radius: var(--radius-m);
+  box-shadow: var(--shadow-m); border-left: 4px solid var(--powder); max-width: 22rem;
+  animation: toast-in .45s var(--ease);
+}
+.toast.error { border-left-color: var(--ribbon); }
+.toast.success { border-left-color: var(--sage); }
+@keyframes toast-in { from { opacity: 0; transform: translateY(14px); } }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+}

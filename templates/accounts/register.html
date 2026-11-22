@@ -1,0 +1,15 @@
+{% extends "base/public.html" %}
+{% block title %}Create account · {{ BRAND.name }}{% endblock %}
+{% block content %}
+<div class="auth">
+  <aside><h2>Your appointments, sorted.</h2><p>Create an account to book services and keep every bill.</p></aside>
+  <main>
+    <h1>Create your account</h1>
+    <form method="post" novalidate>{% csrf_token %}
+      {% include "accounts/_form_fields.html" %}
+      <button class="btn btn-primary" type="submit">Create account</button>
+    </form>
+    <p class="help" style="margin-top:1.2rem">Already registered? <a href="{% url 'accounts:login' %}">Sign in</a></p>
+  </main>
+</div>
+{% endblock %}

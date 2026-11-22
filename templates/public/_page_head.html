@@ -1,0 +1,8 @@
+<header class="page-head">
+  <div class="page-head-inner">
+    <p class="crumb"><a href="{% url 'core:home' %}">Home</a> / {{ crumb }}</p>
+    <h1 data-split>{{ heading }}</h1>
+    {% if lede %}<p class="lede">{{ lede }}</p>{% endif %}
+  </div>
+  <span class="page-head-arch" aria-hidden="true"></span>
+</header>
