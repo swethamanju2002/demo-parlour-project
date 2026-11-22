@@ -1,0 +1,7 @@
+{% extends "base/public.html" %}
+{% block title %}Billing · {{ BRAND.name }}{% endblock %}
+{% block content %}
+<section class="section"><h1>Billing</h1>
+  {% for inv in invoices %}<p>{{ inv }}</p>{% empty %}<p class="empty">No invoices yet. Your bills will appear here after your visits.</p>{% endfor %}
+</section>
+{% endblock %}

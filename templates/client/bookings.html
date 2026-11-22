@@ -1,0 +1,12 @@
+{% extends "base/public.html" %}
+{% block title %}My bookings · {{ BRAND.name }}{% endblock %}
+{% block content %}
+<section class="section">
+  <h1>My bookings</h1>
+  <p><a href="?tab=upcoming">Upcoming</a> · <a href="?tab=past">Past</a> · <a href="?tab=all">All</a></p>
+  <ul>{% for b in page %}<li><a href="{% url 'client:booking_detail' b.public_id %}">{{ b.public_id }}</a> · {{ b.start|date:"j M Y" }} {{ b.start|time:"g:i A" }} · {{ b.staff.name }} · {{ b.get_status_display }}</li>
+  {% empty %}<li class="empty">No bookings here.</li>{% endfor %}</ul>
+  {% if page.has_previous %}<a href="?tab={{ tab }}&page={{ page.previous_page_number }}">Newer</a>{% endif %}
+  {% if page.has_next %}<a href="?tab={{ tab }}&page={{ page.next_page_number }}">Older</a>{% endif %}
+</section>
+{% endblock %}

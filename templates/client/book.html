@@ -1,0 +1,10 @@
+{% extends "base/public.html" %}
+{% block title %}Book an appointment · {{ BRAND.name }}{% endblock %}
+{% block content %}
+<section class="section" id="wizard" data-preselect="{{ preselect_service|default_if_none:'' }}" data-max="{{ max_services }}"
+  data-api-services="{% url 'client:api_services' %}" data-api-dates="{% url 'client:api_dates' %}" data-api-slots="{% url 'client:api_slots' %}"
+  data-api-staff="{% url 'client:api_staff' %}" data-api-summary="{% url 'client:api_summary' %}" data-api-book="{% url 'client:api_book' %}">
+  <h1>Book an appointment</h1>
+  <p class="help">The booking wizard interface is built in the next step. Its endpoints are live.</p>
+</section>
+{% endblock %}

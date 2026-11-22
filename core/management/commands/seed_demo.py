@@ -12,6 +12,8 @@ from gallery.models import GalleryCategory, GalleryItem
 from offers.models import Offer
 from services.models import Service, ServiceCategory
 from staff.models import StaffProfile
+from django.utils import timezone
+from bookings.demo import seed_booking_demo
 
 CATEGORIES = [
     ("Skin Care", "Clear, calm, glowing", "Facials and clinical skin treatments chosen for your skin, not a menu."),
@@ -95,7 +97,7 @@ class Command(BaseCommand):
                                            palette=("#DDDDDD", "#BFC4C9", "#7A7F87", "#9AA0A8")), save=False)
                 item.save()
 
-        today = date.today()
+        today = timezone.localdate()
         offers = [
             ("Grand Opening: 15% off", "Celebrate with us. 15% off any first-visit service.", "percent", 15, False, "WELCOME15",
              today - timedelta(days=6), today + timedelta(days=24), "New customers only. One use per customer. Not combinable with other offers."),
@@ -127,4 +129,6 @@ class Command(BaseCommand):
             if created:
                 u.set_password(pw)
                 u.save()
+                
+                seed_booking_demo(self.stdout.write)
         self.stdout.write(self.style.SUCCESS("Demo data ready. admin_demo / DQAdmin#2026 · demo_customer / DQCustomer#2026"))

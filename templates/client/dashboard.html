@@ -1,2 +1,20 @@
 {% extends "base/public.html" %}
-{% block content %}<div class="auth" style="grid-template-columns:1fr"><main><h1>Hello, {{ user.first_name|default:user.username }}</h1><p>Your portal is being built in Phase 3.</p></main></div>{% endblock %}
+{% block title %}My account · {{ BRAND.name }}{% endblock %}
+{% block content %}
+<section class="section">
+  <h1>Hello, {{ user.first_name|default:user.username }}</h1>
+  <p><a class="btn btn-primary" href="{% url 'client:book' %}">Book an appointment</a>
+     <a class="btn btn-ghost" href="{% url 'client:bookings' %}">All bookings</a>
+     <a class="btn btn-ghost" href="{% url 'client:offers' %}">Offers</a>
+     <a class="btn btn-ghost" href="{% url 'client:billing' %}">Billing</a></p>
+  <h2>Upcoming</h2>
+  {% for day, items in timeline %}
+    <h3>{{ day|date:"l, j F" }}</h3>
+    <ul>{% for b in items %}<li><a href="{% url 'client:booking_detail' b.public_id %}">{{ b.public_id }}</a> · {{ b.start|time:"g:i A" }} · {{ b.staff.name }} · {{ b.get_status_display }}</li>{% endfor %}</ul>
+  {% empty %}<p class="empty">No upcoming appointments yet.</p>{% endfor %}
+  <h2>Recent history</h2>
+  <ul>{% for b in history %}<li><a href="{% url 'client:booking_detail' b.public_id %}">{{ b.public_id }}</a> · {{ b.start|date:"j M Y" }} · {{ b.get_status_display }}</li>{% empty %}<li>Nothing here yet.</li>{% endfor %}</ul>
+  <h2>Offers</h2>
+  <ul>{% for o in offers %}<li>{{ o.badge }}: {{ o.title }}</li>{% empty %}<li>No live offers right now.</li>{% endfor %}</ul>
+</section>
+{% endblock %}

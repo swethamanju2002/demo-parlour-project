@@ -74,3 +74,15 @@ class FAQ(models.Model):
 
     def __str__(self):
         return self.question
+
+
+class Holiday(models.Model):
+    """A full day on which the salon takes no appointments, regardless of the weekly opening hours."""
+    date = models.DateField(unique=True)
+    reason = models.CharField(max_length=120, blank=True)
+
+    class Meta:
+        ordering = ["date"]
+
+    def __str__(self):
+        return f"{self.date:%d %b %Y}" + (f" · {self.reason}" if self.reason else "")

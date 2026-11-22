@@ -1,0 +1,19 @@
+{% extends "base/public.html" %}
+{% block title %}{{ booking.public_id }} · {{ BRAND.name }}{% endblock %}
+{% block content %}
+<section class="section">
+  <h1>Booking {{ booking.public_id }}</h1>
+  <p>{{ booking.get_status_display }} · {{ booking.start|date:"l, j F Y" }}, {{ booking.start|time:"g:i A" }} – {{ booking.end|time:"g:i A" }} · {{ booking.staff.name }}{% if booking.any_staff %} (assigned by the salon){% endif %}</p>
+  <ul>{% for i in items %}<li>{{ i.service_name }} · {{ i.duration_minutes }} min · ₹{{ i.unit_price|floatformat:"-2" }}</li>{% endfor %}</ul>
+  <p><b>Total ₹{{ booking.total_price|floatformat:"-2" }}</b> · {{ booking.total_minutes }} min</p>
+  {% if booking.reschedule_requested_at %}<p class="help">Reschedule requested: {{ booking.reschedule_note|default:"no note" }}</p>{% endif %}
+  {% if booking.can_change %}
+    <form method="post" action="{% url 'client:booking_cancel' booking.public_id %}">{% csrf_token %}<button class="btn btn-ghost" type="submit">Cancel booking</button></form>
+    {% if not booking.reschedule_requested_at %}
+    <form method="post" action="{% url 'client:booking_reschedule' booking.public_id %}">{% csrf_token %}<input class="field-input" name="note" maxlength="300" placeholder="Preferred day or time"><button class="btn btn-ink" type="submit">Request reschedule</button></form>
+    {% endif %}
+    <p class="help">You can change this up to {{ booking.change_deadline|time:"g:i A" }} on {{ booking.change_deadline|date:"j M" }}.</p>
+  {% endif %}
+  <p><a href="{% url 'client:bookings' %}">Back to all bookings</a></p>
+</section>
+{% endblock %}

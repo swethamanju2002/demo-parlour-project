@@ -1,0 +1,8 @@
+{% extends "base/public.html" %}
+{% block title %}Offers · {{ BRAND.name }}{% endblock %}
+{% block content %}
+<section class="section"><h1>Your offers</h1>
+  {% for o in offers %}<article class="offer"><span class="offer-badge">{{ o.badge }}</span><h3>{{ o.title }}</h3><p>{{ o.summary }}</p><p class="offer-valid">Valid until {{ o.valid_to|date:"j F Y" }}</p>{% if o.coupon_code %}<p>Code: <b>{{ o.coupon_code }}</b></p>{% endif %}</article>
+  {% empty %}<p class="empty">No live offers right now.</p>{% endfor %}
+</section>
+{% endblock %}
