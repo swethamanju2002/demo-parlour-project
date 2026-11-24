@@ -1,12 +1,37 @@
-{% extends "base/public.html" %}
+{% extends "base/portal.html" %}
 {% block title %}My bookings · {{ BRAND.name }}{% endblock %}
-{% block content %}
-<section class="section">
-  <h1>My bookings</h1>
-  <p><a href="?tab=upcoming">Upcoming</a> · <a href="?tab=past">Past</a> · <a href="?tab=all">All</a></p>
-  <ul>{% for b in page %}<li><a href="{% url 'client:booking_detail' b.public_id %}">{{ b.public_id }}</a> · {{ b.start|date:"j M Y" }} {{ b.start|time:"g:i A" }} · {{ b.staff.name }} · {{ b.get_status_display }}</li>
-  {% empty %}<li class="empty">No bookings here.</li>{% endfor %}</ul>
-  {% if page.has_previous %}<a href="?tab={{ tab }}&page={{ page.previous_page_number }}">Newer</a>{% endif %}
-  {% if page.has_next %}<a href="?tab={{ tab }}&page={{ page.next_page_number }}">Older</a>{% endif %}
+{% block portal %}
+<header class="p-page">
+  <p class="kicker">My bookings</p>
+  <h1>Every visit, <em>at a glance.</em></h1>
+  <div class="tabs" role="tablist">
+    <a href="?tab=upcoming"{% if tab == 'upcoming' %} aria-current="true"{% endif %}>Upcoming <span>{{ counts.upcoming }}</span></a>
+    <a href="?tab=past"{% if tab == 'past' %} aria-current="true"{% endif %}>Past <span>{{ counts.past }}</span></a>
+    <a href="?tab=all"{% if tab == 'all' %} aria-current="true"{% endif %}>All <span>{{ counts.all }}</span></a>
+  </div>
+</header>
+<section class="p-section">
+  <ul class="blist">
+    {% for b in page %}
+    <li data-reveal style="--i:{{ forloop.counter0 }}"><a class="bl-card" href="{% url 'client:booking_detail' b.public_id %}">
+      <span class="bl-date"><b>{{ b.start|date:"j" }}</b><span>{{ b.start|date:"M Y" }}</span></span>
+      <span class="bl-main"><b>{% for i in b.items.all %}{{ i.service_name }}{% if not forloop.last %}, {% endif %}{% endfor %}</b>
+        <small>{{ b.start|date:"l" }}, {{ b.start|time:"g:i A" }} · {{ b.staff.name }} · ₹{{ b.total_price|floatformat:"-2" }}</small>
+        {% if b.reschedule_requested_at and b.can_change %}<small class="flag">Reschedule requested</small>{% endif %}</span>
+      <span class="status status-{{ b.status }}">{{ b.get_status_display }}</span></a></li>
+    {% empty %}
+    <li class="empty-state"><span class="es-arch" aria-hidden="true"></span>
+      <h2>{% if tab == 'upcoming' %}No upcoming visits.{% else %}Nothing here yet.{% endif %}</h2>
+      <p>When you book, your appointments appear here with their status.</p>
+      <a class="btn btn-primary" href="{% url 'client:book' %}">Book an appointment</a></li>
+    {% endfor %}
+  </ul>
+  {% if page.paginator.num_pages > 1 %}
+  <nav class="pager" aria-label="Pages">
+    {% if page.has_previous %}<a class="btn btn-ghost btn-small" href="?tab={{ tab }}&page={{ page.previous_page_number }}">← Newer</a>{% endif %}
+    <span>Page {{ page.number }} of {{ page.paginator.num_pages }}</span>
+    {% if page.has_next %}<a class="btn btn-ghost btn-small" href="?tab={{ tab }}&page={{ page.next_page_number }}">Older →</a>{% endif %}
+  </nav>
+  {% endif %}
 </section>
 {% endblock %}

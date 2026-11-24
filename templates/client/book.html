@@ -1,10 +1,64 @@
-{% extends "base/public.html" %}
+{% extends "base/portal.html" %}
+{% load static %}
 {% block title %}Book an appointment · {{ BRAND.name }}{% endblock %}
-{% block content %}
-<section class="section" id="wizard" data-preselect="{{ preselect_service|default_if_none:'' }}" data-max="{{ max_services }}"
-  data-api-services="{% url 'client:api_services' %}" data-api-dates="{% url 'client:api_dates' %}" data-api-slots="{% url 'client:api_slots' %}"
-  data-api-staff="{% url 'client:api_staff' %}" data-api-summary="{% url 'client:api_summary' %}" data-api-book="{% url 'client:api_book' %}">
-  <h1>Book an appointment</h1>
-  <p class="help">The booking wizard interface is built in the next step. Its endpoints are live.</p>
-</section>
+{% block body_class %}wizard-page{% endblock %}
+{% block portal %}
+<div class="wiz" id="wizard" data-preselect="{{ preselect_service|default_if_none:'' }}" data-max="{{ max_services }}" data-cancel-hours="{{ cancel_hours }}"
+     data-login-url="{% url 'accounts:login' %}" data-bookings-url="{% url 'client:bookings' %}" data-dashboard-url="{% url 'client:dashboard' %}"
+     data-api-services="{% url 'client:api_services' %}" data-api-dates="{% url 'client:api_dates' %}" data-api-slots="{% url 'client:api_slots' %}"
+     data-api-staff="{% url 'client:api_staff' %}" data-api-summary="{% url 'client:api_summary' %}" data-api-book="{% url 'client:api_book' %}">
+  <header class="wiz-head">
+    <p class="kicker">Book</p>
+    <h1>Let’s plan your visit.</h1>
+  </header>
+  <ol class="stepper" id="stepper" aria-label="Booking progress">
+    <li><span class="st-dot">1</span><span class="st-label">Services</span></li>
+    <li><span class="st-dot">2</span><span class="st-label">Date</span></li>
+    <li><span class="st-dot">3</span><span class="st-label">Time</span></li>
+    <li><span class="st-dot">4</span><span class="st-label">Beautician</span></li>
+    <li><span class="st-dot">5</span><span class="st-label">Review</span></li>
+    <li><span class="st-dot">6</span><span class="st-label">Done</span></li>
+  </ol>
+  <div class="wiz-grid">
+    <div class="wiz-main">
+      <section class="panel is-active" data-panel="1" aria-labelledby="h-1">
+        <h2 id="h-1" tabindex="-1">What would you like done?</h2>
+        <p class="lede">Choose one or more treatments. Prices and durations are shown up front.</p>
+        <div class="panel-body" data-body="1"><p class="loading">Loading services…</p></div>
+      </section>
+      <section class="panel" data-panel="2" aria-labelledby="h-2" hidden>
+        <h2 id="h-2" tabindex="-1">Pick a day.</h2>
+        <p class="lede">Days we cannot take you are greyed out.</p>
+        <div class="panel-body" data-body="2"></div>
+      </section>
+      <section class="panel" data-panel="3" aria-labelledby="h-3" hidden>
+        <h2 id="h-3" tabindex="-1">Choose a time.</h2>
+        <p class="lede" id="slot-lede"></p>
+        <div class="panel-body" data-body="3"></div>
+      </section>
+      <section class="panel" data-panel="4" aria-labelledby="h-4" hidden>
+        <h2 id="h-4" tabindex="-1">Who would you like?</h2>
+        <p class="lede">Choose a beautician, or let us assign the best available one.</p>
+        <div class="panel-body" data-body="4"></div>
+      </section>
+      <section class="panel" data-panel="5" aria-labelledby="h-5" hidden>
+        <h2 id="h-5" tabindex="-1">Check and confirm.</h2>
+        <p class="lede">Prices below are calculated by the salon system.</p>
+        <div class="panel-body" data-body="5"></div>
+      </section>
+      <section class="panel" data-panel="6" aria-labelledby="h-6" hidden>
+        <div class="panel-body" data-body="6"></div>
+      </section>
+      <p class="wiz-error" id="wiz-error" role="alert" hidden></p>
+      <div class="wiz-actions" id="wiz-actions">
+        <button type="button" class="btn btn-ghost" id="wiz-back" hidden>Back</button>
+        <p class="wiz-mini" id="wiz-mini" aria-live="polite"></p>
+        <button type="button" class="btn btn-primary" id="wiz-next" disabled><span>Continue</span></button>
+      </div>
+    </div>
+    <aside class="wiz-rail" id="wiz-rail" aria-label="Your visit so far"></aside>
+  </div>
+  <noscript><p class="notice">Online booking needs JavaScript. Please call us on {{ BRAND.phone }} or message us on WhatsApp to book.</p></noscript>
+</div>
 {% endblock %}
+{% block portal_js %}<script src="{% static 'js/portal/wizard.js' %}"></script>{% endblock %}

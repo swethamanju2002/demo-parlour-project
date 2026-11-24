@@ -1,7 +1,17 @@
-{% extends "base/public.html" %}
+{% extends "base/portal.html" %}
 {% block title %}Billing · {{ BRAND.name }}{% endblock %}
-{% block content %}
-<section class="section"><h1>Billing</h1>
-  {% for inv in invoices %}<p>{{ inv }}</p>{% empty %}<p class="empty">No invoices yet. Your bills will appear here after your visits.</p>{% endfor %}
+{% block portal %}
+<header class="p-page">
+  <p class="kicker">Billing</p>
+  <h1>Invoices<em>and payments.</em></h1>
+</header>
+<section class="p-section">
+  {% if invoices %}
+  <ul class="rows">{% for inv in invoices %}<li><span class="row-main">{{ inv }}</span></li>{% endfor %}</ul>
+  {% else %}
+  <div class="empty-state"><span class="es-arch" aria-hidden="true"></span><h2>No invoices yet.</h2>
+    <p>After each visit your bill is saved here, with the treatments, total and payment status.</p>
+    <a class="btn btn-ghost" href="{% url 'client:bookings' %}">View my bookings</a></div>
+  {% endif %}
 </section>
 {% endblock %}

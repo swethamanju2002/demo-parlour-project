@@ -1,0 +1,21 @@
+{# Cancel / reschedule forms for one booking. Work as plain posts without JS; portal.js upgrades them to confirm-then-fetch. #}
+{% if booking.can_change %}
+<div class="actions-card">
+  <h3>Need to change something?</h3>
+  <p class="help">You can change this appointment until {{ booking.change_deadline|time:"g:i A" }} on {{ booking.change_deadline|date:"j F" }}. After that, please contact the salon.</p>
+  {% if not booking.reschedule_requested_at %}
+  <form class="resched" method="post" action="{% url 'client:booking_reschedule' booking.public_id %}" data-action-form>{% csrf_token %}
+    <label for="note-{{ booking.public_id }}">Ask to reschedule</label>
+    <input class="field-input" id="note-{{ booking.public_id }}" name="note" maxlength="300" placeholder="Which day or time suits you better?">
+    <button class="btn btn-ink btn-small" type="submit">Send request</button>
+  </form>
+  {% else %}
+  <p class="notice">Reschedule requested{% if booking.reschedule_note %}: “{{ booking.reschedule_note }}”{% endif %}. We will be in touch.</p>
+  {% endif %}
+  <form method="post" action="{% url 'client:booking_cancel' booking.public_id %}" data-action-form
+        data-confirm-title="Cancel this appointment?" data-confirm-text="Your {{ booking.start|time:'g:i A' }} appointment on {{ booking.start|date:'j F' }} will be released for other customers."
+        data-confirm-yes="Yes, cancel it">{% csrf_token %}
+    <button class="btn btn-ghost btn-small btn-danger" type="submit">Cancel appointment</button>
+  </form>
+</div>
+{% endif %}

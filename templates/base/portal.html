@@ -1,0 +1,34 @@
+{% extends "base/public.html" %}
+{% load static %}
+{% block css %}{{ block.super }}<link rel="stylesheet" href="{% static 'css/portal/portal.css' %}">{% endblock %}
+{% block body_class %}has-portal-nav{% endblock %}
+{% block content %}
+{% with n=request.resolver_match.url_name %}
+<nav class="portal-nav" aria-label="My account">
+  <div class="pn-inner">
+    <a href="{% url 'client:dashboard' %}"{% if n == 'dashboard' %} aria-current="page"{% endif %}>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11l8-7 8 7v9a1 1 0 0 1-1 1h-4v-6H9v6H5a1 1 0 0 1-1-1z"/></svg><span>Overview</span></a>
+    <a href="{% url 'client:bookings' %}"{% if n == 'bookings' or n == 'booking_detail' %} aria-current="page"{% endif %}>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></svg><span>Bookings</span></a>
+    <a class="pn-book" href="{% url 'client:book' %}"{% if n == 'book' %} aria-current="page"{% endif %}>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg><span>Book</span></a>
+    <a href="{% url 'client:offers' %}"{% if n == 'offers' %} aria-current="page"{% endif %}>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12l9-9h8v8l-9 9z"/><circle cx="15.5" cy="8.5" r="1.2"/></svg><span>Offers</span></a>
+    <a href="{% url 'client:billing' %}"{% if n == 'billing' %} aria-current="page"{% endif %}>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9 8h6M9 12h6"/></svg><span>Billing</span></a>
+  </div>
+</nav>
+{% endwith %}
+<div class="portal">{% block portal %}{% endblock %}</div>
+<dialog class="modal" id="confirm-dialog" aria-labelledby="cd-title" aria-describedby="cd-text">
+  <div class="modal-card">
+    <h3 id="cd-title"></h3>
+    <p id="cd-text"></p>
+    <div class="modal-actions">
+      <button type="button" class="btn btn-ghost" data-cd="no">Keep it</button>
+      <button type="button" class="btn btn-primary" data-cd="yes">Confirm</button>
+    </div>
+  </div>
+</dialog>
+{% endblock %}
+{% block js %}{{ block.super }}<script src="{% static 'js/portal/portal.js' %}"></script>{% block portal_js %}{% endblock %}{% endblock %}

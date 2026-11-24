@@ -1,19 +1,37 @@
-{% extends "base/public.html" %}
+{% extends "base/portal.html" %}
 {% block title %}{{ booking.public_id }} · {{ BRAND.name }}{% endblock %}
-{% block content %}
-<section class="section">
-  <h1>Booking {{ booking.public_id }}</h1>
-  <p>{{ booking.get_status_display }} · {{ booking.start|date:"l, j F Y" }}, {{ booking.start|time:"g:i A" }} – {{ booking.end|time:"g:i A" }} · {{ booking.staff.name }}{% if booking.any_staff %} (assigned by the salon){% endif %}</p>
-  <ul>{% for i in items %}<li>{{ i.service_name }} · {{ i.duration_minutes }} min · ₹{{ i.unit_price|floatformat:"-2" }}</li>{% endfor %}</ul>
-  <p><b>Total ₹{{ booking.total_price|floatformat:"-2" }}</b> · {{ booking.total_minutes }} min</p>
-  {% if booking.reschedule_requested_at %}<p class="help">Reschedule requested: {{ booking.reschedule_note|default:"no note" }}</p>{% endif %}
-  {% if booking.can_change %}
-    <form method="post" action="{% url 'client:booking_cancel' booking.public_id %}">{% csrf_token %}<button class="btn btn-ghost" type="submit">Cancel booking</button></form>
-    {% if not booking.reschedule_requested_at %}
-    <form method="post" action="{% url 'client:booking_reschedule' booking.public_id %}">{% csrf_token %}<input class="field-input" name="note" maxlength="300" placeholder="Preferred day or time"><button class="btn btn-ink" type="submit">Request reschedule</button></form>
-    {% endif %}
-    <p class="help">You can change this up to {{ booking.change_deadline|time:"g:i A" }} on {{ booking.change_deadline|date:"j M" }}.</p>
+{% block portal %}
+<header class="p-page">
+  <p class="crumb"><a href="{% url 'client:bookings' %}">My bookings</a> / <span class="mono">{{ booking.public_id }}</span></p>
+  <h1>{{ booking.start|date:"l, j F" }}<em>at {{ booking.start|time:"g:i A" }}</em></h1>
+  <p><span class="status status-{{ booking.status }} status-lg">{{ booking.get_status_display }}</span></p>
+  {% if booking.status == 'cancelled' or booking.status == 'rejected' %}
+  <p class="notice">{% if booking.status == 'cancelled' %}This appointment was cancelled{% if booking.cancelled_at %} on {{ booking.cancelled_at|date:"j F" }}{% endif %}.{% else %}The salon could not take this request. Please book another time.{% endif %}</p>
+  {% else %}
+  <ol class="progress" aria-label="Booking progress">
+    <li class="done"><span>Requested</span></li>
+    <li class="{% if booking.status == 'confirmed' or booking.status == 'completed' %}done{% else %}now{% endif %}"><span>Confirmed</span></li>
+    <li class="{% if booking.status == 'completed' %}done{% elif booking.status == 'confirmed' %}now{% endif %}"><span>Completed</span></li>
+  </ol>
   {% endif %}
-  <p><a href="{% url 'client:bookings' %}">Back to all bookings</a></p>
+</header>
+<section class="p-section detail-grid">
+  <div class="receipt" data-reveal>
+    <h2>Your treatments</h2>
+    <ul class="r-items">{% for i in items %}<li><span><b>{{ i.service_name }}</b><small>{{ i.duration_minutes }} min</small></span><span>₹{{ i.unit_price|floatformat:"-2" }}</span></li>{% endfor %}</ul>
+    <p class="r-total"><span>Total</span><b>₹{{ booking.total_price|floatformat:"-2" }}</b></p>
+    <p class="help">Prices are fixed when you book. Payment is recorded at the salon; invoices will appear under Billing.</p>
+  </div>
+  <div class="facts" data-reveal style="--i:1">
+    <dl>
+      <div><dt>Booking ID</dt><dd class="mono">{{ booking.public_id }}</dd></div>
+      <div><dt>Beautician</dt><dd>{{ booking.staff.name }}{% if booking.any_staff %} <small>(assigned by the salon)</small>{% endif %}</dd></div>
+      <div><dt>Date</dt><dd>{{ booking.start|date:"l, j F Y" }}</dd></div>
+      <div><dt>Time</dt><dd>{{ booking.start|time:"g:i A" }} – {{ booking.end|time:"g:i A" }} ({{ booking.total_minutes }} min)</dd></div>
+      <div><dt>Requested on</dt><dd>{{ booking.created_at|date:"j F Y" }}</dd></div>
+      {% if booking.notes %}<div><dt>Your note</dt><dd>{{ booking.notes }}</dd></div>{% endif %}
+    </dl>
+    {% include "client/_booking_actions.html" %}
+  </div>
 </section>
 {% endblock %}

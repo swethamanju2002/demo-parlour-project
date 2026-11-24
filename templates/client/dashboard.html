@@ -1,20 +1,89 @@
-{% extends "base/public.html" %}
+{% extends "base/portal.html" %}
 {% block title %}My account · {{ BRAND.name }}{% endblock %}
-{% block content %}
-<section class="section">
-  <h1>Hello, {{ user.first_name|default:user.username }}</h1>
-  <p><a class="btn btn-primary" href="{% url 'client:book' %}">Book an appointment</a>
-     <a class="btn btn-ghost" href="{% url 'client:bookings' %}">All bookings</a>
-     <a class="btn btn-ghost" href="{% url 'client:offers' %}">Offers</a>
-     <a class="btn btn-ghost" href="{% url 'client:billing' %}">Billing</a></p>
-  <h2>Upcoming</h2>
-  {% for day, items in timeline %}
-    <h3>{{ day|date:"l, j F" }}</h3>
-    <ul>{% for b in items %}<li><a href="{% url 'client:booking_detail' b.public_id %}">{{ b.public_id }}</a> · {{ b.start|time:"g:i A" }} · {{ b.staff.name }} · {{ b.get_status_display }}</li>{% endfor %}</ul>
-  {% empty %}<p class="empty">No upcoming appointments yet.</p>{% endfor %}
-  <h2>Recent history</h2>
-  <ul>{% for b in history %}<li><a href="{% url 'client:booking_detail' b.public_id %}">{{ b.public_id }}</a> · {{ b.start|date:"j M Y" }} · {{ b.get_status_display }}</li>{% empty %}<li>Nothing here yet.</li>{% endfor %}</ul>
-  <h2>Offers</h2>
-  <ul>{% for o in offers %}<li>{{ o.badge }}: {{ o.title }}</li>{% empty %}<li>No live offers right now.</li>{% endfor %}</ul>
+{% block portal %}
+<header class="p-hero">
+  <div class="p-hero-copy">
+    <p class="eyebrow-plain p-rise">{{ greeting }}</p>
+    <h1 class="p-rise">{{ user.first_name|default:user.username }}<em>your visits, all in one place.</em></h1>
+    <div class="p-cta p-rise">
+      <a class="btn btn-primary" href="{% url 'client:book' %}">Book an appointment</a>
+      <a class="btn btn-ghost" href="{% url 'client:bookings' %}">All bookings</a>
+    </div>
+  </div>
+  <dl class="p-stats p-rise">
+    <div><dt>Upcoming</dt><dd data-count="{{ upcoming|length }}">0</dd></div>
+    <div><dt>Awaiting confirmation</dt><dd data-count="{{ pending|length }}">0</dd></div>
+    <div><dt>Visits completed</dt><dd data-count="{{ totals.completed }}">0</dd></div>
+  </dl>
+  <span class="p-arch" aria-hidden="true"></span>
+</header>
+
+<section class="p-section">
+  {% if next_booking %}
+  <article class="ticket" data-reveal="clip">
+    <div class="tk-date"><span class="tk-day">{{ next_booking.start|date:"j" }}</span><span class="tk-mon">{{ next_booking.start|date:"M" }}</span><span class="tk-wd">{{ next_booking.start|date:"l" }}</span></div>
+    <div class="tk-body">
+      <p class="kicker">Your next visit</p>
+      <h2>{{ next_booking.start|time:"g:i A" }} with {{ next_booking.staff.name }}</h2>
+      <p class="tk-items">{% for i in next_booking.items.all %}{{ i.service_name }}{% if not forloop.last %} · {% endif %}{% endfor %}</p>
+      <p class="tk-meta"><span class="status status-{{ next_booking.status }}">{{ next_booking.get_status_display }}</span>
+        <span>{{ next_booking.total_minutes }} min</span><span>₹{{ next_booking.total_price|floatformat:"-2" }}</span><span class="mono">{{ next_booking.public_id }}</span></p>
+      <a class="btn btn-ink btn-small" href="{% url 'client:booking_detail' next_booking.public_id %}">View details</a>
+    </div>
+  </article>
+  {% else %}
+  <div class="empty-state" data-reveal>
+    <span class="es-arch" aria-hidden="true"></span>
+    <h2>Nothing booked yet.</h2>
+    <p>Pick a treatment, choose a time that suits you, and we will take care of the rest.</p>
+    <a class="btn btn-primary" href="{% url 'client:book' %}">Book your first visit</a>
+  </div>
+  {% endif %}
+</section>
+
+{% if timeline %}
+<section class="p-section">
+  <div class="p-head" data-reveal><h2>Coming up</h2><a class="link-arrow" href="{% url 'client:bookings' %}">Manage bookings</a></div>
+  <ol class="timeline">
+    {% for day, items in timeline %}
+    <li class="tl-day" data-reveal style="--i:{{ forloop.counter0 }}">
+      <time class="tl-date" datetime="{{ day|date:'Y-m-d' }}"><b>{{ day|date:"j" }}</b><span>{{ day|date:"M" }}</span><em>{{ day|date:"l" }}</em></time>
+      <ul class="tl-items">
+        {% for b in items %}
+        <li><a class="tl-card" href="{% url 'client:booking_detail' b.public_id %}">
+          <span class="tl-time">{{ b.start|time:"g:i A" }}</span>
+          <span class="tl-main"><b>{% for i in b.items.all %}{{ i.service_name }}{% if not forloop.last %}, {% endif %}{% endfor %}</b><small>with {{ b.staff.name }} · {{ b.total_minutes }} min</small></span>
+          <span class="status status-{{ b.status }}">{{ b.get_status_display }}</span></a></li>
+        {% endfor %}
+      </ul>
+    </li>
+    {% endfor %}
+  </ol>
+</section>
+{% endif %}
+
+{% if offers %}
+<section class="p-section p-mist">
+  <div class="p-head" data-reveal><h2>Offers for you</h2><a class="link-arrow" href="{% url 'client:offers' %}">All offers</a></div>
+  <div class="offer-row">{% for o in offers %}{% include "public/_offer_card.html" %}{% endfor %}</div>
+</section>
+{% endif %}
+
+<section class="p-section split">
+  <div data-reveal>
+    <div class="p-head"><h2>Recent history</h2></div>
+    <ul class="rows">
+      {% for b in history %}
+      <li><a href="{% url 'client:booking_detail' b.public_id %}"><span class="row-date">{{ b.start|date:"j M Y" }}</span>
+        <span class="row-main">{% for i in b.items.all %}{{ i.service_name }}{% if not forloop.last %}, {% endif %}{% endfor %}</span>
+        <span class="status status-{{ b.status }}">{{ b.get_status_display }}</span></a></li>
+      {% empty %}<li class="row-empty">Your past visits will appear here.</li>{% endfor %}
+    </ul>
+  </div>
+  <a class="bill-teaser" href="{% url 'client:billing' %}" data-reveal style="--i:1">
+    <span class="kicker">Billing</span><h3>Invoices and payments</h3>
+    <p>{% if invoices %}{{ invoices|length }} invoice{{ invoices|length|pluralize }} available.{% else %}Your bills will be kept here after each visit.{% endif %}</p>
+    <span class="link-arrow">View billing</span>
+  </a>
 </section>
 {% endblock %}

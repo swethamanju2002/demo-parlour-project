@@ -1,8 +1,18 @@
-{% extends "base/public.html" %}
+{% extends "base/portal.html" %}
 {% block title %}Offers · {{ BRAND.name }}{% endblock %}
-{% block content %}
-<section class="section"><h1>Your offers</h1>
-  {% for o in offers %}<article class="offer"><span class="offer-badge">{{ o.badge }}</span><h3>{{ o.title }}</h3><p>{{ o.summary }}</p><p class="offer-valid">Valid until {{ o.valid_to|date:"j F Y" }}</p>{% if o.coupon_code %}<p>Code: <b>{{ o.coupon_code }}</b></p>{% endif %}</article>
-  {% empty %}<p class="empty">No live offers right now.</p>{% endfor %}
+{% block portal %}
+<header class="p-page">
+  <p class="kicker">Offers</p>
+  <h1>Saved for you<em>while they last.</em></h1>
+  <p class="lede">Only live offers are shown. Tell us your code when you visit, or copy it below.</p>
+</header>
+<section class="p-section">
+  {% if offers %}
+  <div class="offer-row">{% for o in offers %}{% include "public/_offer_card.html" %}{% endfor %}</div>
+  {% for o in offers %}{% if o.terms %}<details class="terms" data-reveal><summary>Terms for “{{ o.title }}”</summary><p>{{ o.terms }}</p></details>{% endif %}{% endfor %}
+  {% else %}
+  <div class="empty-state"><span class="es-arch" aria-hidden="true"></span><h2>No live offers right now.</h2><p>New offers are announced regularly. Check back soon.</p>
+    <a class="btn btn-primary" href="{% url 'client:book' %}">Book an appointment</a></div>
+  {% endif %}
 </section>
 {% endblock %}
