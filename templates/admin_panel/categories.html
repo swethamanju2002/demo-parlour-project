@@ -1,0 +1,121 @@
+
+{% extends "base/public.html" %}
+{% load static %}
+
+{% block css %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/admin/services.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="adm-management">
+    <div class="adm-page-heading">
+        <div>
+            <span class="adm-eyebrow">CATALOG MANAGEMENT</span>
+            <h1>Service Categories</h1>
+            <p>Organise treatments into clear categories for your customers.</p>
+        </div>
+        <a href="{% url 'admin_panel:category_create' %}" class="adm-primary-btn">
+            <span>＋</span> Add category
+        </a>
+    </div>
+
+    <div class="adm-summary">
+        <div>
+            <span class="adm-summary-label">TOTAL CATEGORIES</span>
+            <strong>{{ total_count }}</strong>
+        </div>
+        <div>
+            <span class="adm-summary-label">CURRENT PAGE</span>
+            <strong>{{ page.number }} / {{ page.paginator.num_pages|default:1 }}</strong>
+        </div>
+    </div>
+
+    <form method="get" class="adm-filter-panel">
+        <div class="adm-filter-search">
+            <label for="category-search">Search categories</label>
+            <input id="category-search" type="search" name="q"
+                   value="{{ search }}" placeholder="Category name or description">
+        </div>
+
+        <div>
+            <label for="category-status">Status</label>
+            <select id="category-status" name="status">
+                <option value="">All statuses</option>
+                <option value="active" {% if selected_status == "active" %}selected{% endif %}>Active</option>
+                <option value="inactive" {% if selected_status == "inactive" %}selected{% endif %}>Inactive</option>
+            </select>
+        </div>
+
+        <button type="submit" class="adm-filter-btn">Apply filters</button>
+        <a href="{% url 'admin_panel:categories' %}" class="adm-reset-btn">Reset</a>
+    </form>
+
+    <div class="adm-category-grid">
+        {% for category in page %}
+        <article class="adm-category-card">
+            <div class="adm-category-top">
+                {% if category.image %}
+                    <img src="{{ category.image.url }}" alt="{{ category.name }}">
+                {% else %}
+                    <div class="adm-category-placeholder">DQ</div>
+                {% endif %}
+                {% if category.is_active %}
+                    <span class="adm-status adm-status-active">Active</span>
+                {% else %}
+                    <span class="adm-status adm-status-inactive">Inactive</span>
+                {% endif %}
+            </div>
+
+            <div class="adm-category-body">
+                <span class="adm-category-order">DISPLAY ORDER · {{ category.order }}</span>
+                <h2>{{ category.name }}</h2>
+                {% if category.tagline %}
+                    <p class="adm-category-tagline">{{ category.tagline }}</p>
+                {% endif %}
+                <p class="adm-category-description">
+                    {{ category.description|default:"No category description added."|truncatewords:22 }}
+                </p>
+                <small class="adm-category-slug">{{ category.slug }}</small>
+
+                <div class="adm-category-actions">
+                    <a href="{% url 'admin_panel:category_edit' category.pk %}"
+                       class="adm-action-link">Edit category</a>
+
+                    <form method="post" action="{% url 'admin_panel:category_toggle_active' category.pk %}">
+                        {% csrf_token %}
+                        <button type="submit"
+                                class="adm-action-link {% if category.is_active %}adm-action-danger{% endif %}">
+                            {% if category.is_active %}Deactivate{% else %}Activate{% endif %}
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </article>
+        {% empty %}
+        <div class="adm-empty-state adm-category-empty">
+            <span>✦</span>
+            <h3>No categories found</h3>
+            <p>Create categories to organise your salon services.</p>
+            <a href="{% url 'admin_panel:category_create' %}" class="adm-primary-btn">
+                Add category
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+
+    {% if page.has_other_pages %}
+    <div class="adm-pagination">
+        <span>Page {{ page.number }} of {{ page.paginator.num_pages }}</span>
+        <div>
+            {% if page.has_previous %}
+                <a href="?q={{ search|urlencode }}&status={{ selected_status }}&page={{ page.previous_page_number }}">Previous</a>
+            {% endif %}
+            {% if page.has_next %}
+                <a href="?q={{ search|urlencode }}&status={{ selected_status }}&page={{ page.next_page_number }}">Next</a>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+</section>
+{% endblock %}

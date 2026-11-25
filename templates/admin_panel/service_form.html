@@ -1,0 +1,167 @@
+
+{% extends "base/public.html" %}
+{% load static %}
+
+{% block css %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/admin/services.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="adm-management">
+    <div class="adm-page-heading">
+        <div>
+            <span class="adm-eyebrow">CATALOG MANAGEMENT / SERVICES</span>
+            <h1>{{ page_title }}</h1>
+            <p>{{ form_description }}</p>
+        </div>
+        <a href="{% url 'admin_panel:services' %}" class="adm-reset-btn">← Back to services</a>
+    </div>
+
+    <form method="post" enctype="multipart/form-data" class="adm-edit-form">
+        {% csrf_token %}
+
+        {% if form.non_field_errors %}
+            <div class="adm-form-errors">{{ form.non_field_errors }}</div>
+        {% endif %}
+
+        <div class="adm-form-section">
+            <div class="adm-form-section-heading">
+                <span>01</span>
+                <div>
+                    <h2>Service information</h2>
+                    <p>Basic details customers will see when exploring treatments.</p>
+                </div>
+            </div>
+
+            <div class="adm-form-grid">
+                <div class="adm-form-field">
+                    <label for="{{ form.name.id_for_label }}">Service name *</label>
+                    {{ form.name }}
+                    {{ form.name.errors }}
+                </div>
+
+                <div class="adm-form-field">
+                    <label for="{{ form.category.id_for_label }}">Category *</label>
+                    {{ form.category }}
+                    {{ form.category.errors }}
+                </div>
+
+                <div class="adm-form-field">
+                    <label for="{{ form.slug.id_for_label }}">URL slug *</label>
+                    {{ form.slug }}
+                    {{ form.slug.errors }}
+                    <small>Example: luxury-hair-spa</small>
+                </div>
+
+                <div class="adm-form-field adm-form-full">
+                    <label for="{{ form.description.id_for_label }}">Description</label>
+                    {{ form.description }}
+                    {{ form.description.errors }}
+                </div>
+            </div>
+        </div>
+
+        <div class="adm-form-section">
+            <div class="adm-form-section-heading">
+                <span>02</span>
+                <div>
+                    <h2>Pricing and duration</h2>
+                    <p>Set the service price and expected appointment duration.</p>
+                </div>
+            </div>
+
+            <div class="adm-form-grid adm-form-grid-two">
+                <div class="adm-form-field">
+                    <label for="{{ form.price.id_for_label }}">Price (₹) *</label>
+                    {{ form.price }}
+                    {{ form.price.errors }}
+                </div>
+
+                <div class="adm-form-field">
+                    <label for="{{ form.duration_minutes.id_for_label }}">Duration (minutes) *</label>
+                    {{ form.duration_minutes }}
+                    {{ form.duration_minutes.errors }}
+                </div>
+            </div>
+        </div>
+
+        <div class="adm-form-section">
+            <div class="adm-form-section-heading">
+                <span>03</span>
+                <div>
+                    <h2>Service image</h2>
+                    <p>Upload an image representing this salon treatment.</p>
+                </div>
+            </div>
+
+            <div class="adm-form-field">
+                <label for="{{ form.image.id_for_label }}">Service image</label>
+                {% if service.image %}
+                    <div class="adm-current-image">
+                        <img src="{{ service.image.url }}" alt="{{ service.name }}">
+                        <span>Current service image</span>
+                    </div>
+                {% endif %}
+                {{ form.image }}
+                {{ form.image.errors }}
+            </div>
+        </div>
+
+        <div class="adm-form-section">
+            <div class="adm-form-section-heading">
+                <span>04</span>
+                <div>
+                    <h2>Display and availability</h2>
+                    <p>Control how this service is presented on the public website.</p>
+                </div>
+            </div>
+
+            <div class="adm-form-field adm-order-field">
+                <label for="{{ form.order.id_for_label }}">Display order</label>
+                {{ form.order }}
+                {{ form.order.errors }}
+            </div>
+
+            <div class="adm-checkbox-grid">
+                <label class="adm-checkbox-item">
+                    {{ form.is_featured }}
+                    <span>
+                        <strong>Featured service</strong>
+                        <small>Highlight this service on the website.</small>
+                    </span>
+                </label>
+
+                <label class="adm-checkbox-item">
+                    {{ form.is_popular }}
+                    <span>
+                        <strong>Popular service</strong>
+                        <small>Mark this treatment as popular.</small>
+                    </span>
+                </label>
+
+                <label class="adm-checkbox-item">
+                    {{ form.is_bookable }}
+                    <span>
+                        <strong>Allow online booking</strong>
+                        <small>Customers can select this service while booking.</small>
+                    </span>
+                </label>
+
+                <label class="adm-checkbox-item">
+                    {{ form.is_active }}
+                    <span>
+                        <strong>Active service</strong>
+                        <small>Display this service as active on the website.</small>
+                    </span>
+                </label>
+            </div>
+        </div>
+
+        <div class="adm-form-footer">
+            <a href="{% url 'admin_panel:services' %}" class="adm-cancel-btn">Cancel</a>
+            <button type="submit" class="adm-primary-btn">{{ submit_label }}</button>
+        </div>
+    </form>
+</section>
+{% endblock %}

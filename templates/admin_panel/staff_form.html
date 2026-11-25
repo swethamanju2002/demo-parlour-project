@@ -1,0 +1,110 @@
+
+{% extends "base/public.html" %}
+{% load static %}
+
+{% block css %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/admin/staff.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="admin-staff-page">
+    <div class="admin-page-heading">
+        <div>
+            <span class="admin-eyebrow">TEAM MANAGEMENT</span>
+            <h1>{% if staff %}Edit Staff Member{% else %}Add Staff Member{% endif %}</h1>
+            <p>
+                {% if staff %}
+                    Update the professional's profile and assigned services.
+                {% else %}
+                    Create a new professional profile for your salon.
+                {% endif %}
+            </p>
+        </div>
+
+        <a href="{% url 'admin_panel:staff' %}" class="admin-reset-btn">Back to Staff</a>
+    </div>
+
+    <div class="staff-form-panel">
+        <form method="post" enctype="multipart/form-data" class="staff-admin-form">
+            {% csrf_token %}
+
+            {% if form.non_field_errors %}
+                <div class="staff-form-errors">
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
+
+            <div class="staff-form-section">
+                <h2>Professional Information</h2>
+                <p>Basic information displayed on the salon website.</p>
+
+                <div class="staff-form-grid">
+                    {% for field in form %}
+                        {% if field.name == "name" or field.name == "title" or field.name == "bio" or field.name == "years_experience" or field.name == "photo" %}
+                            <div class="staff-form-field {% if field.name == 'bio' or field.name == 'photo' %}staff-field-full{% endif %}">
+                                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                                {{ field }}
+
+                                {% if field.help_text %}
+                                    <small>{{ field.help_text }}</small>
+                                {% endif %}
+
+                                {% for error in field.errors %}
+                                    <span class="staff-field-error">{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+
+                {% if staff and staff.photo %}
+                    <div class="staff-current-photo">
+                        <span>Current profile photo</span>
+                        <img src="{{ staff.photo.url }}" alt="{{ staff.name }}">
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="staff-form-section">
+                <h2>Assigned Services</h2>
+                <p>Select the services this professional is qualified to perform.</p>
+
+                <div class="staff-service-selection">
+                    {{ form.services }}
+
+                    {% for error in form.services.errors %}
+                        <span class="staff-field-error">{{ error }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="staff-form-section">
+                <h2>Profile Settings</h2>
+                <p>Control visibility and ordering of this professional's profile.</p>
+
+                <div class="staff-form-grid">
+                    {% for field in form %}
+                        {% if field.name == "is_featured" or field.name == "is_active" or field.name == "order" %}
+                            <div class="staff-form-field staff-setting-field">
+                                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                                {{ field }}
+                                {% for error in field.errors %}
+                                    <span class="staff-field-error">{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="staff-form-actions">
+                <a href="{% url 'admin_panel:staff' %}" class="admin-reset-btn">Cancel</a>
+                <button type="submit" class="admin-primary-btn">
+                    {% if staff %}Save Changes{% else %}Create Staff Profile{% endif %}
+                </button>
+            </div>
+        </form>
+    </div>
+</section>
+{% endblock %}

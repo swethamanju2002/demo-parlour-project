@@ -1,2 +1,273 @@
 {% extends "base/public.html" %}
-{% block content %}<div class="auth" style="grid-template-columns:1fr"><main><h1>Admin panel</h1><p>Dashboard arrives in Phase 4.</p></main></div>{% endblock %}
+{% load static %}
+
+{% block title %}Admin Dashboard | DQ Aesthetic{% endblock %}
+
+{% block css %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/admin/dashboard.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="admin-dashboard">
+
+    <div class="admin-heading">
+        <div>
+            <span class="admin-eyebrow">DQ AESTHETIC · MANAGEMENT</span>
+            <h1>Good day, {{ request.user.first_name|default:request.user.username }}.</h1>
+            <p>Your salon overview, all in one place.</p>
+        </div>
+
+        <div class="admin-date">
+            <span>Today</span>
+            <strong>{{ today|date:"l, d F Y" }}</strong>
+        </div>
+    </div>
+
+    <div class="admin-welcome">
+        <div>
+            <span class="welcome-label">THE SALON AT A GLANCE</span>
+            <h2>Beauty begins with thoughtful care.</h2>
+            <p>
+                Monitor appointments, customers, services and enquiries
+                from your management workspace.
+            </p>
+        </div>
+        <div class="welcome-mark" aria-hidden="true">DQ</div>
+    </div>
+
+    <div class="admin-section-heading">
+        <div>
+            <span class="admin-eyebrow">OVERVIEW</span>
+            <h2>Business summary</h2>
+        </div>
+    </div>
+
+    <div class="admin-stats">
+
+        <article class="stat-card">
+            <span class="stat-icon">01</span>
+            <span class="stat-label">Today's appointments</span>
+            <strong>{{ stats.today_bookings }}</strong>
+            <span class="stat-caption">Scheduled for today</span>
+        </article>
+
+        <article class="stat-card">
+            <span class="stat-icon">02</span>
+            <span class="stat-label">Total customers</span>
+            <strong>{{ stats.customers }}</strong>
+            <span class="stat-caption">Active customer accounts</span>
+        </article>
+
+        <article class="stat-card">
+            <span class="stat-icon">03</span>
+            <span class="stat-label">Active services</span>
+            <strong>{{ stats.services }}</strong>
+            <span class="stat-caption">Available salon services</span>
+        </article>
+
+        <article class="stat-card">
+            <span class="stat-icon">04</span>
+            <span class="stat-label">Beauticians</span>
+            <strong>{{ stats.beauticians }}</strong>
+            <span class="stat-caption">Active team profiles</span>
+        </article>
+
+    </div>
+
+    <!-- MANAGEMENT WORKSPACE -->
+    <section class="admin-management">
+        <div class="admin-section-heading">
+            <div>
+                <span class="admin-eyebrow">WORKSPACE</span>
+                <h2>Manage your salon</h2>
+                <p>Everything you need to oversee your salon operations.</p>
+            </div>
+        </div>
+
+        <div class="management-grid">
+
+            <a href="{% url 'admin_panel:appointments' %}" class="management-card">
+                <span class="management-number">01</span>
+                <div class="management-icon">✧</div>
+                <h3>Appointments</h3>
+                <p>Review bookings, update appointment status and manage schedules.</p>
+                <span class="management-link">Manage appointments →</span>
+            </a>
+
+            <a href="{% url 'admin_panel:customers' %}" class="management-card">
+                <span class="management-number">02</span>
+                <div class="management-icon">♡</div>
+                <h3>Customers</h3>
+                <p>View customer profiles, contact information and booking history.</p>
+                <span class="management-link">Manage customers →</span>
+            </a>
+
+            <a href="{% url 'admin_panel:services' %}" class="management-card">
+                <span class="management-number">03</span>
+                <div class="management-icon">✿</div>
+                <h3>Services</h3>
+                <p>Create, edit and organize your salon service offerings.</p>
+                <span class="management-link">Manage services →</span>
+            </a>
+
+            <a href="{% url 'admin_panel:staff' %}" class="management-card">
+                <span class="management-number">04</span>
+                <div class="management-icon">♙</div>
+                <h3>Staff Management</h3>
+                <p>Manage beautician profiles, assigned services and team availability.</p>
+                <span class="management-link">Manage staff →</span>
+            </a>
+
+            <a href="{% url 'admin_panel:categories' %}" class="management-card">
+                <span class="management-number">05</span>
+                <div class="management-icon">◇</div>
+                <h3>Service Categories</h3>
+                <p>Organize services into categories and manage their visibility.</p>
+                <span class="management-link">Manage categories →</span>
+            </a>
+
+            <a href="{% url 'admin_panel:offers' %}" class="management-card">
+                <div class="management-card-icon">✧</div>
+                <div class="management-card-content">
+                    <h3>Offer Management</h3>
+                    <p>Create promotional offers, configure discounts, manage coupon codes and validity periods.</p>
+                </div>
+                <span class="management-card-arrow">→</span>
+            </a>
+            <a href="{% url 'admin_panel:billing' %}" class="management-card">
+                <span>Billing & Invoices</span>
+                <p>Manage invoices, payments and financial reports.</p>
+            </a>
+        </div>
+    </section>
+
+
+    <div class="admin-lower-grid">
+
+        <section class="admin-panel">
+            <div class="panel-heading">
+                <div>
+                    <span class="admin-eyebrow">APPOINTMENTS</span>
+                    <h2>Upcoming schedule</h2>
+                </div>
+                <span class="panel-count">
+                    {{ upcoming_bookings|length }} upcoming
+                </span>
+            </div>
+
+            {% if upcoming_bookings %}
+                <div class="appointment-list">
+                    {% for booking in upcoming_bookings %}
+                        <article class="appointment-row">
+                            <div class="appointment-date">
+                                <strong>{{ booking.start|date:"d" }}</strong>
+                                <span>{{ booking.start|date:"M" }}</span>
+                            </div>
+
+                            <div class="appointment-info">
+                                <strong>{{ booking.customer.display_name }}</strong>
+                                <span>
+                                    {{ booking.start|date:"h:i A" }}
+                                    · {{ booking.staff.name }}
+                                </span>
+                                <small>
+                                    {% for item in booking.items.all %}
+                                        {{ item.service_name }}{% if not forloop.last %}, {% endif %}
+                                    {% empty %}
+                                        Service details unavailable
+                                    {% endfor %}
+                                </small>
+                            </div>
+
+                            <span class="booking-status status-{{ booking.status }}">
+                                {{ booking.get_status_display }}
+                            </span>
+                        </article>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="admin-empty">
+                    <span>✧</span>
+                    <h3>No upcoming appointments</h3>
+                    <p>New appointments will appear here when customers book.</p>
+                </div>
+            {% endif %}
+        </section>
+
+        <section class="admin-panel">
+            <div class="panel-heading">
+                <div>
+                    <span class="admin-eyebrow">BOOKING ACTIVITY</span>
+                    <h2>Booking status</h2>
+                </div>
+            </div>
+
+            <div class="status-summary">
+               {% for row in status_rows %}
+                    <div class="status-summary-row">
+                        <span>{{ row.label }}</span>
+                        <strong>{{ row.count }}</strong>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <div class="admin-insight">
+                <span class="insight-label">NEEDS ATTENTION</span>
+                <div>
+                    <strong>{{ stats.pending_bookings }}</strong>
+                    <span>Pending bookings</span>
+                </div>
+                <div>
+                    <strong>{{ stats.new_enquiries }}</strong>
+                    <span>New enquiries</span>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <section class="admin-panel enquiry-panel">
+        <div class="panel-heading">
+            <div>
+                <span class="admin-eyebrow">CUSTOMER COMMUNICATION</span>
+                <h2>Recent enquiries</h2>
+            </div>
+            <span class="panel-count">
+                {{ stats.new_enquiries }} new
+            </span>
+        </div>
+
+        {% if recent_enquiries %}
+            <div class="enquiry-list">
+                {% for enquiry in recent_enquiries %}
+                    <article class="enquiry-row">
+                        <div>
+                            <strong>{{ enquiry.name }}</strong>
+                            <span>{{ enquiry.phone }}</span>
+                        </div>
+                        <div class="enquiry-message">
+                            {{ enquiry.interested_in|default:"General enquiry" }}
+                        </div>
+                        <span class="booking-status status-{{ enquiry.status }}">
+                            {{ enquiry.get_status_display }}
+                        </span>
+                        <time>{{ enquiry.created_at|date:"d M, h:i A" }}</time>
+                    </article>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="admin-empty">
+                <h3>No enquiries yet</h3>
+                <p>Customer enquiries will appear here.</p>
+            </div>
+        {% endif %}
+    </section>
+
+    <div class="admin-footer-note">
+        <span>DQ AESTHETIC</span>
+        <p>Thoughtful beauty. Exceptional experiences.</p>
+    </div>
+
+</section>
+{% endblock %}

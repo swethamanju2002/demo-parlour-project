@@ -1,0 +1,165 @@
+
+{% extends "base/public.html" %}
+{% load static %}
+
+{% block title %}Billing Workspace | DQ Aesthetic{% endblock %}
+
+{% block css %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/admin/billing.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="billing-page">
+    <div class="billing-heading">
+        <div>
+            <span class="billing-eyebrow">FINANCE & MANAGEMENT</span>
+            <h1>Billing Workspace</h1>
+            <p>Manage invoices, payments and salon revenue.</p>
+        </div>
+<div class="billing-heading-actions">
+    <a class="billing-primary-btn"
+       href="{% url 'admin_panel:manual_invoice_create' %}">
+        + New Bill
+    </a>
+
+    <a class="billing-outline-btn"
+       href="{% url 'admin_panel:billing_reports' %}">
+        Financial reports
+    </a>
+</div>    </div>
+
+    <div class="billing-stats">
+        <article class="billing-stat">
+            <span>Total invoiced</span>
+            <strong>₹{{ total_invoiced|floatformat:2 }}</strong>
+        </article>
+        <article class="billing-stat">
+            <span>Amount collected</span>
+            <strong>₹{{ total_collected|floatformat:2 }}</strong>
+        </article>
+        <article class="billing-stat">
+            <span>Outstanding balance</span>
+            <strong>₹{{ outstanding|floatformat:2 }}</strong>
+        </article>
+        <article class="billing-stat">
+            <span>Issued invoices</span>
+            <strong>{{ invoice_count }}</strong>
+        </article>
+    </div>
+
+    {% if messages %}
+    <div class="billing-messages">
+        {% for message in messages %}
+        <div class="billing-message {{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <section class="billing-panel">
+        <div class="billing-panel-heading">
+            <div>
+                <h2>Completed bookings awaiting invoices</h2>
+                <p>Generate an invoice using the saved booking prices.</p>
+            </div>
+        </div>
+
+        {% for booking in uninvoiced_bookings %}
+        <div class="billing-booking-row">
+            <div>
+                <strong>{{ booking.public_id }}</strong>
+                <span>{{ booking.customer.display_name }}</span>
+                <small>{{ booking.start|date:"d M Y, h:i A" }}</small>
+            </div>
+            <div class="billing-booking-price">₹{{ booking.total_price|floatformat:2 }}</div>
+            <form method="post" action="{% url 'admin_panel:invoice_generate' booking.id %}">
+                {% csrf_token %}
+                <button class="billing-primary-btn" type="submit">Generate invoice</button>
+            </form>
+        </div>
+        {% empty %}
+        <p class="billing-empty">No completed bookings are waiting for invoices.</p>
+        {% endfor %}
+    </section>
+
+    <section class="billing-panel">
+        <div class="billing-panel-heading">
+            <div>
+                <h2>Invoice register</h2>
+                <p>Search and review all generated invoices.</p>
+            </div>
+        </div>
+
+        <form method="get" class="billing-filters">
+            <input type="search" name="q" value="{{ query }}" placeholder="Invoice, booking or customer">
+            <select name="status">
+                <option value="">All invoice statuses</option>
+                <option value="issued" {% if selected_status == "issued" %}selected{% endif %}>Issued</option>
+                <option value="draft" {% if selected_status == "draft" %}selected{% endif %}>Draft</option>
+                <option value="void" {% if selected_status == "void" %}selected{% endif %}>Void</option>
+            </select>
+            <select name="payment_status">
+                <option value="">All payment statuses</option>
+                <option value="paid" {% if selected_payment_status == "paid" %}selected{% endif %}>Paid</option>
+                <option value="partial" {% if selected_payment_status == "partial" %}selected{% endif %}>Partially paid</option>
+                <option value="unpaid" {% if selected_payment_status == "unpaid" %}selected{% endif %}>Unpaid</option>
+            </select>
+            <input type="date" name="date_from" value="{{ date_from }}">
+            <input type="date" name="date_to" value="{{ date_to }}">
+            <button class="billing-primary-btn" type="submit">Filter</button>
+            <a class="billing-reset-btn" href="{% url 'admin_panel:billing' %}">Reset</a>
+        </form>
+
+        <div class="billing-table-wrap">
+            <table class="billing-table">
+                <thead>
+                    <tr>
+                        <th>Invoice</th>
+                        <th>Customer</th>
+                        <th>Booking</th>
+                        <th>Issue date</th>
+                        <th>Total</th>
+                        <th>Paid</th>
+                        <th>Balance</th>
+                        <th>Status</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for invoice in invoices %}
+                    <tr>
+                        <td><strong>{{ invoice.invoice_number }}</strong></td>
+                        <td>{{ invoice.customer.display_name }}</td>
+                        <td>{{ invoice.booking.public_id }}</td>
+                        <td>{{ invoice.issue_date|date:"d M Y" }}</td>
+                        <td>₹{{ invoice.total_amount|floatformat:2 }}</td>
+                        <td>₹{{ invoice.paid_amount|floatformat:2 }}</td>
+                        <td>₹{{ invoice.balance_due|floatformat:2 }}</td>
+                        <td>
+                            <span class="billing-status {{ invoice.payment_status }}">
+                                {{ invoice.payment_status|title }}
+                            </span>
+                        </td>
+                        <td><a class="billing-view-link" href="{% url 'admin_panel:invoice_detail' invoice.id %}">View</a></td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="9" class="billing-empty">No invoices found.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        {% if page_obj.has_other_pages %}
+        <div class="billing-pagination">
+            {% if page_obj.has_previous %}
+            <a href="?page={{ page_obj.previous_page_number }}&q={{ query|urlencode }}&status={{ selected_status|urlencode }}&payment_status={{ selected_payment_status|urlencode }}&date_from={{ date_from|urlencode }}&date_to={{ date_to|urlencode }}">Previous</a>
+            {% endif %}
+            <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+            {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}&q={{ query|urlencode }}&status={{ selected_status|urlencode }}&payment_status={{ selected_payment_status|urlencode }}&date_from={{ date_from|urlencode }}&date_to={{ date_to|urlencode }}">Next</a>
+            {% endif %}
+        </div>
+        {% endif %}
+    </section>
+</section>
+{% endblock %}

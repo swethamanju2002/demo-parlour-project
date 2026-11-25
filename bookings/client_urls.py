@@ -1,5 +1,5 @@
 from django.urls import path
-
+from billing import views as billing_views
 from . import api, client_views as v
 
 app_name = "client"
@@ -12,12 +12,19 @@ urlpatterns = [
     path("bookings/<str:public_id>/cancel/", v.booking_cancel, name="booking_cancel"),
     path("bookings/<str:public_id>/reschedule/", v.booking_reschedule, name="booking_reschedule"),
     path("offers/", v.offers, name="offers"),
-    path("billing/", v.billing, name="billing"),
-    # JSON endpoints for the booking wizard
+    # Replace the old placeholder billing route:
+    path("billing/", billing_views.customer_billing, name="billing"),
+    path(
+        "billing/<int:invoice_id>/",
+        billing_views.customer_invoice_detail,
+        name="billing_detail",
+    ),    # JSON endpoints for the booking wizard
     path("api/services/", api.services, name="api_services"),
     path("api/dates/", api.dates, name="api_dates"),
     path("api/slots/", api.slots, name="api_slots"),
     path("api/staff/", api.staff, name="api_staff"),
     path("api/summary/", api.summary, name="api_summary"),
     path("api/book/", api.book, name="api_book"),
+
+
 ]

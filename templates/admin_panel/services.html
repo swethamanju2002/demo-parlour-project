@@ -1,0 +1,171 @@
+
+{% extends "base/public.html" %}
+{% load static %}
+
+{% block css %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/admin/services.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="adm-management">
+    <div class="adm-page-heading">
+        <div>
+            <span class="adm-eyebrow">CATALOG MANAGEMENT</span>
+            <h1>Services</h1>
+            <p>Manage salon treatments, pricing, duration and availability.</p>
+        </div>
+        <a href="{% url 'admin_panel:service_create' %}" class="adm-primary-btn">
+            <span>＋</span> Add service
+        </a>
+    </div>
+
+    <div class="adm-summary">
+        <div>
+            <span class="adm-summary-label">TOTAL SERVICES</span>
+            <strong>{{ total_count }}</strong>
+        </div>
+        <div>
+            <span class="adm-summary-label">CURRENT PAGE</span>
+            <strong>{{ page.number }} / {{ page.paginator.num_pages|default:1 }}</strong>
+        </div>
+    </div>
+
+    <form method="get" class="adm-filter-panel">
+        <div class="adm-filter-search">
+            <label for="service-search">Search services</label>
+            <input id="service-search" type="search" name="q"
+                   value="{{ search }}" placeholder="Service name, category or description">
+        </div>
+
+        <div>
+            <label for="service-category">Category</label>
+            <select id="service-category" name="category">
+                <option value="">All categories</option>
+                {% for category in categories %}
+                    <option value="{{ category.pk }}"
+                        {% if selected_category == category.pk|stringformat:"s" %}selected{% endif %}>
+                        {{ category.name }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div>
+            <label for="service-status">Status</label>
+            <select id="service-status" name="status">
+                <option value="">All statuses</option>
+                <option value="active" {% if selected_status == "active" %}selected{% endif %}>Active</option>
+                <option value="inactive" {% if selected_status == "inactive" %}selected{% endif %}>Inactive</option>
+            </select>
+        </div>
+
+        <button type="submit" class="adm-filter-btn">Apply filters</button>
+        <a href="{% url 'admin_panel:services' %}" class="adm-reset-btn">Reset</a>
+    </form>
+
+    <div class="adm-table-card">
+        <div class="adm-table-heading">
+            <div>
+                <h2>Service directory</h2>
+                <p>{{ total_count }} service{{ total_count|pluralize }}</p>
+            </div>
+        </div>
+
+        <div class="adm-table-scroll">
+            <table class="adm-table">
+                <thead>
+                    <tr>
+                        <th>Service</th>
+                        <th>Category</th>
+                        <th>Price</th>
+                        <th>Duration</th>
+                        <th>Visibility</th>
+                        <th>Booking</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for service in page %}
+                    <tr>
+                        <td>
+                            <div class="adm-service-cell">
+                                {% if service.image %}
+                                    <img src="{{ service.image.url }}" alt="{{ service.name }}">
+                                {% else %}
+                                    <div class="adm-image-placeholder">DQ</div>
+                                {% endif %}
+                                <div>
+                                    <strong>{{ service.name }}</strong>
+                                    <small>{{ service.slug }}</small>
+                                    {% if service.is_featured %}
+                                        <span class="adm-mini-tag">Featured</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </td>
+                        <td>{{ service.category.name }}</td>
+                        <td class="adm-price">₹{{ service.price|floatformat:2 }}</td>
+                        <td>{{ service.duration_minutes }} min</td>
+                        <td>
+                            {% if service.is_active %}
+                                <span class="adm-status adm-status-active">Active</span>
+                            {% else %}
+                                <span class="adm-status adm-status-inactive">Inactive</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if service.is_bookable %}
+                                <span class="adm-status adm-status-active">Bookable</span>
+                            {% else %}
+                                <span class="adm-status adm-status-muted">Not bookable</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="adm-actions">
+                                <a href="{% url 'admin_panel:service_edit' service.pk %}"
+                                   class="adm-action-link">Edit</a>
+                                <form method="post" action="{% url 'admin_panel:service_toggle_active' service.pk %}">
+                                    {% csrf_token %}
+                                    <button type="submit"
+                                            class="adm-action-link {% if service.is_active %}adm-action-danger{% endif %}">
+                                        {% if service.is_active %}Deactivate{% else %}Activate{% endif %}
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7">
+                            <div class="adm-empty-state">
+                                <span>✦</span>
+                                <h3>No services found</h3>
+                                <p>Try changing your filters or add your first service.</p>
+                                <a href="{% url 'admin_panel:service_create' %}" class="adm-primary-btn">
+                                    Add service
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        {% if page.has_other_pages %}
+        <div class="adm-pagination">
+            <span>Page {{ page.number }} of {{ page.paginator.num_pages }}</span>
+            <div>
+                {% if page.has_previous %}
+                    <a href="?q={{ search|urlencode }}&category={{ selected_category }}&status={{ selected_status }}&page={{ page.previous_page_number }}">Previous</a>
+                {% endif %}
+                {% if page.has_next %}
+                    <a href="?q={{ search|urlencode }}&category={{ selected_category }}&status={{ selected_status }}&page={{ page.next_page_number }}">Next</a>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

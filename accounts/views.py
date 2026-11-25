@@ -15,11 +15,20 @@ class SalonLoginView(LoginView):
 
 @login_required
 def post_login(request):
-    """Send each role to its own home after sign-in."""
-    if request.user.is_salon_team:
-        return redirect("admin_panel:dashboard")
-    return redirect("client:dashboard")
+    """Redirect users according to their assigned salon role."""
 
+    if request.user.is_salon_admin:
+        return redirect("admin_panel:dashboard")
+
+    if request.user.role == "staff":
+        messages.info(
+            request,
+            "Your staff workspace is being prepared. "
+            "Please contact the salon administrator if you need assistance.",
+        )
+        return redirect("core:home")
+
+    return redirect("client:dashboard")
 
 def register(request):
     if request.user.is_authenticated:

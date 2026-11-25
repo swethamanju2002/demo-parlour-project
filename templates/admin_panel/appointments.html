@@ -1,0 +1,135 @@
+
+{% extends "base/public.html" %}
+{% load static %}
+
+{% block title %}Appointments | DQ Aesthetic{% endblock %}
+
+{% block css %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/admin/appointments.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="admin-page">
+  <div class="admin-heading">
+    <div>
+      <span class="admin-kicker">DQ AESTHETIC · MANAGEMENT</span>
+      <h1>Appointments</h1>
+      <p>Manage customer bookings and appointment status.</p>
+    </div>
+    <a class="admin-back" href="{% url 'admin_panel:dashboard' %}">
+      Back to dashboard
+    </a>
+  </div>
+
+  <div class="admin-summary">
+    <span>Total matching appointments</span>
+    <strong>{{ total_count }}</strong>
+  </div>
+
+  <form method="get" class="appointment-filters">
+    <input
+      type="search"
+      name="q"
+      value="{{ search }}"
+      placeholder="Search booking ID, customer, phone..."
+    >
+
+    <select name="status">
+      <option value="">All statuses</option>
+      {% for value, label in status_choices %}
+        <option value="{{ value }}"
+          {% if selected_status == value %}selected{% endif %}>
+          {{ label }}
+        </option>
+      {% endfor %}
+    </select>
+
+    <input
+      type="date"
+      name="date"
+      value="{{ selected_date }}"
+    >
+
+    <button type="submit">Apply filters</button>
+    <a href="{% url 'admin_panel:appointments' %}">Clear</a>
+  </form>
+
+  <div class="appointment-table-wrap">
+    <table class="appointment-table">
+      <thead>
+        <tr>
+          <th>Booking ID</th>
+          <th>Customer</th>
+          <th>Beautician</th>
+          <th>Date & time</th>
+          <th>Amount</th>
+          <th>Status</th>
+          <th></th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {% for booking in page %}
+          <tr>
+            <td>
+              <strong>{{ booking.public_id }}</strong>
+            </td>
+
+            <td>
+              <strong>{{ booking.customer.display_name }}</strong>
+              <small>{{ booking.customer.phone }}</small>
+            </td>
+
+            <td>{{ booking.staff.name }}</td>
+
+            <td>
+              {{ booking.start|date:"d M Y" }}
+              <small>{{ booking.start|time:"h:i A" }}</small>
+            </td>
+
+            <td>₹{{ booking.total_price }}</td>
+
+            <td>
+              <span class="appointment-status status-{{ booking.status }}">
+                {{ booking.get_status_display }}
+              </span>
+            </td>
+
+            <td>
+              <a class="appointment-view"
+                 href="{% url 'admin_panel:appointment_detail' booking.public_id %}">
+                View details
+              </a>
+            </td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="7" class="appointment-empty">
+              No appointments match your filters.
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  {% if page.has_other_pages %}
+    <nav class="appointment-pagination" aria-label="Pagination">
+      {% if page.has_previous %}
+        <a href="?q={{ search|urlencode }}&status={{ selected_status|urlencode }}&date={{ selected_date|urlencode }}&page={{ page.previous_page_number }}">
+          Previous
+        </a>
+      {% endif %}
+
+      <span>Page {{ page.number }} of {{ page.paginator.num_pages }}</span>
+
+      {% if page.has_next %}
+        <a href="?q={{ search|urlencode }}&status={{ selected_status|urlencode }}&date={{ selected_date|urlencode }}&page={{ page.next_page_number }}">
+          Next
+        </a>
+      {% endif %}
+    </nav>
+  {% endif %}
+</section>
+{% endblock %}

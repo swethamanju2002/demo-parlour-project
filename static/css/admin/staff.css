@@ -1,0 +1,1167 @@
+
+/* ==========================================
+   DQ AESTHETIC — STAFF MANAGEMENT
+   ========================================== */
+
+.admin-staff-page {
+    width: min(1440px, 100%);
+    margin: 0 auto;
+    padding: 42px 5%;
+    color: #1F2740;
+}
+
+.admin-page-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 24px;
+    margin-bottom: 32px;
+}
+
+.admin-eyebrow {
+    display: block;
+    margin-bottom: 10px;
+    color: #8B9EB2;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2.5px;
+}
+
+.admin-page-heading h1 {
+    margin: 0;
+    color: #1F2740;
+    font-family: "Cormorant Garamond", serif;
+    font-size: clamp(34px, 4vw, 48px);
+    font-weight: 600;
+    line-height: 1.1;
+}
+
+.admin-page-heading p {
+    margin: 10px 0 0;
+    color: #7B8291;
+    font-size: 14px;
+    line-height: 1.7;
+}
+
+.admin-primary-btn,
+.admin-filter-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    min-height: 44px;
+    padding: 0 22px;
+    border: 1px solid #1F2740;
+    border-radius: 3px;
+    background: #1F2740;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: .4px;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background .25s ease, border-color .25s ease, transform .25s ease;
+}
+
+.admin-primary-btn:hover,
+.admin-filter-btn:hover {
+    border-color: #8FB2C9;
+    background: #8FB2C9;
+    color: #1F2740;
+    transform: translateY(-2px);
+}
+
+.admin-primary-btn span {
+    font-size: 19px;
+    line-height: 1;
+}
+
+.admin-reset-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 42px;
+    padding: 0 17px;
+    border: 1px solid #DCE2E9;
+    border-radius: 3px;
+    background: #fff;
+    color: #596174;
+    font-size: 12px;
+    text-decoration: none;
+    cursor: pointer;
+    transition: .25s ease;
+}
+
+.admin-reset-btn:hover {
+    border-color: #8FB2C9;
+    color: #1F2740;
+}
+
+/* FILTER PANEL */
+
+.staff-filter-panel {
+    margin-bottom: 30px;
+    padding: 22px;
+    border: 1px solid #E9ECF0;
+    background: #fff;
+    box-shadow: 0 8px 30px rgba(31, 39, 64, .035);
+}
+
+.staff-filter-form {
+    display: grid;
+    grid-template-columns: minmax(220px, 1fr) 190px auto auto;
+    align-items: end;
+    gap: 14px;
+}
+
+.staff-filter-form label,
+.staff-form-field > label {
+    display: block;
+    margin-bottom: 8px;
+    color: #485168;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .3px;
+}
+
+.staff-filter-form input,
+.staff-filter-form select,
+.staff-form-field input:not([type="checkbox"]),
+.staff-form-field textarea,
+.staff-form-field select {
+    width: 100%;
+    min-height: 44px;
+    padding: 11px 13px;
+    border: 1px solid #E0E5EB;
+    border-radius: 3px;
+    outline: none;
+    background: #fff;
+    color: #1F2740;
+    font-family: "DM Sans", sans-serif;
+    font-size: 13px;
+    transition: border-color .2s ease, box-shadow .2s ease;
+}
+
+.staff-form-field textarea {
+    min-height: 120px;
+    resize: vertical;
+}
+
+.staff-filter-form input:focus,
+.staff-filter-form select:focus,
+.staff-form-field input:focus,
+.staff-form-field textarea:focus,
+.staff-form-field select:focus {
+    border-color: #8FB2C9;
+    box-shadow: 0 0 0 3px rgba(143, 178, 201, .13);
+}
+
+.staff-filter-form .admin-filter-btn {
+    min-height: 44px;
+}
+
+/* STAFF GRID */
+
+.staff-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 24px;
+}
+
+.staff-card {
+    overflow: hidden;
+    border: 1px solid #E9ECF0;
+    background: #fff;
+    box-shadow: 0 8px 30px rgba(31, 39, 64, .035);
+    transition: transform .3s ease, box-shadow .3s ease;
+}
+
+.staff-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 16px 40px rgba(31, 39, 64, .09);
+}
+
+.staff-card-image {
+    position: relative;
+    height: 245px;
+    overflow: hidden;
+    background: #EEF2F5;
+}
+
+.staff-card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 30%;
+    transition: transform .5s ease;
+}
+
+.staff-card:hover .staff-card-image img {
+    transform: scale(1.045);
+}
+
+.staff-image-placeholder {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #E8EFF4, #D6E2EB);
+    color: #1F2740;
+    font-family: "Cormorant Garamond", serif;
+    font-size: 76px;
+}
+
+.staff-status-badge {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    padding: 7px 11px;
+    border-radius: 2px;
+    background: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .5px;
+}
+
+.staff-status-badge.is-active {
+    color: #34785A;
+}
+
+.staff-status-badge.is-inactive {
+    color: #B34F5B;
+}
+
+.staff-card-content {
+    padding: 23px;
+}
+
+.staff-card-role {
+    color: #8A9FB2;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.4px;
+    text-transform: uppercase;
+}
+
+.staff-card-content h2 {
+    margin: 7px 0 9px;
+    color: #1F2740;
+    font-family: "Cormorant Garamond", serif;
+    font-size: 27px;
+    font-weight: 600;
+}
+
+.staff-card-bio {
+    min-height: 43px;
+    margin: 0;
+    color: #7B8291;
+    font-size: 12px;
+    line-height: 1.8;
+}
+
+.staff-card-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 16px;
+    margin: 17px 0;
+    padding: 13px 0;
+    border-top: 1px solid #EEF0F3;
+    border-bottom: 1px solid #EEF0F3;
+    color: #687185;
+    font-size: 11px;
+}
+
+.staff-card-actions {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 9px;
+}
+
+.staff-view-btn,
+.staff-edit-btn {
+    display: flex;
+    min-height: 40px;
+    align-items: center;
+    justify-content: center;
+    padding: 0 14px;
+    border: 1px solid #1F2740;
+    border-radius: 2px;
+    color: #1F2740;
+    font-size: 11px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: .25s ease;
+}
+
+.staff-view-btn {
+    background: #1F2740;
+    color: #fff;
+}
+
+.staff-view-btn:hover {
+    border-color: #8FB2C9;
+    background: #8FB2C9;
+    color: #1F2740;
+}
+
+.staff-edit-btn:hover {
+    background: #F0F4F7;
+}
+
+.staff-card-content form {
+    margin-top: 10px;
+}
+
+.staff-toggle-btn {
+    width: 100%;
+    min-height: 36px;
+    border: 1px solid #E9ECF0;
+    background: #FAFBFC;
+    color: #687185;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: .4px;
+    cursor: pointer;
+    transition: .25s ease;
+}
+
+.staff-toggle-btn:hover {
+    border-color: #D2364E;
+    color: #D2364E;
+}
+
+/* EMPTY STATE */
+
+.staff-empty-state {
+    grid-column: 1 / -1;
+    padding: 70px 20px;
+    border: 1px dashed #DCE2E9;
+    background: #fff;
+    text-align: center;
+}
+
+.staff-empty-icon {
+    color: #8FB2C9;
+    font-size: 32px;
+}
+
+.staff-empty-state h2 {
+    margin: 15px 0 8px;
+    font-family: "Cormorant Garamond", serif;
+    font-size: 30px;
+}
+
+.staff-empty-state p {
+    margin: 0 0 22px;
+    color: #7B8291;
+    font-size: 13px;
+}
+
+/* PAGINATION */
+
+.staff-pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 22px;
+    margin-top: 35px;
+    color: #687185;
+    font-size: 12px;
+}
+
+.staff-pagination a {
+    color: #1F2740;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.staff-pagination a:hover {
+    color: #8FB2C9;
+}
+
+/* STAFF FORM */
+
+.staff-form-panel {
+    max-width: 1000px;
+    padding: 32px;
+    border: 1px solid #E9ECF0;
+    background: #fff;
+    box-shadow: 0 8px 30px rgba(31, 39, 64, .035);
+}
+
+.staff-form-section {
+    padding-bottom: 30px;
+    margin-bottom: 30px;
+    border-bottom: 1px solid #EEF0F3;
+}
+
+.staff-form-section:last-of-type {
+    margin-bottom: 0;
+}
+
+.staff-form-section h2 {
+    margin: 0;
+    color: #1F2740;
+    font-family: "Cormorant Garamond", serif;
+    font-size: 26px;
+    font-weight: 600;
+}
+
+.staff-form-section > p {
+    margin: 7px 0 23px;
+    color: #7B8291;
+    font-size: 12px;
+}
+
+.staff-form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 21px;
+}
+
+.staff-form-field {
+    min-width: 0;
+}
+
+.staff-field-full {
+    grid-column: 1 / -1;
+}
+
+.staff-form-field input[type="file"] {
+    padding: 9px;
+    background: #FAFBFC;
+}
+
+.staff-form-field input[type="checkbox"] {
+    width: 17px;
+    height: 17px;
+    accent-color: #1F2740;
+    vertical-align: middle;
+}
+
+.staff-setting-field {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 13px 15px;
+    border: 1px solid #E9ECF0;
+    background: #FAFBFC;
+}
+
+.staff-setting-field label {
+    margin: 0;
+}
+
+.staff-service-selection {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.staff-service-selection ul {
+    display: contents;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.staff-service-selection li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+    border: 1px solid #E9ECF0;
+    background: #FAFBFC;
+    color: #596174;
+    font-size: 12px;
+}
+
+.staff-service-selection label {
+    cursor: pointer;
+}
+
+.staff-service-selection input {
+    width: 16px;
+    height: 16px;
+    accent-color: #1F2740;
+}
+
+.staff-current-photo {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-top: 18px;
+    color: #687185;
+    font-size: 11px;
+}
+
+.staff-current-photo img {
+    width: 75px;
+    height: 75px;
+    border-radius: 3px;
+    object-fit: cover;
+}
+
+.staff-field-error {
+    display: block;
+    margin-top: 6px;
+    color: #D2364E;
+    font-size: 11px;
+}
+
+.staff-form-errors {
+    margin-bottom: 20px;
+    padding: 13px 16px;
+    border-left: 3px solid #D2364E;
+    background: #FFF5F6;
+    color: #A93243;
+    font-size: 12px;
+}
+
+.staff-form-actions {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 12px;
+    padding-top: 25px;
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 1050px) {
+    .staff-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .staff-filter-form {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width: 650px) {
+    .admin-staff-page {
+        padding: 28px 5%;
+    }
+
+    .admin-page-heading {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .admin-page-heading .admin-primary-btn {
+        width: 100%;
+    }
+
+    .staff-filter-form,
+    .staff-grid,
+    .staff-form-grid,
+    .staff-service-selection {
+        grid-template-columns: 1fr;
+    }
+
+    .staff-filter-panel,
+    .staff-form-panel {
+        padding: 18px;
+    }
+
+    .staff-card-image {
+        height: 230px;
+    }
+
+    .staff-field-full {
+        grid-column: auto;
+    }
+
+    .staff-form-actions {
+        flex-direction: column-reverse;
+    }
+
+    .staff-form-actions > * {
+        width: 100%;
+    }
+}
+
+/* ==========================================
+   STAFF DETAIL — PROFILE OVERVIEW
+   ========================================== */
+
+.staff-detail-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.staff-detail-profile {
+    display: grid;
+    grid-template-columns: 280px minmax(0, 1fr);
+    gap: 35px;
+    padding: 30px;
+    margin-bottom: 35px;
+    border: 1px solid #E9ECF0;
+    background: #fff;
+    box-shadow: 0 8px 30px rgba(31, 39, 64, .035);
+}
+
+.staff-detail-photo {
+    height: 310px;
+    overflow: hidden;
+    background: #EEF2F5;
+}
+
+.staff-detail-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 25%;
+}
+
+.staff-detail-photo .staff-image-placeholder {
+    height: 100%;
+}
+
+.staff-detail-info {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-width: 0;
+}
+
+.staff-detail-name-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 15px;
+}
+
+.staff-detail-name-row h2 {
+    margin: 7px 0 0;
+    color: #1F2740;
+    font-family: "Cormorant Garamond", serif;
+    font-size: 38px;
+    font-weight: 600;
+}
+
+.staff-detail-bio {
+    margin: 20px 0 25px;
+    color: #747D8D;
+    font-size: 13px;
+    line-height: 1.9;
+}
+
+.staff-detail-stat-row {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    border-top: 1px solid #E9ECF0;
+    padding-top: 22px;
+}
+
+.staff-detail-stat {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.staff-detail-stat strong {
+    color: #1F2740;
+    font-family: "Cormorant Garamond", serif;
+    font-size: 30px;
+    font-weight: 600;
+}
+
+.staff-detail-stat span {
+    color: #8790A0;
+    font-size: 10px;
+    letter-spacing: .6px;
+    text-transform: uppercase;
+}
+
+/* DETAIL MANAGEMENT SECTIONS */
+
+.staff-management-section {
+    margin-bottom: 30px;
+    padding: 28px;
+    border: 1px solid #E9ECF0;
+    background: #fff;
+    box-shadow: 0 8px 30px rgba(31, 39, 64, .025);
+}
+
+.staff-section-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    margin-bottom: 22px;
+}
+
+.staff-section-heading h2 {
+    margin: 0;
+    color: #1F2740;
+    font-family: "Cormorant Garamond", serif;
+    font-size: 29px;
+    font-weight: 600;
+}
+
+.staff-section-heading .admin-eyebrow {
+    margin-bottom: 6px;
+}
+
+.staff-section-link {
+    color: #667F96;
+    font-size: 11px;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.staff-section-link:hover {
+    color: #1F2740;
+}
+
+/* ASSIGNED SERVICES */
+
+.staff-assigned-services {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.staff-assigned-service {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 12px 16px;
+    border: 1px solid #E6EBF0;
+    background: #F9FBFC;
+    color: #596174;
+    font-size: 12px;
+}
+
+.staff-service-indicator {
+    width: 7px;
+    height: 7px;
+    flex: 0 0 7px;
+    border-radius: 50%;
+    background: #8FB2C9;
+}
+
+/* SCHEDULE AND LEAVE RECORDS */
+
+.staff-record-list {
+    display: flex;
+    flex-direction: column;
+}
+
+.staff-record-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 17px 0;
+    border-bottom: 1px solid #EEF0F3;
+}
+
+.staff-record-row:first-child {
+    padding-top: 5px;
+}
+
+.staff-record-row:last-child {
+    padding-bottom: 5px;
+    border-bottom: 0;
+}
+
+.staff-record-main {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+}
+
+.staff-record-main strong {
+    color: #1F2740;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.staff-record-main span {
+    color: #788193;
+    font-size: 12px;
+}
+
+.staff-record-main small {
+    color: #9299A6;
+    font-size: 11px;
+}
+
+.staff-record-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 13px;
+}
+
+.staff-record-actions a,
+.staff-record-actions button {
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: #667F96;
+    font-family: "DM Sans", sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.staff-record-actions a:hover,
+.staff-record-actions button:hover {
+    color: #1F2740;
+}
+
+.staff-record-actions form {
+    display: inline-flex;
+    margin: 0;
+}
+
+.staff-record-actions .staff-danger-action {
+    color: #C44F5D;
+}
+
+.staff-record-actions .staff-danger-action:hover {
+    color: #963442;
+}
+
+.staff-leave-status {
+    padding: 6px 9px;
+    border-radius: 2px;
+    font-size: 10px;
+    font-weight: 600;
+}
+
+.leave-approved {
+    background: #EDF7F1;
+    color: #34785A;
+}
+
+.leave-pending {
+    background: #FFF5E9;
+    color: #A56B2D;
+}
+
+.staff-section-note {
+    margin: 18px 0 0;
+    color: #9299A6;
+    font-size: 11px;
+    line-height: 1.7;
+}
+
+.staff-no-records {
+    padding: 20px 15px;
+    color: #9299A6;
+    font-size: 12px;
+    text-align: center;
+}
+
+/* RECENT APPOINTMENTS */
+
+.staff-appointments-table-wrap {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.staff-appointments-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    white-space: nowrap;
+}
+
+.staff-appointments-table th {
+    padding: 14px 13px;
+    border-bottom: 1px solid #E4E9EE;
+    background: #F8FAFB;
+    color: #7D8798;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .8px;
+    text-transform: uppercase;
+}
+
+.staff-appointments-table td {
+    padding: 16px 13px;
+    border-bottom: 1px solid #EEF0F3;
+    color: #596174;
+    font-size: 11px;
+    vertical-align: middle;
+}
+
+.staff-appointments-table tr:last-child td {
+    border-bottom: 0;
+}
+
+.staff-appointments-table td a {
+    color: #667F96;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.staff-appointments-table td a:hover {
+    color: #1F2740;
+}
+
+.staff-appointments-table td small {
+    color: #9299A6;
+    font-size: 10px;
+}
+
+.staff-booking-status {
+    display: inline-block;
+    padding: 6px 9px;
+    border-radius: 2px;
+    background: #F0F3F6;
+    color: #596174;
+    font-size: 10px;
+    font-weight: 600;
+}
+
+.staff-booking-status.status-confirmed {
+    background: #EDF7F1;
+    color: #34785A;
+}
+
+.staff-booking-status.status-pending {
+    background: #FFF5E9;
+    color: #A56B2D;
+}
+
+.staff-booking-status.status-completed {
+    background: #EDF2FA;
+    color: #536C9A;
+}
+
+.staff-booking-status.status-cancelled,
+.staff-booking-status.status-rejected {
+    background: #FFF0F1;
+    color: #B34F5B;
+}
+
+/* DETAIL PAGE RESPONSIVENESS */
+
+@media (max-width: 850px) {
+    .staff-detail-profile {
+        grid-template-columns: 210px minmax(0, 1fr);
+        gap: 22px;
+        padding: 22px;
+    }
+
+    .staff-detail-photo {
+        height: 270px;
+    }
+
+    .staff-detail-name-row h2 {
+        font-size: 31px;
+    }
+
+    .staff-record-row {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .staff-record-actions {
+        justify-content: flex-start;
+    }
+}
+
+@media (max-width: 600px) {
+    .staff-detail-header-actions {
+        width: 100%;
+    }
+
+    .staff-detail-header-actions > * {
+        flex: 1;
+    }
+
+    .staff-detail-profile {
+        grid-template-columns: 1fr;
+        padding: 18px;
+    }
+
+    .staff-detail-photo {
+        width: 100%;
+        height: 280px;
+    }
+
+    .staff-detail-stat-row {
+        gap: 12px;
+    }
+
+    .staff-detail-stat strong {
+        font-size: 25px;
+    }
+
+    .staff-detail-stat span {
+        font-size: 9px;
+    }
+
+    .staff-management-section {
+        padding: 19px;
+    }
+
+    .staff-section-heading {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .staff-leave-row .staff-record-actions {
+        align-items: flex-start;
+    }
+}
+
+/* ==========================================
+   STAFF SCHEDULE FORM
+   ========================================== */
+
+.staff-schedule-form-panel {
+    max-width: 760px;
+}
+
+.schedule-staff-summary {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding-bottom: 22px;
+    margin-bottom: 25px;
+    border-bottom: 1px solid #EEF0F3;
+}
+
+.schedule-summary-avatar {
+    display: flex;
+    width: 58px;
+    height: 58px;
+    flex: 0 0 58px;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    border-radius: 50%;
+    background: #E8EFF4;
+    color: #1F2740;
+    font-family: "Cormorant Garamond", serif;
+    font-size: 26px;
+}
+
+.schedule-summary-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.schedule-staff-summary div {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.schedule-staff-summary strong {
+    color: #1F2740;
+    font-family: "Cormorant Garamond", serif;
+    font-size: 21px;
+}
+
+.schedule-staff-summary div span {
+    color: #8790A0;
+    font-size: 11px;
+}
+
+.schedule-form-guidance {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-top: 24px;
+    padding: 15px;
+    border-left: 3px solid #8FB2C9;
+    background: #F5F8FA;
+}
+
+.schedule-form-guidance > span {
+    color: #8FB2C9;
+    font-size: 17px;
+}
+
+.schedule-form-guidance p {
+    margin: 0;
+    color: #687185;
+    font-size: 11px;
+    line-height: 1.8;
+}
+
+@media (max-width: 600px) {
+    .schedule-staff-summary {
+        align-items: flex-start;
+    }
+
+    .schedule-form-guidance {
+        padding: 12px;
+    }
+}
+
+/* ==========================================
+   STAFF LEAVE MANAGEMENT FORM
+   ========================================== */
+
+.staff-leave-form-panel {
+    max-width: 850px;
+}
+
+.staff-leave-approval-setting {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 18px;
+    border: 1px solid #E5EAF0;
+    background: #FAFBFC;
+}
+
+.staff-leave-approval-setting > div {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.staff-leave-approval-setting strong {
+    color: #1F2740;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.staff-leave-approval-setting > div span {
+    color: #8790A0;
+    font-size: 11px;
+    line-height: 1.7;
+}
+
+.staff-approval-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    flex-shrink: 0;
+    color: #596174;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.staff-approval-checkbox input {
+    width: 18px;
+    height: 18px;
+    accent-color: #1F2740;
+    cursor: pointer;
+}
+
+@media (max-width: 600px) {
+    .staff-leave-approval-setting {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+}

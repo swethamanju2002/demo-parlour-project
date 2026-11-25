@@ -1,0 +1,267 @@
+
+{% extends "base/public.html" %}
+{% load static %}
+
+{% block css %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/admin/staff.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="admin-staff-page">
+
+    <!-- PAGE HEADER -->
+    <div class="admin-page-heading">
+        <div>
+            <span class="admin-eyebrow">TEAM MANAGEMENT / PROFILE</span>
+            <h1>{{ staff.name }}</h1>
+            <p>Manage professional details, availability and appointment history.</p>
+        </div>
+
+        <div class="staff-detail-header-actions">
+            <a href="{% url 'admin_panel:staff' %}" class="admin-reset-btn">Back to Staff</a>
+            <a href="{% url 'admin_panel:staff_edit' staff.id %}" class="admin-primary-btn">Edit Profile</a>
+        </div>
+    </div>
+
+    <!-- PROFILE OVERVIEW -->
+    <div class="staff-detail-profile">
+
+        <div class="staff-detail-photo">
+            {% if staff.photo %}
+                <img src="{{ staff.photo.url }}" alt="{{ staff.name }}">
+            {% else %}
+                <div class="staff-image-placeholder">
+                    {{ staff.name|first|upper }}
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="staff-detail-info">
+            <div class="staff-detail-name-row">
+                <div>
+                    <span class="staff-card-role">{{ staff.title }}</span>
+                    <h2>{{ staff.name }}</h2>
+                </div>
+
+                <span class="staff-status-badge {% if staff.is_active %}is-active{% else %}is-inactive{% endif %}">
+                    {% if staff.is_active %}Active{% else %}Inactive{% endif %}
+                </span>
+            </div>
+
+            <p class="staff-detail-bio">
+                {% if staff.bio %}
+                    {{ staff.bio|linebreaksbr }}
+                {% else %}
+                    No professional biography has been added.
+                {% endif %}
+            </p>
+
+            <div class="staff-detail-stat-row">
+                <div class="staff-detail-stat">
+                    <strong>{{ staff.years_experience }}</strong>
+                    <span>Years Experience</span>
+                </div>
+
+                <div class="staff-detail-stat">
+                    <strong>{{ staff.services.all|length }}</strong>
+                    <span>Assigned Services</span>
+                </div>
+
+                <div class="staff-detail-stat">
+                    <strong>{{ total_bookings }}</strong>
+                    <span>Total Appointments</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ASSIGNED SERVICES -->
+    <div class="staff-management-section">
+        <div class="staff-section-heading">
+            <div>
+                <span class="admin-eyebrow">PROFESSIONAL EXPERTISE</span>
+                <h2>Assigned Services</h2>
+            </div>
+            <a href="{% url 'admin_panel:staff_edit' staff.id %}" class="staff-section-link">Manage Services</a>
+        </div>
+
+        <div class="staff-assigned-services">
+            {% for service in staff.services.all %}
+                <div class="staff-assigned-service">
+                    <span class="staff-service-indicator"></span>
+                    <span>{{ service.name }}</span>
+                </div>
+            {% empty %}
+                <p class="staff-no-records">No services have been assigned to this professional.</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- WEEKLY SCHEDULE -->
+    <div class="staff-management-section">
+        <div class="staff-section-heading">
+            <div>
+                <span class="admin-eyebrow">WORKING HOURS</span>
+                <h2>Weekly Schedule</h2>
+            </div>
+
+            <a href="{% url 'admin_panel:schedule_create' staff.id %}" class="admin-primary-btn">
+                + Add Schedule
+            </a>
+        </div>
+
+        <div class="staff-record-list">
+            {% for schedule in staff.schedules.all %}
+                <div class="staff-record-row">
+                    <div class="staff-record-main">
+                        <strong>{{ schedule.get_weekday_display }}</strong>
+                        <span>{{ schedule.start_time|time:"g:i A" }} – {{ schedule.end_time|time:"g:i A" }}</span>
+                    </div>
+
+                    <div class="staff-record-actions">
+                        <a href="{% url 'admin_panel:schedule_edit' staff.id schedule.id %}">Edit</a>
+
+                        <form method="post" action="{% url 'admin_panel:schedule_delete' staff.id schedule.id %}"
+                              onsubmit="return confirm('Delete this working schedule?');">
+                            {% csrf_token %}
+                            <button type="submit" class="staff-danger-action">Delete</button>
+                        </form>
+                    </div>
+                </div>
+            {% empty %}
+                <div class="staff-no-records">
+                    No weekly schedule has been configured.
+                </div>
+            {% endfor %}
+        </div>
+
+        <p class="staff-section-note">
+            Days without a configured schedule are treated as non-working days.
+        </p>
+    </div>
+
+    <!-- STAFF LEAVE -->
+    <div class="staff-management-section">
+        <div class="staff-section-heading">
+            <div>
+                <span class="admin-eyebrow">TIME OFF MANAGEMENT</span>
+                <h2>Leave Records</h2>
+            </div>
+
+            <a href="{% url 'admin_panel:leave_create' staff.id %}" class="admin-primary-btn">
+                + Add Leave
+            </a>
+        </div>
+
+        <div class="staff-record-list">
+            {% for leave in staff.leaves.all %}
+                <div class="staff-record-row staff-leave-row">
+                    <div class="staff-record-main">
+                        <strong>
+                            {{ leave.start|date:"d M Y" }} – {{ leave.end|date:"d M Y" }}
+                        </strong>
+
+                        <span>
+                            {{ leave.start|date:"g:i A" }} – {{ leave.end|date:"g:i A" }}
+                        </span>
+
+                        {% if leave.reason %}
+                            <small>{{ leave.reason }}</small>
+                        {% endif %}
+                    </div>
+
+                    <div class="staff-record-actions">
+                        <span class="staff-leave-status {% if leave.is_approved %}leave-approved{% else %}leave-pending{% endif %}">
+                            {% if leave.is_approved %}Approved{% else %}Not Approved{% endif %}
+                        </span>
+
+                        <a href="{% url 'admin_panel:leave_edit' staff.id leave.id %}">Edit</a>
+
+                        <form method="post" action="{% url 'admin_panel:leave_toggle_approval' staff.id leave.id %}">
+                            {% csrf_token %}
+                            <button type="submit">
+                                {% if leave.is_approved %}Revoke Approval{% else %}Approve{% endif %}
+                            </button>
+                        </form>
+
+                        <form method="post" action="{% url 'admin_panel:leave_delete' staff.id leave.id %}"
+                              onsubmit="return confirm('Delete this leave record?');">
+                            {% csrf_token %}
+                            <button type="submit" class="staff-danger-action">Delete</button>
+                        </form>
+                    </div>
+                </div>
+            {% empty %}
+                <div class="staff-no-records">
+                    No leave records available.
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- RECENT APPOINTMENTS -->
+    <div class="staff-management-section">
+        <div class="staff-section-heading">
+            <div>
+                <span class="admin-eyebrow">APPOINTMENT ACTIVITY</span>
+                <h2>Recent Appointments</h2>
+            </div>
+        </div>
+
+        <div class="staff-appointments-table-wrap">
+            <table class="staff-appointments-table">
+                <thead>
+                    <tr>
+                        <th>Booking ID</th>
+                        <th>Customer</th>
+                        <th>Date & Time</th>
+                        <th>Services</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for booking in recent_bookings %}
+                        <tr>
+                            <td>
+                                <a href="{% url 'admin_panel:appointment_detail' booking.public_id %}">
+                                    {{ booking.public_id }}
+                                </a>
+                            </td>
+
+                            <td>{{ booking.customer.display_name }}</td>
+
+                            <td>
+                                {{ booking.start|date:"d M Y" }}<br>
+                                <small>{{ booking.start|date:"g:i A" }}</small>
+                            </td>
+
+                            <td>
+                                {% for item in booking.items.all %}
+                                    {{ item.service_name }}{% if not forloop.last %}, {% endif %}
+                                {% empty %}
+                                    —
+                                {% endfor %}
+                            </td>
+
+                            <td>
+                                <span class="staff-booking-status status-{{ booking.status }}">
+                                    {{ booking.get_status_display }}
+                                </span>
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="5" class="staff-no-records">
+                                No appointments found for this professional.
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</section>
+{% endblock %}

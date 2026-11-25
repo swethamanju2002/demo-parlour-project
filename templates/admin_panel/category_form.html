@@ -1,0 +1,119 @@
+
+{% extends "base/public.html" %}
+{% load static %}
+
+{% block css %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/admin/services.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="adm-management">
+    <div class="adm-page-heading">
+        <div>
+            <span class="adm-eyebrow">CATALOG MANAGEMENT / CATEGORIES</span>
+            <h1>{{ page_title }}</h1>
+            <p>{{ form_description }}</p>
+        </div>
+        <a href="{% url 'admin_panel:categories' %}" class="adm-reset-btn">← Back to categories</a>
+    </div>
+
+    <form method="post" enctype="multipart/form-data" class="adm-edit-form">
+        {% csrf_token %}
+
+        {% if form.non_field_errors %}
+            <div class="adm-form-errors">{{ form.non_field_errors }}</div>
+        {% endif %}
+
+        <div class="adm-form-section">
+            <div class="adm-form-section-heading">
+                <span>01</span>
+                <div>
+                    <h2>Category information</h2>
+                    <p>Define the name and description of this service category.</p>
+                </div>
+            </div>
+
+            <div class="adm-form-grid">
+                <div class="adm-form-field">
+                    <label for="{{ form.name.id_for_label }}">Category name *</label>
+                    {{ form.name }}
+                    {{ form.name.errors }}
+                </div>
+
+                <div class="adm-form-field">
+                    <label for="{{ form.slug.id_for_label }}">URL slug *</label>
+                    {{ form.slug }}
+                    {{ form.slug.errors }}
+                    <small>Example: hair-treatments</small>
+                </div>
+
+                <div class="adm-form-field adm-form-full">
+                    <label for="{{ form.tagline.id_for_label }}">Tagline</label>
+                    {{ form.tagline }}
+                    {{ form.tagline.errors }}
+                </div>
+
+                <div class="adm-form-field adm-form-full">
+                    <label for="{{ form.description.id_for_label }}">Description</label>
+                    {{ form.description }}
+                    {{ form.description.errors }}
+                </div>
+            </div>
+        </div>
+
+        <div class="adm-form-section">
+            <div class="adm-form-section-heading">
+                <span>02</span>
+                <div>
+                    <h2>Category image</h2>
+                    <p>Choose a visual for the public category listing.</p>
+                </div>
+            </div>
+
+            <div class="adm-form-field">
+                <label for="{{ form.image.id_for_label }}">Category image</label>
+                {% if category.image %}
+                    <div class="adm-current-image">
+                        <img src="{{ category.image.url }}" alt="{{ category.name }}">
+                        <span>Current category image</span>
+                    </div>
+                {% endif %}
+                {{ form.image }}
+                {{ form.image.errors }}
+            </div>
+        </div>
+
+        <div class="adm-form-section">
+            <div class="adm-form-section-heading">
+                <span>03</span>
+                <div>
+                    <h2>Display settings</h2>
+                    <p>Manage the category's position and public visibility.</p>
+                </div>
+            </div>
+
+            <div class="adm-form-grid adm-form-grid-two">
+                <div class="adm-form-field">
+                    <label for="{{ form.order.id_for_label }}">Display order</label>
+                    {{ form.order }}
+                    {{ form.order.errors }}
+                </div>
+
+                <div class="adm-checkbox-item adm-single-checkbox">
+                    {{ form.is_active }}
+                    <span>
+                        <strong>Active category</strong>
+                        <small>Allow this category to appear on the website.</small>
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <div class="adm-form-footer">
+            <a href="{% url 'admin_panel:categories' %}" class="adm-cancel-btn">Cancel</a>
+            <button type="submit" class="adm-primary-btn">{{ submit_label }}</button>
+        </div>
+    </form>
+</section>
+{% endblock %}

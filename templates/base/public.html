@@ -1,6 +1,12 @@
 {% extends "base/base.html" %}
 {% load static %}
-{% block css %}<link rel="stylesheet" href="{% static 'css/public/site.css' %}"><link rel="stylesheet" href="{% static 'css/public/sections.css' %}">{% endblock %}
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/public/site.css' %}">
+<link rel="stylesheet" href="{% static 'css/public/sections.css' %}">
+{% if request.user.is_salon_admin and request.resolver_match.namespace == "admin_panel" %}
+<link rel="stylesheet" href="{% static 'css/admin/navigation.css' %}">
+{% endif %}
+{% endblock %}
 {% block body %}
 <div class="announce">{{ BRAND.announcement|default:"Now open in Melur, the town's first large-scale salon for women." }} <a href="{% url 'offers:list' %}">See offers</a></div>
 <header class="site-header">
@@ -25,6 +31,63 @@
     </nav>
   </div>
 </header>
+
+{% if request.user.is_salon_admin and request.resolver_match.namespace == "admin_panel" %}
+<nav class="admin-navigation" aria-label="Admin navigation">
+    <div class="admin-navigation-inner">
+
+        <a href="{% url 'admin_panel:dashboard' %}"
+           class="admin-nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
+            Dashboard
+        </a>
+
+        <a href="{% url 'admin_panel:appointments' %}"
+           class="admin-nav-link {% if 'appointment' in request.resolver_match.url_name %}active{% endif %}">
+            Appointments
+        </a>
+
+        <a href="{% url 'admin_panel:customers' %}"
+           class="admin-nav-link {% if 'customer' in request.resolver_match.url_name %}active{% endif %}">
+            Customers
+        </a>
+
+        <a href="{% url 'admin_panel:services' %}"
+           class="admin-nav-link {% if 'service' in request.resolver_match.url_name %}active{% endif %}">
+            Services
+        </a>
+
+        <a href="{% url 'admin_panel:categories' %}"
+           class="admin-nav-link {% if 'categor' in request.resolver_match.url_name %}active{% endif %}">
+            Categories
+        </a>
+
+        <a href="{% url 'admin_panel:staff' %}"
+           class="admin-nav-link {% if 'staff' in request.resolver_match.url_name or 'schedule' in request.resolver_match.url_name or 'leave' in request.resolver_match.url_name %}active{% endif %}">
+            Staff
+        </a>
+
+        <a href="{% url 'admin_panel:offers' %}"
+          class="admin-nav-link {% if 'offer' in request.resolver_match.url_name %}active{% endif %}">
+            Offers
+        </a>
+        <a href="{% url 'admin_panel:billing' %}" class="admin-nav-link 
+        {% if 'billing' in request.resolver_match.url_name %}active{% endif %}">
+        Billing
+      </a>
+
+        <div class="admin-nav-account">
+            <span>{{ request.user.first_name|default:request.user.username }}</span>
+
+            <form method="post" action="{% url 'accounts:logout' %}">
+                {% csrf_token %}
+                <button type="submit">Logout</button>
+            </form>
+        </div>
+
+    </div>
+</nav>
+{% endif %}
+
 {% block content %}{% endblock %}
 <footer class="site-footer" id="visit">
   <div class="footer-grid">

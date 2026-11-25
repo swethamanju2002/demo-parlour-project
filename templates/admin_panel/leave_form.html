@@ -1,0 +1,134 @@
+
+{% extends "base/public.html" %}
+{% load static %}
+
+{% block css %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/admin/staff.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="admin-staff-page">
+
+    <div class="admin-page-heading">
+        <div>
+            <span class="admin-eyebrow">TEAM MANAGEMENT / TIME OFF</span>
+            <h1>{% if leave %}Edit Leave Record{% else %}Add Staff Leave{% endif %}</h1>
+            <p>Manage time off and leave approval for {{ staff.name }}.</p>
+        </div>
+
+        <a href="{% url 'admin_panel:staff_detail' staff.id %}" class="admin-reset-btn">
+            Back to Staff Profile
+        </a>
+    </div>
+
+    <div class="staff-form-panel staff-leave-form-panel">
+
+        <div class="schedule-staff-summary">
+            <span class="schedule-summary-avatar">
+                {% if staff.photo %}
+                    <img src="{{ staff.photo.url }}" alt="{{ staff.name }}">
+                {% else %}
+                    {{ staff.name|first|upper }}
+                {% endif %}
+            </span>
+
+            <div>
+                <strong>{{ staff.name }}</strong>
+                <span>{{ staff.title }}</span>
+            </div>
+        </div>
+
+        <form method="post" class="staff-admin-form">
+            {% csrf_token %}
+
+            {% if form.non_field_errors %}
+                <div class="staff-form-errors">
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
+
+            <div class="staff-form-section">
+                <h2>Leave Duration</h2>
+                <p>Specify when the professional's leave begins and ends.</p>
+
+                <div class="staff-form-grid">
+
+                    <div class="staff-form-field">
+                        <label for="{{ form.start.id_for_label }}">Start Date & Time</label>
+                        {{ form.start }}
+
+                        {% for error in form.start.errors %}
+                            <span class="staff-field-error">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+
+                    <div class="staff-form-field">
+                        <label for="{{ form.end.id_for_label }}">End Date & Time</label>
+                        {{ form.end }}
+
+                        {% for error in form.end.errors %}
+                            <span class="staff-field-error">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+
+                    <div class="staff-form-field staff-field-full">
+                        <label for="{{ form.reason.id_for_label }}">Reason for Leave</label>
+                        {{ form.reason }}
+
+                        {% if form.reason.help_text %}
+                            <small>{{ form.reason.help_text }}</small>
+                        {% endif %}
+
+                        {% for error in form.reason.errors %}
+                            <span class="staff-field-error">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="staff-form-section">
+                <h2>Approval Status</h2>
+                <p>Only approved leave blocks the professional's availability for new bookings.</p>
+
+                <div class="staff-leave-approval-setting">
+                    <div>
+                        <strong>Approve this leave</strong>
+                        <span>Approved leave will be considered during booking availability checks.</span>
+                    </div>
+
+                    <label class="staff-approval-checkbox" for="{{ form.is_approved.id_for_label }}">
+                        {{ form.is_approved }}
+                        <span>Approved</span>
+                    </label>
+
+                    {% for error in form.is_approved.errors %}
+                        <span class="staff-field-error">{{ error }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="schedule-form-guidance">
+                <span>✦</span>
+                <p>
+                    Before approving leave, review existing appointments during this period.
+                    Adding leave does not automatically cancel or reschedule existing bookings.
+                </p>
+            </div>
+
+            <div class="staff-form-actions">
+                <a href="{% url 'admin_panel:staff_detail' staff.id %}" class="admin-reset-btn">
+                    Cancel
+                </a>
+
+                <button type="submit" class="admin-primary-btn">
+                    {% if leave %}Save Leave Changes{% else %}Create Leave Record{% endif %}
+                </button>
+            </div>
+
+        </form>
+    </div>
+
+</section>
+{% endblock %}

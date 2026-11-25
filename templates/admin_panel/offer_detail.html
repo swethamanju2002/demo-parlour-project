@@ -1,0 +1,300 @@
+
+{% extends "base/public.html" %}
+{% load static %}
+
+{% block title %}{{ offer.title }} | Offer Management{% endblock %}
+
+{% block css %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/admin/offers.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="admin-offer-detail-page">
+
+    <!-- PAGE HEADER -->
+    <div class="offer-detail-heading">
+        <div>
+            <span class="admin-eyebrow">DQ AESTHETIC · MANAGEMENT</span>
+            <h1>Offer Details</h1>
+            <p>Review and manage this promotional campaign.</p>
+        </div>
+
+        <div class="offer-detail-header-actions">
+            <a href="{% url 'admin_panel:offers' %}" class="offer-detail-back">
+                ← All offers
+            </a>
+
+            <a href="{% url 'admin_panel:offer_edit' offer.pk %}"
+               class="offer-detail-edit">
+                Edit offer
+            </a>
+        </div>
+    </div>
+
+    <!-- OFFER HERO -->
+    <div class="offer-detail-hero">
+
+        <div class="offer-detail-image">
+            {% if offer.banner %}
+                <img src="{{ offer.banner.url }}" alt="{{ offer.title }}">
+            {% else %}
+                <div class="offer-detail-placeholder">
+                    <span>DQ</span>
+                    <small>AESTHETIC</small>
+                </div>
+            {% endif %}
+
+            <span class="offer-detail-discount">
+                {{ offer.badge }}
+            </span>
+        </div>
+
+        <div class="offer-detail-overview">
+
+            <div class="offer-detail-labels">
+
+                {% if offer_status == "Current" %}
+                    <span class="offer-status current">Current</span>
+                {% elif offer_status == "Inactive" %}
+                    <span class="offer-status inactive">Inactive</span>
+                {% elif offer_status == "Expired" %}
+                    <span class="offer-status expired">Expired</span>
+                {% else %}
+                    <span class="offer-status upcoming">Upcoming</span>
+                {% endif %}
+
+                {% if offer.is_package %}
+                    <span class="offer-type-label">Special package</span>
+                {% else %}
+                    <span class="offer-type-label">Regular offer</span>
+                {% endif %}
+
+            </div>
+
+            <h2>{{ offer.title }}</h2>
+
+            <p class="offer-detail-summary">
+                {{ offer.summary }}
+            </p>
+
+            {% if offer.description %}
+                <div class="offer-detail-description">
+                    {{ offer.description|linebreaks }}
+                </div>
+            {% endif %}
+
+            <div class="offer-detail-quick-info">
+
+                <div>
+                    <span>Discount</span>
+                    <strong>{{ offer.badge }}</strong>
+                </div>
+
+                <div>
+                    <span>Valid from</span>
+                    <strong>{{ offer.valid_from|date:"d F Y" }}</strong>
+                </div>
+
+                <div>
+                    <span>Valid until</span>
+                    <strong>{{ offer.valid_to|date:"d F Y" }}</strong>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+    <!-- DETAILS GRID -->
+    <div class="offer-detail-grid">
+
+        <!-- DISCOUNT DETAILS -->
+        <section class="offer-detail-panel">
+
+            <div class="offer-detail-section-heading">
+                <span>01</span>
+                <div>
+                    <h2>Discount configuration</h2>
+                    <p>Promotional pricing information.</p>
+                </div>
+            </div>
+
+            <div class="offer-detail-info-list">
+
+                <div>
+                    <span>Discount type</span>
+                    <strong>{{ offer.get_discount_type_display }}</strong>
+                </div>
+
+                <div>
+                    <span>Discount value</span>
+                    <strong>{{ offer.badge }}</strong>
+                </div>
+
+                <div>
+                    <span>Coupon code</span>
+                    <strong>
+                        {{ offer.coupon_code|default:"No coupon required" }}
+                    </strong>
+                </div>
+
+                <div>
+                    <span>Offer category</span>
+                    <strong>
+                        {% if offer.is_package %}Package{% else %}Regular offer{% endif %}
+                    </strong>
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- VALIDITY DETAILS -->
+        <section class="offer-detail-panel">
+
+            <div class="offer-detail-section-heading">
+                <span>02</span>
+                <div>
+                    <h2>Validity period</h2>
+                    <p>Offer availability dates.</p>
+                </div>
+            </div>
+
+            <div class="offer-detail-info-list">
+
+                <div>
+                    <span>Start date</span>
+                    <strong>{{ offer.valid_from|date:"d F Y" }}</strong>
+                </div>
+
+                <div>
+                    <span>End date</span>
+                    <strong>{{ offer.valid_to|date:"d F Y" }}</strong>
+                </div>
+
+                <div>
+                    <span>Publication status</span>
+                    <strong>{{ offer_status }}</strong>
+                </div>
+
+            </div>
+
+        </section>
+
+    </div>
+
+    <!-- APPLICABLE SERVICES -->
+    <section class="offer-detail-panel offer-services-panel">
+
+        <div class="offer-detail-section-heading">
+            <span>03</span>
+            <div>
+                <h2>Applicable services</h2>
+                <p>Services covered by this promotional offer.</p>
+            </div>
+        </div>
+
+        {% if offer.services.exists %}
+
+            <div class="offer-detail-service-list">
+                {% for service in offer.services.all %}
+                    <div class="offer-detail-service">
+                        <span class="service-mark">✧</span>
+                        <div>
+                            <strong>{{ service.name }}</strong>
+                            <small>
+                                {{ service.category.name }}
+                                {% if not service.is_active %}
+                                    · Inactive service
+                                {% endif %}
+                            </small>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+
+        {% else %}
+
+            <div class="offer-all-services">
+                <span>✧</span>
+                <div>
+                    <strong>All services</strong>
+                    <p>
+                        This offer is configured to apply to every eligible salon service.
+                    </p>
+                </div>
+            </div>
+
+        {% endif %}
+
+    </section>
+
+    <!-- TERMS -->
+    <section class="offer-detail-panel offer-terms-panel">
+
+        <div class="offer-detail-section-heading">
+            <span>04</span>
+            <div>
+                <h2>Terms and conditions</h2>
+                <p>Conditions associated with this promotion.</p>
+            </div>
+        </div>
+
+        {% if offer.terms %}
+            <div class="offer-detail-terms">
+                {{ offer.terms|linebreaks }}
+            </div>
+        {% else %}
+            <p class="offer-detail-muted">
+                No additional terms and conditions have been specified.
+            </p>
+        {% endif %}
+
+    </section>
+
+    <!-- ACTIONS -->
+    <section class="offer-detail-management">
+
+        <div>
+            <span class="admin-eyebrow">MANAGEMENT ACTIONS</span>
+            <h2>Control this offer</h2>
+            <p>
+                {% if offer.is_active %}
+                    Deactivating this offer removes it from active publication.
+                {% else %}
+                    Activating this offer allows publication during its validity period.
+                {% endif %}
+            </p>
+        </div>
+
+        <div class="offer-detail-management-actions">
+
+            <a href="{% url 'admin_panel:offer_edit' offer.pk %}"
+               class="offer-detail-edit">
+                Edit offer
+            </a>
+
+            <form method="post"
+                  action="{% url 'admin_panel:offer_toggle_active' offer.pk %}">
+                {% csrf_token %}
+
+                <button type="submit"
+                        class="{% if offer.is_active %}offer-deactivate-action{% else %}offer-activate-action{% endif %}"
+                        onclick="return confirm('Are you sure you want to {% if offer.is_active %}deactivate{% else %}activate{% endif %} this offer?');">
+
+                    {% if offer.is_active %}
+                        Deactivate offer
+                    {% else %}
+                        Activate offer
+                    {% endif %}
+
+                </button>
+            </form>
+
+        </div>
+
+    </section>
+
+</section>
+{% endblock %}

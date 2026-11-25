@@ -1,0 +1,85 @@
+
+{% extends "base/portal.html" %}
+{% load static %}
+
+{% block title %}{{ invoice.invoice_number }} | DQ Aesthetic{% endblock %}
+
+{% block css %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/admin/billing.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="billing-page">
+    <div class="billing-heading no-print">
+        <div>
+            <span class="billing-eyebrow">YOUR INVOICE</span>
+            <h1>{{ invoice.invoice_number }}</h1>
+            <p>Booking {{ invoice.booking.public_id }}</p>
+        </div>
+        <div class="billing-heading-actions">
+            <button class="billing-outline-btn" type="button" onclick="window.print()">Print invoice</button>
+            <a class="billing-outline-btn" href="{% url 'client:billing' %}">Back to invoices</a>
+        </div>
+    </div>
+
+    <article class="invoice-paper">
+        <div class="invoice-brand">
+            <div><span class="billing-eyebrow">DQ AESTHETIC</span><h2>INVOICE</h2></div>
+            <div class="invoice-number">
+                <strong>{{ invoice.invoice_number }}</strong>
+                <span>Issued {{ invoice.issue_date|date:"d M Y" }}</span>
+            </div>
+        </div>
+
+        <div class="invoice-parties">
+            <div><span>INVOICE TO</span><strong>{{ invoice.customer.display_name }}</strong><p>{{ invoice.customer.email }}</p></div>
+            <div><span>BOOKING</span><strong>{{ invoice.booking.public_id }}</strong><p>{{ invoice.booking.start|date:"d M Y, h:i A" }}</p></div>
+        </div>
+
+        <div class="billing-table-wrap">
+            <table class="billing-table invoice-items-table">
+                <thead><tr><th>Service</th><th>Duration</th><th>Unit price</th><th>Amount</th></tr></thead>
+                <tbody>
+                    {% for item in invoice.items.all %}
+                    <tr><td>{{ item.service_name }}</td><td>{{ item.duration_minutes }} min</td><td>₹{{ item.unit_price|floatformat:2 }}</td><td>₹{{ item.line_total|floatformat:2 }}</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="invoice-totals">
+            <div><span>Subtotal</span><strong>₹{{ invoice.subtotal|floatformat:2 }}</strong></div>
+            <div><span>Discount</span><strong>− ₹{{ invoice.discount_amount|floatformat:2 }}</strong></div>
+            <div><span>Tax</span><strong>₹{{ invoice.tax_amount|floatformat:2 }}</strong></div>
+            <div class="invoice-grand-total"><span>Total</span><strong>₹{{ invoice.total_amount|floatformat:2 }}</strong></div>
+            <div><span>Paid</span><strong>₹{{ invoice.paid_amount|floatformat:2 }}</strong></div>
+            <div class="invoice-balance"><span>Balance due</span><strong>₹{{ invoice.balance_due|floatformat:2 }}</strong></div>
+        </div>
+
+        <div class="invoice-footer">Thank you for choosing DQ Aesthetic.</div>
+    </article>
+
+    <section class="billing-panel">
+        <div class="billing-panel-heading"><div><h2>Payment history</h2><p>Your recorded transactions.</p></div></div>
+        <div class="billing-table-wrap">
+            <table class="billing-table">
+                <thead><tr><th>Date</th><th>Method</th><th>Reference</th><th>Amount</th><th>Status</th></tr></thead>
+                <tbody>
+                    {% for payment in invoice.payments.all %}
+                    <tr>
+                        <td>{{ payment.paid_at|date:"d M Y, h:i A" }}</td>
+                        <td>{{ payment.get_method_display }}</td>
+                        <td>{{ payment.transaction_reference|default:"—" }}</td>
+                        <td>₹{{ payment.amount|floatformat:2 }}</td>
+                        <td>{{ payment.get_status_display }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="5" class="billing-empty">No payments have been recorded.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+</section>
+{% endblock %}

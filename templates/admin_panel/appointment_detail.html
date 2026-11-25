@@ -1,0 +1,106 @@
+
+{% extends "base/public.html" %}
+{% load static %}
+
+{% block title %}{{ booking.public_id }} | DQ Aesthetic{% endblock %}
+
+{% block css %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/admin/appointments.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="admin-page">
+  <div class="admin-heading">
+    <div>
+      <span class="admin-kicker">APPOINTMENT DETAILS</span>
+      <h1>{{ booking.public_id }}</h1>
+      <p>Review booking information and update its status.</p>
+    </div>
+
+    <a class="admin-back" href="{% url 'admin_panel:appointments' %}">
+      All appointments
+    </a>
+  </div>
+
+  <div class="appointment-detail-grid">
+    <article class="appointment-card">
+      <h2>Customer information</h2>
+      <dl>
+        <div><dt>Name</dt><dd>{{ booking.customer.display_name }}</dd></div>
+        <div><dt>Email</dt><dd>{{ booking.customer.email }}</dd></div>
+        <div><dt>Phone</dt><dd>{{ booking.customer.phone }}</dd></div>
+      </dl>
+    </article>
+
+    <article class="appointment-card">
+      <h2>Appointment information</h2>
+      <dl>
+        <div><dt>Beautician</dt><dd>{{ booking.staff.name }}</dd></div>
+        <div><dt>Date</dt><dd>{{ booking.start|date:"d M Y" }}</dd></div>
+        <div><dt>Start</dt><dd>{{ booking.start|time:"h:i A" }}</dd></div>
+        <div><dt>End</dt><dd>{{ booking.end|time:"h:i A" }}</dd></div>
+        <div><dt>Duration</dt><dd>{{ booking.total_minutes }} minutes</dd></div>
+        <div><dt>Status</dt><dd>{{ booking.get_status_display }}</dd></div>
+      </dl>
+    </article>
+  </div>
+
+  <article class="appointment-card appointment-services">
+    <h2>Selected services</h2>
+
+    {% for item in items %}
+      <div class="appointment-service-row">
+        <div>
+          <strong>{{ item.service_name }}</strong>
+          <small>{{ item.duration_minutes }} minutes</small>
+        </div>
+        <strong>₹{{ item.unit_price }}</strong>
+      </div>
+    {% endfor %}
+
+    <div class="appointment-total">
+      <span>Booking total</span>
+      <strong>₹{{ booking.total_price }}</strong>
+    </div>
+  </article>
+
+  <article class="appointment-card">
+    <h2>Customer notes</h2>
+    <p>{{ booking.notes|default:"No additional notes provided."|linebreaksbr }}</p>
+  </article>
+
+  <article class="appointment-card">
+    <h2>Administrator update</h2>
+
+    <form method="post"
+          action="{% url 'admin_panel:update_appointment' booking.public_id %}">
+      {% csrf_token %}
+
+      <label for="status">Appointment status</label>
+      <select name="status" id="status">
+        <option value="{{ booking.status }}" selected>
+          {{ booking.get_status_display }} (current)
+        </option>
+
+        {% if booking.status == "pending" %}
+          <option value="confirmed">Confirm appointment</option>
+          <option value="rejected">Reject appointment</option>
+          <option value="cancelled">Cancel appointment</option>
+        {% elif booking.status == "confirmed" %}
+          <option value="completed">Mark as completed</option>
+          <option value="cancelled">Cancel appointment</option>
+        {% endif %}
+      </select>
+
+      <label for="admin_note">Internal administrator note</label>
+      <textarea name="admin_note" id="admin_note" rows="4"
+        placeholder="Add an internal note...">{{ booking.admin_note }}</textarea>
+
+      <button type="submit" class="appointment-save">
+        Save changes
+      </button>
+    </form>
+  </article>
+</section>
+{% endblock %}

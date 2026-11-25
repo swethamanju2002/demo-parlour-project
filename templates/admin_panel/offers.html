@@ -1,0 +1,255 @@
+
+{% extends "base/public.html" %}
+{% load static %}
+
+{% block title %}Offer Management | DQ Aesthetic{% endblock %}
+
+{% block css %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/admin/offers.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="admin-offers-page">
+
+    <div class="offers-page-heading">
+        <div>
+            <span class="admin-eyebrow">DQ AESTHETIC · MANAGEMENT</span>
+            <h1>Offer Management</h1>
+            <p>Manage promotions, discounts and special salon packages.</p>
+        </div>
+
+        <a href="{% url 'admin_panel:offer_create' %}" class="offer-primary-button">
+            <span>＋</span> Create New Offer
+        </a>
+    </div>
+
+    <!-- SUMMARY -->
+    <div class="offer-summary">
+        <div class="offer-summary-card">
+            <span>Total offers</span>
+            <strong>{{ total_count }}</strong>
+        </div>
+
+        <div class="offer-summary-card">
+            <span>Current page</span>
+            <strong>{{ offers.number }} / {{ offers.paginator.num_pages|default:1 }}</strong>
+        </div>
+
+        <div class="offer-summary-card">
+            <span>Today's date</span>
+            <strong>{{ today|date:"d M Y" }}</strong>
+        </div>
+    </div>
+
+    <!-- SEARCH AND FILTERS -->
+    <form method="get" class="offer-filter-panel">
+
+        <div class="offer-search-field">
+            <label for="offer-search">Search offers</label>
+            <input
+                type="search"
+                id="offer-search"
+                name="q"
+                value="{{ query }}"
+                placeholder="Search title, description or coupon code..."
+            >
+        </div>
+
+        <div class="offer-filter-field">
+            <label for="offer-status">Offer status</label>
+            <select name="status" id="offer-status">
+                <option value="">All statuses</option>
+                <option value="active" {% if status == "active" %}selected{% endif %}>Active</option>
+                <option value="inactive" {% if status == "inactive" %}selected{% endif %}>Inactive</option>
+                <option value="current" {% if status == "current" %}selected{% endif %}>Currently valid</option>
+                <option value="upcoming" {% if status == "upcoming" %}selected{% endif %}>Upcoming</option>
+                <option value="expired" {% if status == "expired" %}selected{% endif %}>Expired</option>
+            </select>
+        </div>
+
+        <div class="offer-filter-field">
+            <label for="offer-type">Offer type</label>
+            <select name="type" id="offer-type">
+                <option value="">All types</option>
+                <option value="regular" {% if offer_type == "regular" %}selected{% endif %}>Regular offer</option>
+                <option value="package" {% if offer_type == "package" %}selected{% endif %}>Package</option>
+            </select>
+        </div>
+
+        <div class="offer-filter-actions">
+            <button type="submit" class="offer-filter-button">Apply filters</button>
+            <a href="{% url 'admin_panel:offers' %}" class="offer-reset-button">Reset</a>
+        </div>
+
+    </form>
+
+    <!-- OFFER LIST -->
+    <div class="offer-list-heading">
+        <div>
+            <span class="admin-eyebrow">PROMOTIONS</span>
+            <h2>All offers</h2>
+        </div>
+
+        <span class="offer-result-count">
+            {{ total_count }} result{{ total_count|pluralize }}
+        </span>
+    </div>
+
+    {% if offers %}
+
+        <div class="offer-management-grid">
+
+            {% for offer in offers %}
+                <article class="offer-management-card">
+
+                    <div class="offer-card-banner">
+                        {% if offer.banner %}
+                            <img src="{{ offer.banner.url }}" alt="{{ offer.title }}">
+                        {% else %}
+                            <div class="offer-banner-placeholder">
+                                <span>DQ</span>
+                                <small>AESTHETIC</small>
+                            </div>
+                        {% endif %}
+
+                        <span class="offer-discount-badge">
+                            {{ offer.badge }}
+                        </span>
+                    </div>
+
+                    <div class="offer-card-content">
+
+                        <div class="offer-card-topline">
+                            {% if not offer.is_active %}
+                                <span class="offer-status inactive">Inactive</span>
+                            {% elif offer.valid_to < today %}
+                                <span class="offer-status expired">Expired</span>
+                            {% elif offer.valid_from > today %}
+                                <span class="offer-status upcoming">Upcoming</span>
+                            {% else %}
+                                <span class="offer-status current">Current</span>
+                            {% endif %}
+
+                            {% if offer.is_package %}
+                                <span class="offer-type-label">Package</span>
+                            {% else %}
+                                <span class="offer-type-label">Regular offer</span>
+                            {% endif %}
+                        </div>
+
+                        <h3>{{ offer.title }}</h3>
+
+                        <p class="offer-card-summary">
+                            {{ offer.summary }}
+                        </p>
+
+                        <div class="offer-card-meta">
+
+                            <div>
+                                <span>Validity</span>
+                                <strong>
+                                    {{ offer.valid_from|date:"d M Y" }}
+                                    – {{ offer.valid_to|date:"d M Y" }}
+                                </strong>
+                            </div>
+
+                            <div>
+                                <span>Coupon code</span>
+                                <strong>
+                                    {{ offer.coupon_code|default:"No coupon required" }}
+                                </strong>
+                            </div>
+
+                            <div>
+                                <span>Applicable services</span>
+                                <strong>
+                                    {% if offer.services.exists %}
+                                        {{ offer.services.count }} selected
+                                    {% else %}
+                                        All services
+                                    {% endif %}
+                                </strong>
+                            </div>
+
+                        </div>
+
+                        <div class="offer-card-actions">
+
+                            <a href="{% url 'admin_panel:offer_detail' offer.pk %}"
+                               class="offer-view-button">
+                                View details
+                            </a>
+
+                            <a href="{% url 'admin_panel:offer_edit' offer.pk %}"
+                               class="offer-edit-button">
+                                Edit
+                            </a>
+
+                            <form method="post"
+                                  action="{% url 'admin_panel:offer_toggle_active' offer.pk %}">
+                                {% csrf_token %}
+                                <button
+                                    type="submit"
+                                    class="offer-toggle-button {% if offer.is_active %}deactivate{% else %}activate{% endif %}"
+                                    onclick="return confirm('Are you sure you want to {% if offer.is_active %}deactivate{% else %}activate{% endif %} this offer?');"
+                                >
+                                    {% if offer.is_active %}Deactivate{% else %}Activate{% endif %}
+                                </button>
+                            </form>
+
+                        </div>
+
+                    </div>
+                </article>
+            {% endfor %}
+
+        </div>
+
+        <!-- PAGINATION -->
+        {% if page_obj.has_other_pages %}
+            <nav class="offer-pagination" aria-label="Offer pagination">
+
+                {% if page_obj.has_previous %}
+                    <a href="?q={{ query|urlencode }}&status={{ status|urlencode }}&type={{ offer_type|urlencode }}&page={{ page_obj.previous_page_number }}">
+                        Previous
+                    </a>
+                {% endif %}
+
+                <span>
+                    Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+                </span>
+
+                {% if page_obj.has_next %}
+                    <a href="?q={{ query|urlencode }}&status={{ status|urlencode }}&type={{ offer_type|urlencode }}&page={{ page_obj.next_page_number }}">
+                        Next
+                    </a>
+                {% endif %}
+
+            </nav>
+        {% endif %}
+
+    {% else %}
+
+        <div class="offer-empty-state">
+            <span>✧</span>
+            <h2>No offers found</h2>
+            <p>
+                {% if query or status or offer_type %}
+                    Try changing your search or filters.
+                {% else %}
+                    Start by creating your first salon promotion.
+                {% endif %}
+            </p>
+
+            {% if query or status or offer_type %}
+                <a href="{% url 'admin_panel:offers' %}">Clear filters</a>
+            {% else %}
+                <a href="{% url 'admin_panel:offer_create' %}">Create your first offer</a>
+            {% endif %}
+        </div>
+
+    {% endif %}
+
+</section>
+{% endblock %}

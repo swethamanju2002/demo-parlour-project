@@ -1,0 +1,108 @@
+
+{% extends "base/public.html" %}
+{% load static %}
+
+{% block css %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/admin/staff.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="admin-staff-page">
+
+    <div class="admin-page-heading">
+        <div>
+            <span class="admin-eyebrow">TEAM MANAGEMENT / WORKING HOURS</span>
+            <h1>{% if schedule %}Edit Schedule{% else %}Add Working Schedule{% endif %}</h1>
+            <p>Configure the weekly working hours for {{ staff.name }}.</p>
+        </div>
+
+        <a href="{% url 'admin_panel:staff_detail' staff.id %}" class="admin-reset-btn">
+            Back to Staff Profile
+        </a>
+    </div>
+
+    <div class="staff-form-panel staff-schedule-form-panel">
+
+        <div class="schedule-staff-summary">
+            <span class="schedule-summary-avatar">
+                {% if staff.photo %}
+                    <img src="{{ staff.photo.url }}" alt="{{ staff.name }}">
+                {% else %}
+                    {{ staff.name|first|upper }}
+                {% endif %}
+            </span>
+
+            <div>
+                <strong>{{ staff.name }}</strong>
+                <span>{{ staff.title }}</span>
+            </div>
+        </div>
+
+        <form method="post" class="staff-admin-form">
+            {% csrf_token %}
+
+            {% if form.non_field_errors %}
+                <div class="staff-form-errors">
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
+
+            <div class="staff-form-section">
+                <h2>Weekly Working Hours</h2>
+                <p>Select one working day and define its start and end time.</p>
+
+                <div class="staff-form-grid">
+
+                    <div class="staff-form-field staff-field-full">
+                        <label for="{{ form.weekday.id_for_label }}">Working Day</label>
+                        {{ form.weekday }}
+
+                        {% for error in form.weekday.errors %}
+                            <span class="staff-field-error">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+
+                    <div class="staff-form-field">
+                        <label for="{{ form.start_time.id_for_label }}">Start Time</label>
+                        {{ form.start_time }}
+
+                        {% for error in form.start_time.errors %}
+                            <span class="staff-field-error">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+
+                    <div class="staff-form-field">
+                        <label for="{{ form.end_time.id_for_label }}">End Time</label>
+                        {{ form.end_time }}
+
+                        {% for error in form.end_time.errors %}
+                            <span class="staff-field-error">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="schedule-form-guidance">
+                <span>✦</span>
+                <p>
+                    Each staff member can have one working-time block per weekday.
+                    Leave a day without a schedule if the professional does not work that day.
+                </p>
+            </div>
+
+            <div class="staff-form-actions">
+                <a href="{% url 'admin_panel:staff_detail' staff.id %}" class="admin-reset-btn">
+                    Cancel
+                </a>
+
+                <button type="submit" class="admin-primary-btn">
+                    {% if schedule %}Save Schedule{% else %}Add Schedule{% endif %}
+                </button>
+            </div>
+        </form>
+    </div>
+
+</section>
+{% endblock %}

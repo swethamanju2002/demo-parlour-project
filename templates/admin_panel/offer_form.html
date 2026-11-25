@@ -1,0 +1,275 @@
+
+{% extends "base/public.html" %}
+{% load static %}
+
+{% block title %}{{ page_title }} | DQ Aesthetic{% endblock %}
+
+{% block css %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/admin/offers.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="admin-offer-form-page">
+
+    <div class="offer-form-heading">
+        <div>
+            <span class="admin-eyebrow">DQ AESTHETIC · MANAGEMENT</span>
+            <h1>{{ page_title }}</h1>
+            <p>{{ form_description }}</p>
+        </div>
+
+        <a href="{% url 'admin_panel:offers' %}" class="offer-back-link">
+            ← Back to offers
+        </a>
+    </div>
+
+    <form method="post"
+          enctype="multipart/form-data"
+          class="offer-admin-form">
+
+        {% csrf_token %}
+
+        {% if form.non_field_errors %}
+            <div class="offer-form-errors">
+                {% for error in form.non_field_errors %}
+                    <p>{{ error }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <!-- BASIC INFORMATION -->
+        <section class="offer-form-section">
+
+            <div class="offer-form-section-heading">
+                <span>01</span>
+                <div>
+                    <h2>Offer information</h2>
+                    <p>Provide the main details of your promotion.</p>
+                </div>
+            </div>
+
+            <div class="offer-form-grid">
+
+                <div class="offer-form-field full-width">
+                    <label for="{{ form.title.id_for_label }}">Offer title *</label>
+                    {{ form.title }}
+                    {{ form.title.errors }}
+                </div>
+
+                <div class="offer-form-field full-width">
+                    <label for="{{ form.summary.id_for_label }}">Short summary *</label>
+                    {{ form.summary }}
+                    {{ form.summary.errors }}
+                </div>
+
+                <div class="offer-form-field full-width">
+                    <label for="{{ form.description.id_for_label }}">Description</label>
+                    {{ form.description }}
+                    {{ form.description.errors }}
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- DISCOUNT CONFIGURATION -->
+        <section class="offer-form-section">
+
+            <div class="offer-form-section-heading">
+                <span>02</span>
+                <div>
+                    <h2>Discount configuration</h2>
+                    <p>Set the discount amount and promotional code.</p>
+                </div>
+            </div>
+
+            <div class="offer-form-grid">
+
+                <div class="offer-form-field">
+                    <label for="{{ form.discount_type.id_for_label }}">Discount type *</label>
+                    {{ form.discount_type }}
+                    {{ form.discount_type.errors }}
+                </div>
+
+                <div class="offer-form-field">
+                    <label for="{{ form.discount_value.id_for_label }}">Discount value *</label>
+                    {{ form.discount_value }}
+                    {{ form.discount_value.errors }}
+                    <small>Percentage discounts must not exceed 100.</small>
+                </div>
+
+                <div class="offer-form-field">
+                    <label for="{{ form.coupon_code.id_for_label }}">Coupon code</label>
+                    {{ form.coupon_code }}
+                    {{ form.coupon_code.errors }}
+                    <small>Optional. Example: GLOW20</small>
+                </div>
+
+                <div class="offer-form-field offer-checkbox-field">
+                    <label class="offer-checkbox-label">
+                        {{ form.is_package }}
+                        <span>
+                            <strong>Special package</strong>
+                            <small>Mark this promotion as a package offer.</small>
+                        </span>
+                    </label>
+                    {{ form.is_package.errors }}
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- SERVICE SELECTION -->
+        <section class="offer-form-section">
+
+            <div class="offer-form-section-heading">
+                <span>03</span>
+                <div>
+                    <h2>Applicable services</h2>
+                    <p>Choose which services are eligible for this promotion.</p>
+                </div>
+            </div>
+
+            <div class="offer-service-selection">
+
+                <div class="offer-service-selection-heading">
+                    <strong>Select services</strong>
+                    <span>Leave all unchecked to apply this offer to every service.</span>
+                </div>
+
+                {% if form.services.field.queryset %}
+                    <div class="offer-service-checkbox-grid">
+                        {% for checkbox in form.services %}
+                            <label class="offer-service-option">
+                                {{ checkbox.tag }}
+                                <span>{{ checkbox.choice_label }}</span>
+                            </label>
+                        {% empty %}
+                            <p>No services are currently available.</p>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="offer-no-services">
+                        No active services are available to assign.
+                    </p>
+                {% endif %}
+
+                {{ form.services.errors }}
+
+            </div>
+
+        </section>
+
+        <!-- VALIDITY -->
+        <section class="offer-form-section">
+
+            <div class="offer-form-section-heading">
+                <span>04</span>
+                <div>
+                    <h2>Offer validity</h2>
+                    <p>Define when this promotion starts and expires.</p>
+                </div>
+            </div>
+
+            <div class="offer-form-grid">
+
+                <div class="offer-form-field">
+                    <label for="{{ form.valid_from.id_for_label }}">Valid from *</label>
+                    {{ form.valid_from }}
+                    {{ form.valid_from.errors }}
+                </div>
+
+                <div class="offer-form-field">
+                    <label for="{{ form.valid_to.id_for_label }}">Valid until *</label>
+                    {{ form.valid_to }}
+                    {{ form.valid_to.errors }}
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- BANNER AND TERMS -->
+        <section class="offer-form-section">
+
+            <div class="offer-form-section-heading">
+                <span>05</span>
+                <div>
+                    <h2>Presentation and terms</h2>
+                    <p>Upload promotional artwork and specify conditions.</p>
+                </div>
+            </div>
+
+            <div class="offer-form-grid">
+
+                <div class="offer-form-field full-width">
+                    <label for="{{ form.banner.id_for_label }}">Offer banner</label>
+
+                    {% if offer and offer.banner %}
+                        <div class="offer-current-banner">
+                            <img src="{{ offer.banner.url }}" alt="{{ offer.title }}">
+                            <span>Current banner</span>
+                        </div>
+                    {% endif %}
+
+                    {{ form.banner }}
+                    {{ form.banner.errors }}
+                    <small>Optional. Upload a suitable promotional image.</small>
+                </div>
+
+                <div class="offer-form-field full-width">
+                    <label for="{{ form.terms.id_for_label }}">Terms and conditions</label>
+                    {{ form.terms }}
+                    {{ form.terms.errors }}
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- STATUS -->
+        <section class="offer-form-section">
+
+            <div class="offer-form-section-heading">
+                <span>06</span>
+                <div>
+                    <h2>Publication settings</h2>
+                    <p>Control whether this promotion is enabled.</p>
+                </div>
+            </div>
+
+            <div class="offer-publication-setting">
+                <label class="offer-checkbox-label">
+                    {{ form.is_active }}
+                    <span>
+                        <strong>Offer is active</strong>
+                        <small>
+                            Active offers can appear on the public website
+                            when they are within their validity period.
+                        </small>
+                    </span>
+                </label>
+
+                {{ form.is_active.errors }}
+            </div>
+
+        </section>
+
+        <div class="offer-form-footer">
+
+            <a href="{% url 'admin_panel:offers' %}" class="offer-cancel-button">
+                Cancel
+            </a>
+
+            <button type="submit" class="offer-save-button">
+                {{ submit_label }} →
+            </button>
+
+        </div>
+
+    </form>
+
+</section>
+{% endblock %}

@@ -1,17 +1,46 @@
+
 {% extends "base/portal.html" %}
-{% block title %}Billing · {{ BRAND.name }}{% endblock %}
-{% block portal %}
-<header class="p-page">
-  <p class="kicker">Billing</p>
-  <h1>Invoices<em>and payments.</em></h1>
-</header>
-<section class="p-section">
-  {% if invoices %}
-  <ul class="rows">{% for inv in invoices %}<li><span class="row-main">{{ inv }}</span></li>{% endfor %}</ul>
-  {% else %}
-  <div class="empty-state"><span class="es-arch" aria-hidden="true"></span><h2>No invoices yet.</h2>
-    <p>After each visit your bill is saved here, with the treatments, total and payment status.</p>
-    <a class="btn btn-ghost" href="{% url 'client:bookings' %}">View my bookings</a></div>
-  {% endif %}
+{% load static %}
+
+{% block title %}My Billing | DQ Aesthetic{% endblock %}
+
+{% block css %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/admin/billing.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="billing-page client-billing-page">
+    <div class="billing-heading">
+        <div>
+            <span class="billing-eyebrow">YOUR ACCOUNT</span>
+            <h1>My Invoices</h1>
+            <p>View your invoices and payment history.</p>
+        </div>
+    </div>
+
+    <section class="billing-panel">
+        <div class="billing-table-wrap">
+            <table class="billing-table">
+                <thead><tr><th>Invoice</th><th>Booking</th><th>Issue date</th><th>Total</th><th>Paid</th><th>Balance</th><th>Status</th><th></th></tr></thead>
+                <tbody>
+                    {% for invoice in invoices %}
+                    <tr>
+                        <td><strong>{{ invoice.invoice_number }}</strong></td>
+                        <td>{{ invoice.booking.public_id }}</td>
+                        <td>{{ invoice.issue_date|date:"d M Y" }}</td>
+                        <td>₹{{ invoice.total_amount|floatformat:2 }}</td>
+                        <td>₹{{ invoice.paid_amount|floatformat:2 }}</td>
+                        <td>₹{{ invoice.balance_due|floatformat:2 }}</td>
+                        <td><span class="billing-status {{ invoice.payment_status }}">{{ invoice.payment_status|title }}</span></td>
+                        <td><a class="billing-view-link" href="{% url 'client:billing_detail' invoice.id %}">View</a></td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="8" class="billing-empty">Your invoices will appear here after your appointments are completed and billed.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
 </section>
 {% endblock %}

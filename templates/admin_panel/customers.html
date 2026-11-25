@@ -1,0 +1,196 @@
+
+{% extends "base/public.html" %}
+{% load static %}
+
+{% block css %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/admin/customers.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="admin-page customer-management">
+
+    <div class="admin-heading">
+        <div>
+            <span class="admin-eyebrow">CLIENT RELATIONSHIPS</span>
+            <h1>Customer <em>Management</em></h1>
+            <p>View and manage your salon's customer directory.</p>
+        </div>
+
+        <div class="customer-total">
+            <span>Total customers</span>
+            <strong>{{ total_count }}</strong>
+        </div>
+    </div>
+
+    <div class="customer-toolbar">
+        <form method="get" class="customer-filter-form">
+
+            <div class="customer-search">
+                <label for="customer-search">Search customers</label>
+                <input
+                    type="search"
+                    id="customer-search"
+                    name="q"
+                    value="{{ search }}"
+                    placeholder="Name, email, phone or username..."
+                >
+            </div>
+
+            <div class="customer-status-filter">
+                <label for="account-status">Account status</label>
+                <select id="account-status" name="account_status">
+                    <option value="">All accounts</option>
+                    <option value="active"
+                        {% if account_status == "active" %}selected{% endif %}>
+                        Active
+                    </option>
+                    <option value="inactive"
+                        {% if account_status == "inactive" %}selected{% endif %}>
+                        Inactive
+                    </option>
+                </select>
+            </div>
+
+            <button type="submit" class="customer-filter-btn">
+                Apply filters
+            </button>
+
+            {% if search or account_status %}
+                <a href="{% url 'admin_panel:customers' %}"
+                   class="customer-reset-btn">
+                    Clear
+                </a>
+            {% endif %}
+
+        </form>
+    </div>
+
+    <div class="customer-table-card">
+
+        <div class="customer-table-heading">
+            <div>
+                <h2>Customer directory</h2>
+                <p>{{ total_count }} registered customer{{ total_count|pluralize }}</p>
+            </div>
+        </div>
+
+        {% if page.object_list %}
+            <div class="customer-table-wrapper">
+                <table class="customer-table">
+                    <thead>
+                        <tr>
+                            <th>Customer</th>
+                            <th>Contact</th>
+                            <th>Joined</th>
+                            <th>Appointments</th>
+                            <th>Account</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for customer in page %}
+                            <tr>
+                                <td>
+                                    <div class="customer-identity">
+                                        {% if customer.avatar %}
+                                            <img
+                                                src="{{ customer.avatar.url }}"
+                                                alt="{{ customer.display_name }}"
+                                                class="customer-avatar"
+                                            >
+                                        {% else %}
+                                            <div class="customer-avatar customer-avatar-placeholder">
+                                                {{ customer.display_name|first|upper }}
+                                            </div>
+                                        {% endif %}
+
+                                        <div>
+                                            <strong>{{ customer.display_name }}</strong>
+                                            <span>@{{ customer.username }}</span>
+                                        </div>
+                                    </div>
+                                </td>
+
+                                <td>
+                                    <div class="customer-contact">
+                                        <span>{{ customer.email }}</span>
+                                        <span>{{ customer.phone|default:"Not provided" }}</span>
+                                    </div>
+                                </td>
+
+                                <td>{{ customer.date_joined|date:"d M Y" }}</td>
+
+                                <td>
+                                    <span class="customer-booking-count">
+                                        {{ customer.booking_count }}
+                                    </span>
+                                </td>
+
+                                <td>
+                                    {% if customer.is_active %}
+                                        <span class="customer-status active">Active</span>
+                                    {% else %}
+                                        <span class="customer-status inactive">Inactive</span>
+                                    {% endif %}
+                                </td>
+
+                                <td>
+                                    <a
+                                        href="{% url 'admin_panel:customer_detail' customer.id %}"
+                                        class="customer-view-link"
+                                    >
+                                        View profile
+                                        <span aria-hidden="true">→</span>
+                                    </a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            {% if page.has_other_pages %}
+                <nav class="customer-pagination" aria-label="Customer pages">
+
+                    {% if page.has_previous %}
+                        <a href="?q={{ search|urlencode }}&account_status={{ account_status|urlencode }}&page={{ page.previous_page_number }}">
+                            Previous
+                        </a>
+                    {% endif %}
+
+                    <span>
+                        Page {{ page.number }} of {{ page.paginator.num_pages }}
+                    </span>
+
+                    {% if page.has_next %}
+                        <a href="?q={{ search|urlencode }}&account_status={{ account_status|urlencode }}&page={{ page.next_page_number }}">
+                            Next
+                        </a>
+                    {% endif %}
+
+                </nav>
+            {% endif %}
+
+        {% else %}
+            <div class="customer-empty-state">
+                <span class="empty-icon">✦</span>
+                <h3>No customers found</h3>
+                <p>
+                    {% if search or account_status %}
+                        Try changing your search or filters.
+                    {% else %}
+                        Registered customers will appear here.
+                    {% endif %}
+                </p>
+                {% if search or account_status %}
+                    <a href="{% url 'admin_panel:customers' %}">Clear filters</a>
+                {% endif %}
+            </div>
+        {% endif %}
+
+    </div>
+
+</section>
+{% endblock %}

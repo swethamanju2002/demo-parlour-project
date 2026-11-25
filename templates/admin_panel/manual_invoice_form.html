@@ -1,0 +1,310 @@
+
+{% extends "base/public.html" %}
+{% load static %}
+
+{% block title %}New Manual Bill | DQ Aesthetic{% endblock %}
+
+{% block css %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/admin/billing.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="billing-page manual-bill-page">
+
+    <div class="billing-heading">
+        <div>
+            <span class="billing-eyebrow">FINANCE & MANAGEMENT</span>
+            <h1>Create New Bill</h1>
+            <p>Create an invoice for an existing or walk-in customer.</p>
+        </div>
+
+        <a class="billing-outline-btn"
+           href="{% url 'admin_panel:billing' %}">
+            Back to Billing
+        </a>
+    </div>
+
+    <section class="billing-panel manual-bill-panel">
+
+        <div class="billing-panel-heading">
+            <div>
+                <h2>Invoice details</h2>
+                <p>Enter customer information and select the services provided.</p>
+            </div>
+        </div>
+
+        {% if form.non_field_errors %}
+            <div class="billing-message error">
+                {{ form.non_field_errors }}
+            </div>
+        {% endif %}
+
+        <form method="post" class="manual-bill-form">
+            {% csrf_token %}
+
+            <!-- CUSTOMER TYPE -->
+            <div class="manual-section">
+                <div class="manual-section-heading">
+                    <span class="manual-step">01</span>
+                    <div>
+                        <h3>Customer</h3>
+                        <p>Choose an existing customer or register a walk-in.</p>
+                    </div>
+                </div>
+
+                <div class="customer-type-options">
+                    <label class="customer-type-card">
+                        <input type="radio" name="customer_type"
+                               value="existing" checked>
+                        <span>
+                            <strong>Existing customer</strong>
+                            <small>Select from customer records</small>
+                        </span>
+                    </label>
+
+                    <label class="customer-type-card">
+                        <input type="radio" name="customer_type"
+                               value="new">
+                        <span>
+                            <strong>New walk-in customer</strong>
+                            <small>Add a new customer</small>
+                        </span>
+                    </label>
+                </div>
+
+                <div id="existingCustomerSection" class="customer-entry-section">
+                    <div class="manual-bill-field">
+                        <label for="{{ form.customer.id_for_label }}">
+                            Select customer
+                        </label>
+                        {{ form.customer }}
+                        {% for error in form.customer.errors %}
+                            <small class="billing-field-error">{{ error }}</small>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div id="newCustomerSection"
+                     class="customer-entry-section"
+                     hidden>
+
+                    <div class="manual-customer-grid">
+                        <div class="manual-bill-field">
+                            <label for="{{ form.new_customer_name.id_for_label }}">
+                                Customer name *
+                            </label>
+                            {{ form.new_customer_name }}
+                            {% for error in form.new_customer_name.errors %}
+                                <small class="billing-field-error">{{ error }}</small>
+                            {% endfor %}
+                        </div>
+
+                        <div class="manual-bill-field">
+                            <label for="{{ form.new_customer_phone.id_for_label }}">
+                                Phone number *
+                            </label>
+                            {{ form.new_customer_phone }}
+                            {% for error in form.new_customer_phone.errors %}
+                                <small class="billing-field-error">{{ error }}</small>
+                            {% endfor %}
+                        </div>
+
+                        <div class="manual-bill-field manual-customer-email">
+                            <label for="{{ form.new_customer_email.id_for_label }}">
+                                Email address
+                            </label>
+                            {{ form.new_customer_email }}
+                            {% for error in form.new_customer_email.errors %}
+                                <small class="billing-field-error">{{ error }}</small>
+                            {% endfor %}
+                            <small>Optional for walk-in customers.</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SERVICES -->
+            <div class="manual-section">
+                <div class="manual-section-heading">
+                    <span class="manual-step">02</span>
+                    <div>
+                        <h3>Select services</h3>
+                        <p>Search and tick the services included in this bill.</p>
+                    </div>
+                </div>
+
+                <div class="service-picker-toolbar">
+                    <input type="search"
+                           id="serviceSearch"
+                           placeholder="Search services..."
+                           autocomplete="off">
+
+                    <span id="selectedServiceCount">0 selected</span>
+                </div>
+
+                <div class="service-choice-grid" id="serviceChoiceGrid">
+                    {% for checkbox in form.services %}
+                        <label class="service-choice-card"
+                               data-service-name="{{ checkbox.choice_label|lower }}">
+                            {{ checkbox.tag }}
+                            <span class="service-choice-check"></span>
+                            <span class="service-choice-name">
+                                {{ checkbox.choice_label }}
+                            </span>
+                        </label>
+                    {% empty %}
+                        <p>No active services are available.</p>
+                    {% endfor %}
+                </div>
+
+                {% for error in form.services.errors %}
+                    <small class="billing-field-error">{{ error }}</small>
+                {% endfor %}
+
+                <div class="selected-service-summary" id="selectedServiceSummary">
+                    No services selected yet.
+                </div>
+            </div>
+
+            <!-- BILL DETAILS -->
+            <div class="manual-section">
+                <div class="manual-section-heading">
+                    <span class="manual-step">03</span>
+                    <div>
+                        <h3>Bill adjustments</h3>
+                        <p>Add a discount, tax or due date if applicable.</p>
+                    </div>
+                </div>
+
+                <div class="manual-bill-financial-grid">
+                    <div class="manual-bill-field">
+                        <label for="{{ form.discount_amount.id_for_label }}">
+                            Discount (Rs.)
+                        </label>
+                        {{ form.discount_amount }}
+                        {% for error in form.discount_amount.errors %}
+                            <small class="billing-field-error">{{ error }}</small>
+                        {% endfor %}
+                    </div>
+
+                    <div class="manual-bill-field">
+                        <label for="{{ form.tax_amount.id_for_label }}">
+                            Tax (Rs.)
+                        </label>
+                        {{ form.tax_amount }}
+                        {% for error in form.tax_amount.errors %}
+                            <small class="billing-field-error">{{ error }}</small>
+                        {% endfor %}
+                    </div>
+
+                    <div class="manual-bill-field">
+                        <label for="{{ form.due_date.id_for_label }}">
+                            Due date
+                        </label>
+                        {{ form.due_date }}
+                        {% for error in form.due_date.errors %}
+                            <small class="billing-field-error">{{ error }}</small>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="manual-bill-field manual-notes-field">
+                    <label for="{{ form.notes.id_for_label }}">Bill notes</label>
+                    {{ form.notes }}
+                </div>
+            </div>
+
+            <div class="manual-bill-actions">
+                <a class="billing-reset-btn"
+                   href="{% url 'admin_panel:billing' %}">
+                    Cancel
+                </a>
+
+                <button type="submit" class="billing-primary-btn">
+                    Create Invoice
+                </button>
+            </div>
+        </form>
+    </section>
+</section>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const customerRadios = document.querySelectorAll(
+        'input[name="customer_type"]'
+    );
+    const existingSection = document.getElementById(
+        "existingCustomerSection"
+    );
+    const newSection = document.getElementById("newCustomerSection");
+    const customerSelect = document.getElementById(
+        "{{ form.customer.id_for_label }}"
+    );
+
+    function updateCustomerMode() {
+        const selectedMode = document.querySelector(
+            'input[name="customer_type"]:checked'
+        )?.value || "existing";
+
+        const isNew = selectedMode === "new";
+
+        existingSection.hidden = isNew;
+        newSection.hidden = !isNew;
+
+        if (customerSelect) {
+            customerSelect.disabled = isNew;
+            if (isNew) customerSelect.value = "";
+        }
+    }
+
+    customerRadios.forEach(function (radio) {
+        radio.addEventListener("change", updateCustomerMode);
+    });
+
+    const searchInput = document.getElementById("serviceSearch");
+    const serviceCards = document.querySelectorAll(".service-choice-card");
+    const countElement = document.getElementById("selectedServiceCount");
+    const summaryElement = document.getElementById("selectedServiceSummary");
+
+    function updateServices() {
+        const selected = [];
+
+        serviceCards.forEach(function (card) {
+            const checkbox = card.querySelector('input[type="checkbox"]');
+
+            if (checkbox.checked) {
+                selected.push(
+                    card.querySelector(".service-choice-name").textContent.trim()
+                );
+            }
+        });
+
+        countElement.textContent =
+            selected.length + (selected.length === 1 ? " selected" : " selected");
+
+        summaryElement.textContent = selected.length
+            ? "Selected: " + selected.join(" · ")
+            : "No services selected yet.";
+    }
+
+    serviceCards.forEach(function (card) {
+        const checkbox = card.querySelector('input[type="checkbox"]');
+
+        checkbox.addEventListener("change", updateServices);
+    });
+
+    searchInput.addEventListener("input", function () {
+        const query = searchInput.value.trim().toLowerCase();
+
+        serviceCards.forEach(function (card) {
+            const name = card.dataset.serviceName || "";
+            card.hidden = !name.includes(query);
+        });
+    });
+
+    updateCustomerMode();
+    updateServices();
+});
+</script>
+{% endblock %}

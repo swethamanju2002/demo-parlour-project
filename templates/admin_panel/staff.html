@@ -1,0 +1,128 @@
+
+{% extends "base/public.html" %}
+{% load static %}
+
+{% block css %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/admin/staff.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="admin-staff-page">
+    <div class="admin-page-heading">
+        <div>
+            <span class="admin-eyebrow">TEAM MANAGEMENT</span>
+            <h1>Our Staff</h1>
+            <p>Manage your salon professionals, their profiles and availability.</p>
+        </div>
+
+        <a href="{% url 'admin_panel:staff_create' %}" class="admin-primary-btn">
+            <span>+</span> Add Staff Member
+        </a>
+    </div>
+
+    <div class="staff-filter-panel">
+        <form method="get" class="staff-filter-form">
+            <div class="staff-search">
+                <label for="staff-search">Search staff</label>
+                <input
+                    type="search"
+                    id="staff-search"
+                    name="q"
+                    value="{{ query }}"
+                    placeholder="Search by name, title or bio..."
+                >
+            </div>
+
+            <div class="staff-status-filter">
+                <label for="staff-status">Status</label>
+                <select name="status" id="staff-status">
+                    <option value="">All staff</option>
+                    <option value="active" {% if status == "active" %}selected{% endif %}>Active</option>
+                    <option value="inactive" {% if status == "inactive" %}selected{% endif %}>Inactive</option>
+                </select>
+            </div>
+
+            <button type="submit" class="admin-filter-btn">Apply Filters</button>
+            <a href="{% url 'admin_panel:staff' %}" class="admin-reset-btn">Reset</a>
+        </form>
+    </div>
+
+    <div class="staff-grid">
+        {% for member in staff_members %}
+            <article class="staff-card">
+                <div class="staff-card-image">
+                    {% if member.photo %}
+                        <img src="{{ member.photo.url }}" alt="{{ member.name }}">
+                    {% else %}
+                        <div class="staff-image-placeholder">
+                            {{ member.name|first|upper }}
+                        </div>
+                    {% endif %}
+
+                    <span class="staff-status-badge {% if member.is_active %}is-active{% else %}is-inactive{% endif %}">
+                        {% if member.is_active %}Active{% else %}Inactive{% endif %}
+                    </span>
+                </div>
+
+                <div class="staff-card-content">
+                    <span class="staff-card-role">{{ member.title }}</span>
+                    <h2>{{ member.name }}</h2>
+
+                    <p class="staff-card-bio">
+                        {% if member.bio %}
+                            {{ member.bio|truncatechars:105 }}
+                        {% else %}
+                            No profile description added yet.
+                        {% endif %}
+                    </p>
+
+                    <div class="staff-card-meta">
+                        <span>{{ member.years_experience }} years experience</span>
+                        <span>{{ member.services.all|length }} services</span>
+                    </div>
+
+                    <div class="staff-card-actions">
+                        <a href="{% url 'admin_panel:staff_detail' member.id %}" class="staff-view-btn">
+                            View Profile
+                        </a>
+                        <a href="{% url 'admin_panel:staff_edit' member.id %}" class="staff-edit-btn">
+                            Edit
+                        </a>
+                    </div>
+
+                    <form method="post" action="{% url 'admin_panel:staff_toggle_active' member.id %}">
+                        {% csrf_token %}
+                        <button type="submit" class="staff-toggle-btn">
+                            {% if member.is_active %}Deactivate Staff{% else %}Activate Staff{% endif %}
+                        </button>
+                    </form>
+                </div>
+            </article>
+        {% empty %}
+            <div class="staff-empty-state">
+                <span class="staff-empty-icon">✦</span>
+                <h2>No staff members found</h2>
+                <p>Try changing your filters or add your first staff member.</p>
+                <a href="{% url 'admin_panel:staff_create' %}" class="admin-primary-btn">
+                    Add Staff Member
+                </a>
+            </div>
+        {% endfor %}
+    </div>
+
+    {% if page_obj.has_other_pages %}
+        <nav class="staff-pagination" aria-label="Staff pagination">
+            {% if page_obj.has_previous %}
+                <a href="?page={{ page_obj.previous_page_number }}&q={{ query|urlencode }}&status={{ status|urlencode }}">Previous</a>
+            {% endif %}
+
+            <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}&q={{ query|urlencode }}&status={{ status|urlencode }}">Next</a>
+            {% endif %}
+        </nav>
+    {% endif %}
+</section>
+{% endblock %}

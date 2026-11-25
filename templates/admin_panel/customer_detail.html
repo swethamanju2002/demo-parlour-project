@@ -1,0 +1,158 @@
+
+{% extends "base/public.html" %}
+{% load static %}
+
+{% block css %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/admin/customers.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="admin-page customer-management customer-profile-page">
+
+    <a href="{% url 'admin_panel:customers' %}" class="customer-back-link">
+        ← Back to customers
+    </a>
+
+    <div class="admin-heading customer-profile-heading">
+        <div>
+            <span class="admin-eyebrow">CUSTOMER PROFILE</span>
+            <h1>{{ customer.display_name }}</h1>
+            <p>Customer account and appointment history</p>
+        </div>
+
+        <span class="customer-status {% if customer.is_active %}active{% else %}inactive{% endif %}">
+            {% if customer.is_active %}Active account{% else %}Inactive account{% endif %}
+        </span>
+    </div>
+
+    <div class="customer-profile-grid">
+
+        <article class="customer-profile-card">
+            <div class="customer-profile-avatar">
+                {% if customer.avatar %}
+                    <img src="{{ customer.avatar.url }}" alt="{{ customer.display_name }}">
+                {% else %}
+                    <span>{{ customer.display_name|first|upper }}</span>
+                {% endif %}
+            </div>
+
+            <h2>{{ customer.display_name }}</h2>
+            <p class="customer-profile-username">@{{ customer.username }}</p>
+
+            <div class="customer-profile-divider"></div>
+
+            <div class="customer-info-list">
+                <div>
+                    <span>Email address</span>
+                    <strong>{{ customer.email|default:"Not provided" }}</strong>
+                </div>
+
+                <div>
+                    <span>Phone number</span>
+                    <strong>{{ customer.phone|default:"Not provided" }}</strong>
+                </div>
+
+                <div>
+                    <span>Address</span>
+                    <strong>{{ customer.address|default:"Not provided"|linebreaksbr }}</strong>
+                </div>
+
+                <div>
+                    <span>Joined on</span>
+                    <strong>{{ customer.date_joined|date:"d F Y" }}</strong>
+                </div>
+
+                <div>
+                    <span>Last login</span>
+                    <strong>
+                        {% if customer.last_login %}
+                            {{ customer.last_login|date:"d M Y, h:i A" }}
+                        {% else %}
+                            Never logged in
+                        {% endif %}
+                    </strong>
+                </div>
+            </div>
+        </article>
+
+        <div class="customer-history-section">
+
+            <div class="customer-stat-card">
+                <span>Total appointments</span>
+                <strong>{{ total_bookings }}</strong>
+                <small>All recorded bookings</small>
+            </div>
+
+            <div class="customer-history-card">
+                <div class="customer-table-heading">
+                    <h2>Appointment history</h2>
+                    <p>Complete booking records for this customer</p>
+                </div>
+
+                {% if bookings %}
+                    <div class="customer-table-wrapper">
+                        <table class="customer-table">
+                            <thead>
+                                <tr>
+                                    <th>Booking ID</th>
+                                    <th>Services</th>
+                                    <th>Appointment</th>
+                                    <th>Staff</th>
+                                    <th>Amount</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                {% for booking in bookings %}
+                                    <tr>
+                                        <td>
+                                            <strong>{{ booking.public_id }}</strong>
+                                        </td>
+
+                                        <td>
+                                            <div class="customer-booking-services">
+                                                {% for item in booking.items.all %}
+                                                    <span>{{ item.service_name }}</span>
+                                                {% empty %}
+                                                    <span>Service details unavailable</span>
+                                                {% endfor %}
+                                            </div>
+                                        </td>
+
+                                        <td>
+                                            {{ booking.start|date:"d M Y" }}
+                                            <small>{{ booking.start|date:"h:i A" }}</small>
+                                        </td>
+
+                                        <td>{{ booking.staff.name }}</td>
+
+                                        <td class="customer-booking-amount">
+                                            ₹{{ booking.total_price|floatformat:2 }}
+                                        </td>
+
+                                        <td>
+                                            <span class="customer-booking-status status-{{ booking.status }}">
+                                                {{ booking.get_status_display }}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="customer-empty-state">
+                        <span class="empty-icon">✦</span>
+                        <h3>No appointments yet</h3>
+                        <p>This customer has not made any bookings.</p>
+                    </div>
+                {% endif %}
+            </div>
+
+        </div>
+    </div>
+
+</section>
+{% endblock %}

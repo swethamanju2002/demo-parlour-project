@@ -1,0 +1,157 @@
+
+{% extends "base/public.html" %}
+{% load static %}
+
+{% block title %}{{ invoice.invoice_number }} | DQ Aesthetic{% endblock %}
+
+{% block css %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/admin/billing.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="billing-page">
+    <div class="billing-heading no-print">
+        <div>
+            <span class="billing-eyebrow">INVOICE DETAILS</span>
+            <h1>{{ invoice.invoice_number }}</h1>
+            <p>Booking {{ invoice.booking.public_id }}</p>
+        </div>
+        <div class="billing-heading-actions">
+            <button class="billing-outline-btn" onclick="window.print()" type="button">Print invoice</button>
+            <a class="billing-outline-btn" href="{% url 'admin_panel:billing' %}">Back to billing</a>
+        </div>
+    </div>
+
+    {% if messages %}
+    <div class="billing-messages no-print">
+        {% for message in messages %}
+        <div class="billing-message {{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <article class="invoice-paper">
+        <div class="invoice-brand">
+            <div>
+                <span class="billing-eyebrow">DQ AESTHETIC</span>
+                <h2>INVOICE</h2>
+            </div>
+            <div class="invoice-number">
+                <strong>{{ invoice.invoice_number }}</strong>
+                <span>Issued {{ invoice.issue_date|date:"d M Y" }}</span>
+                {% if invoice.due_date %}<span>Due {{ invoice.due_date|date:"d M Y" }}</span>{% endif %}
+            </div>
+        </div>
+
+        <div class="invoice-parties">
+            <div>
+                <span>INVOICE TO</span>
+                <strong>{{ invoice.customer.display_name }}</strong>
+                <p>{{ invoice.customer.email }}</p>
+                {% if invoice.customer.phone %}<p>{{ invoice.customer.phone }}</p>{% endif %}
+            </div>
+            <div>
+                <span>BOOKING DETAILS</span>
+                <strong>{{ invoice.booking.public_id }}</strong>
+                <p>{{ invoice.booking.start|date:"d M Y, h:i A" }}</p>
+                <p>Staff: {{ invoice.booking.staff }}</p>
+            </div>
+        </div>
+
+        <div class="billing-table-wrap">
+            <table class="billing-table invoice-items-table">
+                <thead>
+                    <tr><th>Service</th><th>Duration</th><th>Unit price</th><th>Amount</th></tr>
+                </thead>
+                <tbody>
+                    {% for item in invoice.items.all %}
+                    <tr>
+                        <td>{{ item.service_name }}</td>
+                        <td>{{ item.duration_minutes }} min</td>
+                        <td>₹{{ item.unit_price|floatformat:2 }}</td>
+                        <td>₹{{ item.line_total|floatformat:2 }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="invoice-totals">
+            <div><span>Subtotal</span><strong>₹{{ invoice.subtotal|floatformat:2 }}</strong></div>
+            <div><span>Discount</span><strong>− ₹{{ invoice.discount_amount|floatformat:2 }}</strong></div>
+            <div><span>Tax</span><strong>₹{{ invoice.tax_amount|floatformat:2 }}</strong></div>
+            <div class="invoice-grand-total"><span>Total</span><strong>₹{{ invoice.total_amount|floatformat:2 }}</strong></div>
+            <div><span>Paid</span><strong>₹{{ invoice.paid_amount|floatformat:2 }}</strong></div>
+            <div class="invoice-balance"><span>Balance due</span><strong>₹{{ invoice.balance_due|floatformat:2 }}</strong></div>
+        </div>
+
+        {% if invoice.notes %}
+        <div class="invoice-notes"><strong>Notes</strong><p>{{ invoice.notes|linebreaksbr }}</p></div>
+        {% endif %}
+
+        <div class="invoice-footer">Thank you for choosing DQ Aesthetic.</div>
+    </article>
+
+    <section class="billing-panel no-print">
+        <div class="billing-panel-heading"><div><h2>Record a payment</h2><p>Outstanding balance: ₹{{ invoice.balance_due|floatformat:2 }}</p></div></div>
+        {% if invoice.balance_due > 0 and invoice.status == "issued" %}
+        <form method="post" action="{% url 'admin_panel:payment_create' invoice.id %}" class="billing-form">
+            {% csrf_token %}
+            {% for field in payment_form %}
+            <label>{{ field.label }}{{ field }}{% if field.errors %}<small class="form-error">{{ field.errors|striptags }}</small>{% endif %}</label>
+            {% endfor %}
+            <button class="billing-primary-btn" type="submit">Record payment</button>
+        </form>
+        {% else %}
+        <p class="billing-empty">No payment is currently due.</p>
+        {% endif %}
+    </section>
+
+    <section class="billing-panel no-print">
+        <div class="billing-panel-heading"><div><h2>Payment history</h2><p>All transactions recorded against this invoice.</p></div></div>
+        <div class="billing-table-wrap">
+            <table class="billing-table">
+                <thead><tr><th>Date</th><th>Method</th><th>Reference</th><th>Amount</th><th>Status</th><th>Update</th></tr></thead>
+                <tbody>
+                    {% for payment in payments %}
+                    <tr>
+                        <td>{{ payment.paid_at|date:"d M Y, h:i A" }}</td>
+                        <td>{{ payment.get_method_display }}</td>
+                        <td>{{ payment.transaction_reference|default:"—" }}</td>
+                        <td>₹{{ payment.amount|floatformat:2 }}</td>
+                        <td>{{ payment.get_status_display }}</td>
+                        <td>
+                            {% if payment.status != "refunded" %}
+                            <form method="post" action="{% url 'admin_panel:payment_status_update' payment.id %}" class="inline-status-form">
+                                {% csrf_token %}
+                                <select name="status">
+                                    {% for value,label in payment_status_choices %}
+                                    <option value="{{ value }}" {% if payment.status == value %}selected{% endif %}>{{ label }}</option>
+                                    {% endfor %}
+                                </select>
+                                <button type="submit">Save</button>
+                            </form>
+                            {% else %}—{% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="6" class="billing-empty">No payments recorded yet.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section class="billing-panel no-print">
+        <div class="billing-panel-heading"><div><h2>Invoice notes and due date</h2><p>Update administrative invoice information.</p></div></div>
+        <form method="post" action="{% url 'admin_panel:invoice_update' invoice.id %}" class="billing-form">
+            {% csrf_token %}
+            {% for field in invoice_form %}
+            <label>{{ field.label }}{{ field }}</label>
+            {% endfor %}
+            <button class="billing-primary-btn" type="submit">Save invoice details</button>
+        </form>
+    </section>
+</section>
+{% endblock %}
