@@ -193,3 +193,5 @@ urlpatterns = [
 ),
     
     ]
+from inventory.admin_urls import urlpatterns as inventory_urlpatterns
+urlpatterns += inventory_urlpatterns

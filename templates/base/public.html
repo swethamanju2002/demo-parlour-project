@@ -74,7 +74,10 @@
         {% if 'billing' in request.resolver_match.url_name %}active{% endif %}">
         Billing
       </a>
-
+        <a href="{% url 'admin_panel:inventory_products' %}"
+           class="admin-nav-link {% if 'inventory' in request.resolver_match.url_name %}active{% endif %}">
+            Inventory
+        </a>
         <div class="admin-nav-account">
             <span>{{ request.user.first_name|default:request.user.username }}</span>
 

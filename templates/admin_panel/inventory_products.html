@@ -1,0 +1,145 @@
+{% extends "base/public.html" %}
+{% load static %}
+{% block title %}Inventory | DQ Aesthetic{% endblock %}
+
+{% block css %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/admin/services.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="adm-management">
+    <div class="adm-page-heading">
+        <div>
+            <span class="adm-eyebrow">INVENTORY MANAGEMENT</span>
+            <h1>Products</h1>
+            <p>Track retail and consumable products, pricing and stock levels.</p>
+        </div>
+        <div class="adm-actions">
+            <a href="{% url 'admin_panel:inventory_categories' %}" class="adm-reset-btn">Categories</a>
+            <a href="{% url 'admin_panel:inventory_product_create' %}" class="adm-primary-btn"><span>＋</span> Add product</a>
+        </div>
+    </div>
+
+    <div class="adm-summary">
+        <div>
+            <span class="adm-summary-label">TOTAL PRODUCTS</span>
+            <strong>{{ total_count }}</strong>
+        </div>
+        <div>
+            <span class="adm-summary-label">LOW OR OUT OF STOCK</span>
+            <strong><a href="?stock=low" class="adm-action-link {% if low_stock_count %}adm-action-danger{% endif %}">{{ low_stock_count }}</a></strong>
+        </div>
+        <div>
+            <span class="adm-summary-label">CURRENT PAGE</span>
+            <strong>{{ page.number }} / {{ page.paginator.num_pages|default:1 }}</strong>
+        </div>
+    </div>
+
+    <form method="get" class="adm-filter-panel">
+        <div class="adm-filter-search">
+            <label for="product-search">Search products</label>
+            <input id="product-search" type="search" name="q" value="{{ search }}" placeholder="Name, SKU or description">
+        </div>
+        <div>
+            <label for="product-category">Category</label>
+            <select id="product-category" name="category">
+                <option value="">All categories</option>
+                {% for category in categories %}
+                <option value="{{ category.pk }}" {% if selected_category == category.pk|stringformat:"s" %}selected{% endif %}>{{ category.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div>
+            <label for="product-stock">Stock</label>
+            <select id="product-stock" name="stock">
+                <option value="">All stock levels</option>
+                <option value="low" {% if selected_stock == "low" %}selected{% endif %}>Low stock</option>
+                <option value="out" {% if selected_stock == "out" %}selected{% endif %}>Out of stock</option>
+            </select>
+        </div>
+        <div>
+            <label for="product-status">Status</label>
+            <select id="product-status" name="status">
+                <option value="">All statuses</option>
+                <option value="active" {% if selected_status == "active" %}selected{% endif %}>Active</option>
+                <option value="inactive" {% if selected_status == "inactive" %}selected{% endif %}>Inactive</option>
+            </select>
+        </div>
+        <button type="submit" class="adm-filter-btn">Apply filters</button>
+        <a href="{% url 'admin_panel:inventory_products' %}" class="adm-reset-btn">Reset</a>
+    </form>
+
+    <div class="adm-table-card">
+        <div class="adm-table-heading">
+            <div>
+                <h2>Product directory</h2>
+                <p>{{ total_count }} product{{ total_count|pluralize }}</p>
+            </div>
+        </div>
+        <div class="adm-table-scroll">
+            <table class="adm-table">
+                <thead>
+                    <tr><th>Product</th><th>Category</th><th>In stock</th><th>Cost</th><th>Selling price</th><th>Status</th><th>Actions</th></tr>
+                </thead>
+                <tbody>
+                    {% for product in page %}
+                    <tr>
+                        <td>
+                            <div class="adm-service-cell">
+                                <div>
+                                    <strong>{{ product.name }}</strong>
+                                    <small>{{ product.sku }}</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>{{ product.category.name }}</td>
+                        <td>
+                            <strong>{{ product.quantity_on_hand }}</strong> {{ product.unit }}
+                            {% if not product.quantity_on_hand %}<span class="adm-mini-tag">Out of stock</span>
+                            {% elif product.is_low_stock %}<span class="adm-mini-tag">Low stock</span>{% endif %}
+                            <small>Reorder at {{ product.reorder_level }}</small>
+                        </td>
+                        <td class="adm-price">₹{{ product.cost_price|floatformat:2 }}</td>
+                        <td class="adm-price">₹{{ product.selling_price|floatformat:2 }}</td>
+                        <td>
+                            {% if product.is_active %}<span class="adm-status adm-status-active">Active</span>
+                            {% else %}<span class="adm-status adm-status-inactive">Inactive</span>{% endif %}
+                        </td>
+                        <td>
+                            <div class="adm-actions">
+                                <a href="{% url 'admin_panel:inventory_product_edit' product.pk %}" class="adm-action-link">Edit</a>
+                                <form method="post" action="{% url 'admin_panel:inventory_product_toggle' product.pk %}">
+                                    {% csrf_token %}
+                                    <button type="submit" class="adm-action-link {% if product.is_active %}adm-action-danger{% endif %}">
+                                        {% if product.is_active %}Deactivate{% else %}Activate{% endif %}
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="7">
+                        <div class="adm-empty-state">
+                            <span>✦</span>
+                            <h3>No products found</h3>
+                            <p>Try changing your filters or add your first product.</p>
+                            <a href="{% url 'admin_panel:inventory_product_create' %}" class="adm-primary-btn">Add product</a>
+                        </div>
+                    </td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% if page.has_other_pages %}
+        <div class="adm-pagination">
+            <span>Page {{ page.number }} of {{ page.paginator.num_pages }}</span>
+            <div>
+                {% if page.has_previous %}<a href="?q={{ search|urlencode }}&category={{ selected_category }}&stock={{ selected_stock }}&status={{ selected_status }}&page={{ page.previous_page_number }}">Previous</a>{% endif %}
+                {% if page.has_next %}<a href="?q={{ search|urlencode }}&category={{ selected_category }}&stock={{ selected_stock }}&status={{ selected_status }}&page={{ page.next_page_number }}">Next</a>{% endif %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

@@ -25,6 +25,7 @@ INSTALLED_APPS = [
     "billing",
     "offers",
     "enquiries",
+    "inventory",
 ]
 
 MIDDLEWARE = [

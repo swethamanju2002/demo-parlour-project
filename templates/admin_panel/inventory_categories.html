@@ -1,0 +1,101 @@
+{% extends "base/public.html" %}
+{% load static %}
+{% block title %}Product Categories | DQ Aesthetic{% endblock %}
+
+{% block css %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/admin/services.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="adm-management">
+    <div class="adm-page-heading">
+        <div>
+            <span class="adm-eyebrow">INVENTORY MANAGEMENT</span>
+            <h1>Product Categories</h1>
+            <p>Organise your retail and consumable products.</p>
+        </div>
+        <div class="adm-actions">
+            <a href="{% url 'admin_panel:inventory_products' %}" class="adm-reset-btn">← Products</a>
+            <a href="{% url 'admin_panel:inventory_category_create' %}" class="adm-primary-btn"><span>＋</span> Add category</a>
+        </div>
+    </div>
+
+    <div class="adm-summary">
+        <div><span class="adm-summary-label">TOTAL CATEGORIES</span><strong>{{ total_count }}</strong></div>
+        <div><span class="adm-summary-label">CURRENT PAGE</span><strong>{{ page.number }} / {{ page.paginator.num_pages|default:1 }}</strong></div>
+    </div>
+
+    <form method="get" class="adm-filter-panel">
+        <div class="adm-filter-search">
+            <label for="pc-search">Search categories</label>
+            <input id="pc-search" type="search" name="q" value="{{ search }}" placeholder="Category name or description">
+        </div>
+        <div>
+            <label for="pc-status">Status</label>
+            <select id="pc-status" name="status">
+                <option value="">All statuses</option>
+                <option value="active" {% if selected_status == "active" %}selected{% endif %}>Active</option>
+                <option value="inactive" {% if selected_status == "inactive" %}selected{% endif %}>Inactive</option>
+            </select>
+        </div>
+        <button type="submit" class="adm-filter-btn">Apply filters</button>
+        <a href="{% url 'admin_panel:inventory_categories' %}" class="adm-reset-btn">Reset</a>
+    </form>
+
+    <div class="adm-table-card">
+        <div class="adm-table-scroll">
+            <table class="adm-table">
+                <thead><tr><th>Category</th><th>Products</th><th>Display order</th><th>Status</th><th>Actions</th></tr></thead>
+                <tbody>
+                    {% for category in page %}
+                    <tr>
+                        <td>
+                            <div class="adm-service-cell"><div>
+                                <strong>{{ category.name }}</strong>
+                                <small>{{ category.description|default:"No description"|truncatewords:14 }}</small>
+                            </div></div>
+                        </td>
+                        <td><a class="adm-action-link" href="{% url 'admin_panel:inventory_products' %}?category={{ category.pk }}">{{ category.product_count }}</a></td>
+                        <td>{{ category.order }}</td>
+                        <td>
+                            {% if category.is_active %}<span class="adm-status adm-status-active">Active</span>
+                            {% else %}<span class="adm-status adm-status-inactive">Inactive</span>{% endif %}
+                        </td>
+                        <td>
+                            <div class="adm-actions">
+                                <a href="{% url 'admin_panel:inventory_category_edit' category.pk %}" class="adm-action-link">Edit</a>
+                                <form method="post" action="{% url 'admin_panel:inventory_category_toggle' category.pk %}">
+                                    {% csrf_token %}
+                                    <button type="submit" class="adm-action-link {% if category.is_active %}adm-action-danger{% endif %}">
+                                        {% if category.is_active %}Deactivate{% else %}Activate{% endif %}
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="5">
+                        <div class="adm-empty-state">
+                            <span>✦</span>
+                            <h3>No categories found</h3>
+                            <p>Create a category before adding products.</p>
+                            <a href="{% url 'admin_panel:inventory_category_create' %}" class="adm-primary-btn">Add category</a>
+                        </div>
+                    </td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% if page.has_other_pages %}
+        <div class="adm-pagination">
+            <span>Page {{ page.number }} of {{ page.paginator.num_pages }}</span>
+            <div>
+                {% if page.has_previous %}<a href="?q={{ search|urlencode }}&status={{ selected_status }}&page={{ page.previous_page_number }}">Previous</a>{% endif %}
+                {% if page.has_next %}<a href="?q={{ search|urlencode }}&status={{ selected_status }}&page={{ page.next_page_number }}">Next</a>{% endif %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}
