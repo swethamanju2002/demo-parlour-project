@@ -1,0 +1,914 @@
+.adm-academy{--adm-navy:#1F2740;--adm-blue:#8FB2C9;--adm-red:#D2364E;max-width:1440px;margin:0 auto;padding:54px 5% 80px;color:var(--adm-navy)}
+.adm-academy-head{display:flex;align-items:center;justify-content:space-between;gap:20px;margin-bottom:28px}
+.adm-eyebrow{font-size:10px;letter-spacing:2px;font-weight:700;color:#8a91a0}
+.adm-academy-head h1{font:500 clamp(34px,4vw,48px)/1.05 "Cormorant Garamond",serif;margin:10px 0 7px}
+.adm-academy-head p{font-size:13px;color:#818796;margin:0}
+.adm-academy-tabs{display:flex;gap:6px;overflow-x:auto;border-bottom:1px solid #e8eaf0;margin-bottom:26px}
+.adm-academy-tabs a{padding:13px 16px;color:#697184;text-decoration:none;font-size:12px;white-space:nowrap;border-bottom:2px solid transparent}
+.adm-academy-tabs a:hover{color:var(--adm-navy);border-color:var(--adm-blue)}
+.adm-academy-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+.adm-academy-stats article{padding:20px;border:1px solid #e9eaf0;border-radius:5px;background:#fff}
+.adm-academy-stats span,.adm-academy-stats strong{display:block}
+.adm-academy-stats span{font-size:11px;color:#7c8492}
+.adm-academy-stats strong{font:500 38px "Cormorant Garamond",serif;margin-top:8px}
+.adm-academy-shortcuts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:22px 0}
+.adm-academy-shortcuts a{display:flex;align-items:center;gap:12px;padding:17px;border:1px solid #e9eaf0;background:white;text-decoration:none;color:var(--adm-navy);border-radius:5px;transition:.2s}
+.adm-academy-shortcuts a:hover{border-color:var(--adm-blue);transform:translateY(-2px)}
+.adm-academy-shortcuts b{display:grid;place-items:center;width:35px;height:35px;border-radius:50%;background:#f0f5f8;color:#536c87;font-size:22px;font-weight:400}
+.adm-academy-shortcuts strong,.adm-academy-shortcuts small{display:block}
+.adm-academy-shortcuts strong{font-size:12px}.adm-academy-shortcuts small{font-size:10px;color:#858b98;margin-top:4px}
+.adm-academy-columns{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.adm-panel{background:white;border:1px solid #e8eaf0;border-radius:5px;padding:22px;min-width:0}
+.adm-panel-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.adm-panel-head h2{font:600 25px "Cormorant Garamond",serif;margin:0}
+.adm-panel-head a{font-size:11px;color:#536c87}
+.adm-mini-row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:13px 0;border-top:1px solid #f0f1f4}
+.adm-mini-row strong,.adm-mini-row small{display:block}.adm-mini-row strong{font-size:12px}.adm-mini-row small{font-size:10px;color:#858b98;margin-top:4px}
+.adm-pill{display:inline-block;padding:6px 9px;border-radius:20px;background:#f0f4f7;color:#536c87;font-size:10px;white-space:nowrap}
+.adm-muted{font-size:11px;color:#858b98}.adm-empty{text-align:center;color:#858b98;font-size:12px;padding:24px}
+.adm-toolbar{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:18px}
+.adm-toolbar form{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.adm-input{width:100%;min-height:40px;padding:9px 11px;border:1px solid #dfe3e9;border-radius:4px;background:#fff;color:#1f2740;font:inherit;font-size:12px;box-sizing:border-box}
+.adm-toolbar .adm-input{width:auto;min-width:190px}.adm-input:focus{outline:2px solid #8fb2c955;border-color:#8fb2c9}
+.adm-btn{display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:0 16px;border:1px solid transparent;border-radius:4px;text-decoration:none;font-size:11px;font-weight:600;cursor:pointer}
+.adm-btn-primary{background:#1f2740;color:#fff}.adm-btn-primary:hover{background:#303d5b}
+.adm-btn-ghost{background:#fff;border-color:#dfe3e9;color:#1f2740}
+.adm-table-wrap{overflow-x:auto;padding:0}.adm-table{width:100%;border-collapse:collapse;white-space:nowrap}
+.adm-table th{text-align:left;background:#f7f8fa;color:#778091;font-size:9px;letter-spacing:.8px;text-transform:uppercase;padding:14px 15px}
+.adm-table td{padding:14px 15px;border-top:1px solid #eef0f3;font-size:11px;vertical-align:middle}
+.adm-table td strong,.adm-table td small{display:block}.adm-table td strong{font-size:11px}.adm-table td small{font-size:10px;color:#8b91a0;margin-top:4px;max-width:230px;overflow:hidden;text-overflow:ellipsis}
+.adm-actions{display:flex;align-items:center;gap:12px}.adm-actions a,.adm-actions button{font-size:10px;color:#536c87;text-decoration:none;background:none;border:0;padding:0;cursor:pointer}.adm-actions a:hover,.adm-actions button:hover{text-decoration:underline}
+.adm-pagination{display:flex;justify-content:center;align-items:center;gap:18px;padding:20px;font-size:11px;color:#777}.adm-pagination a{color:#536c87}
+.adm-form-panel{max-width:1000px}.adm-form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+.adm-field{min-width:0}.adm-field>label{display:block;font-size:11px;font-weight:700;margin-bottom:7px}.adm-field>label i{color:#d2364e;font-style:normal;margin-left:3px}
+.adm-field textarea{resize:vertical}.adm-field select{min-height:40px}
+.adm-field-check{display:flex;align-items:center;padding-top:22px}.adm-check{display:flex;align-items:center;gap:9px;font-size:12px}.adm-check input{width:16px;height:16px;accent-color:#1f2740}
+.adm-help{display:block;color:#858b98;font-size:10px;margin-top:5px}.adm-error,.adm-form-errors{display:block;color:#b72f43;font-size:11px;margin-top:5px}
+.adm-form-actions{display:flex;justify-content:flex-end;gap:10px;border-top:1px solid #eef0f3;margin-top:24px;padding-top:20px}
+.adm-messages{margin-bottom:16px}.adm-message{padding:11px 14px;border-radius:4px;background:#eef5f0;color:#347454;font-size:12px;margin-bottom:7px}.adm-message.error{background:#fff0f1;color:#b72f43}
+@media(max-width:950px){.adm-academy-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.adm-academy-shortcuts{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:680px){.adm-academy{padding:38px 4% 60px}.adm-academy-head{align-items:flex-start;flex-direction:column}.adm-academy-columns{grid-template-columns:1fr}.adm-form-grid{grid-template-columns:1fr}.adm-toolbar{align-items:stretch;flex-direction:column}.adm-toolbar form{width:100%}.adm-toolbar .adm-input{min-width:0;flex:1}.adm-toolbar>.adm-btn{align-self:flex-start}}
+
+/* =========================================================
+   DQ AESTHETIC — PHASE 7 ACADEMY UI ENHANCEMENTS
+   Append below existing academy.css
+========================================================= */
+
+/* General page spacing */
+.adm-academy .adm-panel + .adm-panel {
+    margin-top: 18px;
+}
+
+.adm-academy section {
+    min-width: 0;
+}
+
+.adm-academy h2,
+.adm-academy h3 {
+    color: var(--adm-navy);
+}
+
+.adm-academy a {
+    transition: color .2s ease, background .2s ease, border-color .2s ease;
+}
+
+/* Navigation active state */
+.adm-academy-tabs a.active,
+.adm-academy-tabs a[aria-current="page"] {
+    color: var(--adm-navy);
+    border-bottom-color: var(--adm-red);
+    font-weight: 700;
+}
+
+/* Improved cards */
+.adm-academy-stats article {
+    position: relative;
+    overflow: hidden;
+    transition: transform .2s ease, box-shadow .2s ease;
+}
+
+.adm-academy-stats article:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(31, 39, 64, .07);
+}
+
+.adm-academy-stats article strong {
+    color: var(--adm-navy);
+}
+
+/* Detail information grids */
+.adm-detail-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.adm-detail-item {
+    padding: 14px;
+    background: #f8f9fb;
+    border: 1px solid #edf0f3;
+    border-radius: 5px;
+    min-width: 0;
+}
+
+.adm-detail-item span {
+    display: block;
+    color: #858b98;
+    font-size: 10px;
+    margin-bottom: 6px;
+}
+
+.adm-detail-item strong {
+    display: block;
+    color: var(--adm-navy);
+    font-size: 13px;
+    overflow-wrap: anywhere;
+}
+
+/* Status badges */
+.adm-status {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5px 10px;
+    border-radius: 30px;
+    font-size: 10px;
+    font-weight: 700;
+    white-space: nowrap;
+    background: #f0f2f5;
+    color: #596273;
+}
+
+.adm-status.active,
+.adm-status.completed,
+.adm-status.present,
+.adm-status.passed,
+.adm-status.confirmed {
+    background: #eaf5ee;
+    color: #287348;
+}
+
+.adm-status.pending,
+.adm-status.planned,
+.adm-status.late,
+.adm-status.ongoing {
+    background: #fff5e5;
+    color: #95621b;
+}
+
+.adm-status.cancelled,
+.adm-status.withdrawn,
+.adm-status.absent,
+.adm-status.failed,
+.adm-status.rejected {
+    background: #fff0f1;
+    color: #b72f43;
+}
+
+.adm-status.excused,
+.adm-status.enrolling {
+    background: #edf3f8;
+    color: #536c87;
+}
+
+/* Progress bars */
+.adm-progress {
+    width: 100%;
+    height: 8px;
+    overflow: hidden;
+    border-radius: 20px;
+    background: #edf0f3;
+}
+
+.adm-progress-bar {
+    height: 100%;
+    border-radius: inherit;
+    background: var(--adm-blue);
+    transition: width .3s ease;
+}
+
+.adm-progress-bar.complete {
+    background: #4b9870;
+}
+
+.adm-progress-info {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 7px;
+    font-size: 10px;
+    color: #7c8492;
+}
+
+/* Attendance */
+.adm-attendance-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.adm-attendance-option {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px;
+    background: #fff;
+    border: 1px solid #e8eaf0;
+    border-radius: 5px;
+    font-size: 11px;
+}
+
+.adm-attendance-option input {
+    accent-color: var(--adm-navy);
+}
+
+.adm-attendance-option:has(input:checked) {
+    border-color: var(--adm-blue);
+    background: #f5f9fc;
+}
+
+/* Student and enrollment information */
+.adm-student-card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px;
+    border: 1px solid #e9eaf0;
+    border-radius: 5px;
+    background: #fff;
+}
+
+.adm-student-avatar {
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: #edf3f8;
+    color: var(--adm-navy);
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.adm-student-card strong,
+.adm-student-card small {
+    display: block;
+}
+
+.adm-student-card strong {
+    font-size: 13px;
+}
+
+.adm-student-card small {
+    margin-top: 4px;
+    color: #858b98;
+    font-size: 10px;
+}
+
+/* Assessment and result cards */
+.adm-assessment-card {
+    padding: 17px;
+    border: 1px solid #e9eaf0;
+    border-radius: 5px;
+    background: #fff;
+}
+
+.adm-assessment-card h3 {
+    margin: 0 0 8px;
+    font-size: 14px;
+}
+
+.adm-assessment-score {
+    font: 500 30px "Cormorant Garamond", serif;
+    color: var(--adm-navy);
+}
+
+/* Certificate presentation */
+.adm-certificate {
+    position: relative;
+    padding: 32px;
+    text-align: center;
+    border: 1px solid #dce3e9;
+    outline: 1px solid #dce3e9;
+    outline-offset: -7px;
+    background: #fff;
+}
+
+.adm-certificate .adm-eyebrow {
+    letter-spacing: 3px;
+}
+
+.adm-certificate h2 {
+    font: 500 clamp(28px, 4vw, 42px) "Cormorant Garamond", serif;
+    margin: 15px 0;
+}
+
+.adm-certificate-name {
+    font: 500 27px "Cormorant Garamond", serif;
+    color: var(--adm-red);
+    margin: 18px 0;
+}
+
+/* Filters and search */
+.adm-filter-panel {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: end;
+    gap: 12px;
+    padding: 17px;
+    margin-bottom: 18px;
+    background: #f8f9fb;
+    border: 1px solid #e9eaf0;
+    border-radius: 5px;
+}
+
+.adm-filter-panel .adm-field {
+    flex: 1 1 170px;
+}
+
+.adm-filter-panel .adm-btn {
+    flex: 0 0 auto;
+}
+
+/* Report summary */
+.adm-report-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+    margin-bottom: 20px;
+}
+
+.adm-report-card {
+    padding: 18px;
+    background: #fff;
+    border: 1px solid #e9eaf0;
+    border-radius: 5px;
+}
+
+.adm-report-card span {
+    display: block;
+    color: #858b98;
+    font-size: 10px;
+}
+
+.adm-report-card strong {
+    display: block;
+    margin-top: 8px;
+    font: 500 30px "Cormorant Garamond", serif;
+}
+
+/* Table improvements */
+.adm-table tbody tr {
+    transition: background .15s ease;
+}
+
+.adm-table tbody tr:hover {
+    background: #fafbfd;
+}
+
+.adm-table td a {
+    color: #536c87;
+    text-decoration: none;
+}
+
+.adm-table td a:hover {
+    color: var(--adm-red);
+}
+
+.adm-table td form {
+    display: inline-flex;
+    margin: 0;
+}
+
+.adm-table td button {
+    font: inherit;
+}
+
+/* Form improvements */
+.adm-field input:not([type="checkbox"]):not([type="radio"]),
+.adm-field select,
+.adm-field textarea {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.adm-field input[type="checkbox"],
+.adm-field input[type="radio"] {
+    accent-color: var(--adm-navy);
+}
+
+.adm-field input:disabled,
+.adm-field select:disabled,
+.adm-field textarea:disabled {
+    background: #f3f4f6;
+    cursor: not-allowed;
+}
+
+.adm-form-panel .adm-panel-head {
+    padding-bottom: 14px;
+    border-bottom: 1px solid #eef0f3;
+}
+
+/* Buttons */
+.adm-btn {
+    transition: transform .15s ease, background .2s ease, border-color .2s ease;
+}
+
+.adm-btn:hover {
+    transform: translateY(-1px);
+}
+
+.adm-btn:focus-visible,
+.adm-actions a:focus-visible,
+.adm-academy-tabs a:focus-visible {
+    outline: 2px solid var(--adm-blue);
+    outline-offset: 3px;
+}
+
+/* Messages */
+.adm-message {
+    border: 1px solid #dcebe1;
+}
+
+.adm-message.error {
+    border-color: #f3d5d9;
+}
+
+.adm-message.warning {
+    background: #fff6e8;
+    color: #95621b;
+    border-color: #f1dfbf;
+}
+
+/* Empty states */
+.adm-empty {
+    padding: 36px 18px;
+    background: #fafbfd;
+    border: 1px dashed #dfe3e9;
+    border-radius: 5px;
+}
+
+/* Responsive */
+@media (max-width: 950px) {
+    .adm-attendance-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .adm-report-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 680px) {
+    .adm-detail-grid,
+    .adm-report-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .adm-attendance-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .adm-certificate {
+        padding: 22px 14px;
+    }
+
+    .adm-student-card {
+        align-items: flex-start;
+    }
+
+    .adm-filter-panel {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .adm-filter-panel .adm-field {
+        flex: auto;
+        width: 100%;
+    }
+
+    .adm-table th,
+    .adm-table td {
+        padding: 11px 12px;
+    }
+
+    .adm-form-actions {
+        flex-wrap: wrap;
+    }
+
+    .adm-form-actions .adm-btn {
+        flex: 1;
+    }
+}
+
+/* ==========================================================
+   DQ AESTHETIC — PHASE 7 COMPLETE PAGE STYLING
+========================================================== */
+
+/* Shared card compatibility */
+.adm-academy .adm-card {
+    background: #fff;
+    border: 1px solid #e8eaf0;
+    border-radius: 6px;
+    padding: 24px;
+    margin-bottom: 20px;
+    min-width: 0;
+    box-shadow: 0 3px 14px rgba(31,39,64,.025);
+}
+
+.adm-academy .adm-card h2,
+.adm-academy .adm-card h3 {
+    color: #1F2740;
+}
+
+.adm-academy .adm-card h2 {
+    font: 500 30px "Cormorant Garamond", serif;
+    margin: 0 0 12px;
+}
+
+.adm-academy .adm-card h3 {
+    font: 500 25px "Cormorant Garamond", serif;
+    margin: 0 0 18px;
+}
+
+.adm-academy .adm-card p {
+    color: #707989;
+    font-size: 12px;
+    line-height: 1.7;
+}
+
+/* Step 3 onwards forms */
+.adm-p7-form {
+    max-width: 1050px;
+}
+
+.adm-p7-form-heading {
+    margin-bottom: 28px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid #edf0f3;
+}
+
+.adm-p7-form-heading h2 {
+    font: 500 32px "Cormorant Garamond", serif;
+    margin: 9px 0 5px;
+}
+
+.adm-p7-form-heading p {
+    font-size: 12px;
+    color: #858b98;
+    margin: 0;
+}
+
+.adm-p7-form .adm-form-grid {
+    row-gap: 23px;
+    column-gap: 22px;
+}
+
+.adm-p7-form .adm-field {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+
+.adm-p7-form .adm-field label {
+    display: block;
+    color: #343e52;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.adm-p7-form .adm-field label i {
+    color: #D2364E;
+    font-style: normal;
+}
+
+.adm-p7-form .adm-input {
+    width: 100%;
+    min-height: 43px;
+    border: 1px solid #dfe3e9;
+    border-radius: 4px;
+    padding: 10px 12px;
+    background: #fff;
+    color: #1F2740;
+    font-family: inherit;
+    font-size: 12px;
+    box-sizing: border-box;
+    transition: border-color .2s, box-shadow .2s;
+}
+
+.adm-p7-form textarea.adm-input {
+    min-height: 105px;
+    resize: vertical;
+}
+
+.adm-p7-form select.adm-input {
+    cursor: pointer;
+}
+
+.adm-p7-form .adm-input:focus {
+    outline: none;
+    border-color: #8FB2C9;
+    box-shadow: 0 0 0 3px rgba(143,178,201,.15);
+}
+
+.adm-p7-form .adm-field.has-error .adm-input {
+    border-color: #D2364E;
+}
+
+.adm-p7-form .adm-help {
+    font-size: 10px;
+    line-height: 1.5;
+    color: #858b98;
+}
+
+.adm-p7-form .adm-error,
+.adm-p7-form .adm-form-errors {
+    color: #b72f43;
+    font-size: 11px;
+}
+
+.adm-p7-form .adm-form-errors {
+    background: #fff1f2;
+    border: 1px solid #f1d5da;
+    border-radius: 4px;
+    padding: 12px 16px;
+    margin-bottom: 20px;
+}
+
+.adm-p7-form .adm-form-errors p {
+    margin: 3px 0;
+}
+
+.adm-p7-form .adm-form-actions {
+    margin-top: 30px;
+}
+
+/* Admissions toolbar and filters */
+.adm-academy-toolbar,
+.adm-academy-filters {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 22px;
+}
+
+.adm-academy-toolbar form,
+.adm-academy-filters {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    flex-wrap: wrap;
+}
+
+.adm-academy-toolbar form {
+    flex: 1;
+}
+
+.adm-academy-toolbar form .adm-input {
+    min-width: 190px;
+    max-width: 290px;
+}
+
+.adm-academy-toolbar > a {
+    white-space: nowrap;
+}
+
+/* Tables */
+.adm-academy .adm-table-wrap {
+    width: 100%;
+    overflow-x: auto;
+    border: 1px solid #e9eaf0;
+    border-radius: 5px;
+    background: #fff;
+}
+
+.adm-academy .adm-table {
+    min-width: 680px;
+}
+
+.adm-academy .adm-table tbody tr:last-child td {
+    border-bottom: 0;
+}
+
+.adm-academy .adm-table tbody tr:hover {
+    background: #f8fafc;
+}
+
+.adm-academy .adm-table td a {
+    color: #536c87;
+    font-weight: 600;
+}
+
+.adm-academy .adm-table td[colspan] {
+    text-align: center;
+    color: #858b98;
+    padding: 28px;
+}
+
+/* Enrollment detail */
+.adm-enrollment-detail {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.adm-enrollment-detail .adm-card {
+    margin: 0;
+}
+
+.adm-enrollment-detail .adm-card:first-child {
+    grid-column: 1 / -1;
+}
+
+.adm-enrollment-detail .adm-detail-status {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 18px;
+}
+
+.adm-enrollment-detail .adm-card form {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.adm-enrollment-detail .adm-card form .adm-input {
+    max-width: 220px;
+}
+
+/* Learning progress and results */
+.adm-record-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 13px 0;
+    border-top: 1px solid #edf0f3;
+    font-size: 12px;
+}
+
+.adm-record-row:first-of-type {
+    border-top: 0;
+}
+
+.adm-record-row strong {
+    color: #1F2740;
+}
+
+.adm-record-row a {
+    color: #536c87;
+    font-size: 11px;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.adm-record-row a:hover {
+    color: #D2364E;
+}
+
+/* Attendance */
+.adm-academy .adm-card > label {
+    display: block;
+    font-size: 11px;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.adm-attendance-submit {
+    display: flex;
+    justify-content: flex-end;
+    padding-top: 20px;
+}
+
+.adm-attendance-student {
+    min-width: 180px;
+}
+
+.adm-attendance-remarks {
+    min-width: 160px;
+}
+
+/* Status labels */
+.adm-status-label {
+    display: inline-flex;
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 10px;
+    font-weight: 700;
+    background: #edf3f8;
+    color: #536c87;
+}
+
+/* Reports */
+.adm-academy .adm-academy-stats .adm-card {
+    margin: 0;
+    transition: transform .2s, box-shadow .2s;
+}
+
+.adm-academy .adm-academy-stats .adm-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 22px rgba(31,39,64,.07);
+}
+
+.adm-academy .adm-academy-stats .adm-card small {
+    color: #858b98;
+    font-size: 11px;
+}
+
+.adm-academy .adm-academy-stats .adm-card h2 {
+    font-size: 36px;
+    margin-top: 8px;
+}
+
+/* Certificate verification */
+.adm-certificate-verification {
+    max-width: 760px;
+    margin: 0 auto;
+    text-align: center;
+    padding: 42px 30px !important;
+}
+
+.adm-certificate-verification h2 {
+    color: #347454 !important;
+}
+
+.adm-certificate-verification .adm-certificate-number {
+    font: 500 25px "Cormorant Garamond", serif;
+    color: #D2364E;
+    margin: 18px 0;
+}
+
+/* Empty states */
+.adm-academy .adm-table td[colspan],
+.adm-academy .adm-empty {
+    text-align: center;
+    color: #858b98;
+}
+
+/* Responsive */
+@media(max-width: 760px) {
+    .adm-enrollment-detail {
+        grid-template-columns: 1fr;
+    }
+
+    .adm-enrollment-detail .adm-card:first-child {
+        grid-column: auto;
+    }
+
+    .adm-academy-toolbar {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .adm-academy-toolbar form {
+        width: 100%;
+    }
+
+    .adm-academy-toolbar form .adm-input {
+        min-width: 0;
+        max-width: none;
+        flex: 1;
+    }
+
+    .adm-academy-toolbar > a {
+        align-self: flex-start;
+    }
+}
+
+@media(max-width: 560px) {
+    .adm-academy .adm-card {
+        padding: 17px;
+    }
+
+    .adm-p7-form .adm-form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .adm-academy-filters {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .adm-academy-filters .adm-input {
+        width: 100%;
+    }
+
+    .adm-record-row {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .adm-enrollment-detail .adm-card form {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .adm-enrollment-detail .adm-card form .adm-input {
+        max-width: none;
+    }
+}

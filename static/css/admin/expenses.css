@@ -1,0 +1,523 @@
+/* DQ Aesthetic — Expense Management */
+
+.exp-page {
+    padding: 32px 0 60px;
+}
+
+.exp-page .adm-page-heading {
+    margin-bottom: 28px;
+}
+
+.exp-page .adm-page-heading h1 {
+    color: #1F2740;
+    font-size: clamp(26px, 3vw, 36px);
+    margin-bottom: 8px;
+}
+
+.exp-page .adm-page-heading p {
+    color: #777F91;
+}
+
+.exp-page .adm-table-card {
+    background: #fff;
+    border: 1px solid #E9EDF2;
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 8px 25px rgba(31, 39, 64, 0.045);
+    margin-bottom: 24px;
+}
+
+.exp-kpis {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+    margin-bottom: 26px;
+}
+
+.exp-kpi {
+    padding: 24px;
+    background: #fff;
+    border: 1px solid #E9EDF2;
+    border-radius: 16px;
+}
+
+.exp-kpi span {
+    display: block;
+    color: #777F91;
+    font-size: 13px;
+    margin-bottom: 12px;
+}
+
+.exp-kpi h2 {
+    color: #1F2740;
+    font-size: 27px;
+    margin: 0;
+    font-weight: 600;
+}
+
+.exp-kpi.pending h2 {
+    color: #D2364E;
+}
+
+.exp-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+    margin-bottom: 22px;
+}
+
+.exp-filters .adm-input {
+    min-width: 145px;
+    flex: 1;
+}
+
+.exp-page .adm-input {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid #DCE2EA;
+    border-radius: 9px;
+    background: #fff;
+    color: #1F2740;
+    font: inherit;
+    outline: none;
+    transition: border-color .2s, box-shadow .2s;
+}
+
+.exp-page .adm-input:focus {
+    border-color: #8FB2C9;
+    box-shadow: 0 0 0 3px rgba(143, 178, 201, .18);
+}
+
+.exp-form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+}
+
+.exp-field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.exp-field label {
+    color: #1F2740;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.exp-field.full {
+    grid-column: 1 / -1;
+}
+
+.exp-field textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+.exp-error {
+    color: #D2364E;
+    font-size: 12px;
+}
+
+.exp-page .adm-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 720px;
+}
+
+.exp-page .adm-table th {
+    background: #F5F7FA;
+    color: #59647A;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    padding: 15px;
+    text-align: left;
+}
+
+.exp-page .adm-table td {
+    padding: 15px;
+    border-bottom: 1px solid #EDF0F4;
+    color: #454E60;
+    font-size: 14px;
+}
+
+.exp-page .adm-table tbody tr:hover {
+    background: #FAFBFD;
+}
+
+.exp-status {
+    display: inline-block;
+    padding: 5px 11px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.exp-status.paid {
+    background: #E8F5EF;
+    color: #23764D;
+}
+
+.exp-status.pending {
+    background: #FFF0E5;
+    color: #B66B24;
+}
+
+.exp-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+}
+
+.exp-actions a,
+.exp-actions button {
+    cursor: pointer;
+}
+
+.exp-page .adm-btn {
+    border-radius: 9px;
+    padding: 11px 17px;
+    font-weight: 600;
+    transition: transform .2s, box-shadow .2s;
+}
+
+.exp-page .adm-btn:hover {
+    transform: translateY(-2px);
+}
+
+.exp-empty {
+    text-align: center;
+    padding: 35px 15px;
+    color: #8992A3;
+}
+
+.exp-pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 18px;
+    margin-top: 22px;
+    color: #687287;
+}
+
+@media (max-width: 768px) {
+    .exp-kpis {
+        grid-template-columns: 1fr;
+    }
+
+    .exp-form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .exp-page .adm-table-card {
+        padding: 16px;
+    }
+
+    .exp-filters {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .exp-page .adm-page-heading {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+}
+
+/* ==========================================
+   EXPENSE FORMS — COMPLETE STYLING
+========================================== */
+
+.exp-page .exp-form-card {
+    background: #fff;
+    border: 1px solid #E5EAF0;
+    border-radius: 18px;
+    padding: 30px;
+    box-shadow: 0 8px 28px rgba(31, 39, 64, 0.06);
+    max-width: 950px;
+}
+
+.exp-form-header {
+    padding-bottom: 20px;
+    margin-bottom: 25px;
+    border-bottom: 1px solid #EDF0F4;
+}
+
+.exp-form-header h2 {
+    color: #1F2740;
+    font-size: 21px;
+    margin: 0 0 7px;
+}
+
+.exp-form-header p {
+    color: #858D9D;
+    font-size: 13px;
+    margin: 0;
+}
+
+.exp-form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 23px;
+}
+
+.exp-field {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+    min-width: 0;
+}
+
+.exp-field.full {
+    grid-column: 1 / -1;
+}
+
+.exp-field label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #303B55;
+}
+
+.exp-field input:not([type="checkbox"]),
+.exp-field select,
+.exp-field textarea {
+    width: 100%;
+    min-height: 46px;
+    box-sizing: border-box;
+    padding: 12px 14px;
+    border: 1px solid #DCE3EB;
+    border-radius: 9px;
+    background: #FBFCFE;
+    color: #1F2740;
+    font: inherit;
+    font-size: 14px;
+    outline: none;
+    transition: border-color .2s, box-shadow .2s, background .2s;
+}
+
+.exp-field textarea {
+    min-height: 115px;
+    resize: vertical;
+}
+
+.exp-field input:focus,
+.exp-field select:focus,
+.exp-field textarea:focus {
+    border-color: #8FB2C9;
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(143, 178, 201, .17);
+}
+
+.exp-field input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: #1F2740;
+}
+
+.exp-field:has(input[type="checkbox"]) {
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+}
+
+.exp-field:has(input[type="checkbox"]) label {
+    order: 2;
+}
+
+.exp-field .helptext {
+    color: #8992A2;
+    font-size: 12px;
+}
+
+.exp-error {
+    color: #C52F48;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.exp-form-errors {
+    padding: 13px 16px;
+    margin-bottom: 20px;
+    background: #FFF1F2;
+    border: 1px solid #F5C7CF;
+    border-radius: 9px;
+    color: #B4233D;
+    font-size: 13px;
+}
+
+.exp-form-footer {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 28px;
+    padding-top: 22px;
+    border-top: 1px solid #EDF0F4;
+}
+
+/* ==========================================
+   EXPENSE BUTTONS
+========================================== */
+
+.exp-page .exp-btn {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    min-height: 42px;
+    padding: 11px 19px;
+    border: 1px solid transparent;
+    border-radius: 9px;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all .2s ease;
+}
+
+.exp-page .exp-btn-primary {
+    color: #fff;
+    background: #1F2740;
+    border-color: #1F2740;
+}
+
+.exp-page .exp-btn-primary:hover {
+    background: #303D5D;
+    box-shadow: 0 5px 14px rgba(31, 39, 64, .17);
+    transform: translateY(-1px);
+}
+
+.exp-page .exp-btn-secondary {
+    color: #1F2740;
+    background: #fff;
+    border-color: #DCE3EB;
+}
+
+.exp-page .exp-btn-secondary:hover {
+    background: #F1F6F9;
+    border-color: #8FB2C9;
+}
+
+.exp-page .exp-btn-danger {
+    color: #C52F48;
+    background: #FFF3F4;
+    border-color: #F3D0D6;
+}
+
+.exp-page .exp-btn-danger:hover {
+    color: #fff;
+    background: #D2364E;
+    border-color: #D2364E;
+}
+
+.exp-page .exp-btn-small {
+    min-height: 34px;
+    padding: 7px 12px;
+    font-size: 12px;
+}
+
+.exp-page .exp-btn:focus-visible {
+    outline: 3px solid rgba(143, 178, 201, .45);
+    outline-offset: 3px;
+}
+
+/* ==========================================
+   FILTER AND TABLE ACTIONS
+========================================== */
+
+.exp-page .exp-filters {
+    padding: 18px;
+    background: #F8FAFC;
+    border: 1px solid #E9EDF2;
+    border-radius: 12px;
+}
+
+.exp-page .exp-table-actions {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.exp-page .exp-table-actions a,
+.exp-page .exp-table-actions button {
+    font: inherit;
+}
+
+.exp-page .exp-table-actions form {
+    display: inline-flex;
+    margin: 0;
+}
+
+.exp-page .exp-table-actions button {
+    cursor: pointer;
+}
+
+.exp-page .exp-status {
+    white-space: nowrap;
+}
+
+.exp-page .table-responsive {
+    width: 100%;
+    overflow-x: auto;
+}
+
+/* ==========================================
+   RESPONSIVE
+========================================== */
+
+@media (max-width: 768px) {
+    .exp-page .exp-form-card {
+        padding: 19px;
+    }
+
+    .exp-form-grid {
+        grid-template-columns: 1fr;
+        gap: 18px;
+    }
+
+    .exp-field.full {
+        grid-column: auto;
+    }
+
+    .exp-form-footer {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .exp-form-footer .exp-btn {
+        width: 100%;
+    }
+
+    .exp-page .exp-table-actions {
+        align-items: flex-start;
+    }
+}
+
+/* Expense forms — reuse the shared Services admin design */
+
+.exp-page .adm-edit-form {
+    width: 100%;
+}
+
+.exp-page .adm-form-field .errorlist {
+    margin: 7px 0 0;
+    padding: 0;
+    color: #B43B4C;
+    list-style: none;
+    font-size: 11px;
+}
+
+.exp-page .adm-form-field .adm-checkbox-item {
+    margin: 0;
+}
+
+.exp-page .adm-form-field .adm-checkbox-item input[type="checkbox"] {
+    width: 16px;
+    min-height: 16px;
+    padding: 0;
+}

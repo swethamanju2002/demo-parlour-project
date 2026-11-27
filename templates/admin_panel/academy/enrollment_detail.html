@@ -1,0 +1,113 @@
+
+{% extends "admin_panel/academy/base.html" %}
+
+{% block academy_heading %}Student Enrollment{% endblock %}
+
+{% block academy_content %}
+
+<div class="adm-enrollment-detail">
+
+<div class="adm-card">
+    <h2>{{ enrollment.student.get_full_name|default:enrollment.student.username }}</h2>
+
+    <p>{{ enrollment.student.email }}</p>
+    <p>Course: {{ enrollment.batch.course.title }}</p>
+    <p>Batch: {{ enrollment.batch.name }}</p>
+    <p>Admission date: {{ enrollment.enrolled_on }}</p>
+    <p>Agreed fee: {{ enrollment.fee_agreed }}</p>
+    <p>Status: {{ enrollment.get_status_display }}</p>
+
+    <form method="post"
+          action="{% url 'admin_panel:academy_enrollment_status' enrollment.pk %}">
+        {% csrf_token %}
+
+        <select class="adm-input" name="status">
+            {% for value,label in enrollment_statuses %}
+                <option value="{{ value }}"
+                    {% if enrollment.status == value %}selected{% endif %}>
+                    {{ label }}
+                </option>
+            {% endfor %}
+        </select>
+
+        <button class="adm-btn adm-btn-primary">
+            Update Status
+        </button>
+    </form>
+</div>
+
+<div class="adm-card">
+    <h3>Learning Progress</h3>
+
+    {% for item in progress %}
+        <p>
+            {{ item.module.title }} —
+            {% if item.is_completed %}Completed{% else %}Pending{% endif %}
+        </p>
+    {% empty %}
+        <p>No progress recorded.</p>
+    {% endfor %}
+
+    {% for module in modules %}
+        <p>
+            <a href="{% url 'admin_panel:academy_progress_update' enrollment.pk module.pk %}">
+                Update {{ module.title }}
+            </a>
+        </p>
+    {% endfor %}
+</div>
+
+<div class="adm-card">
+    <h3>Assessment Results</h3>
+
+    {% for result in results %}
+        <p>
+            {{ result.assessment.title }}:
+            {{ result.score }} / {{ result.assessment.max_score }}
+            — {% if result.passed %}Passed{% else %}Not Passed{% endif %}
+        </p>
+    {% empty %}
+        <p>No assessment results.</p>
+    {% endfor %}
+
+    {% for assessment in assessments %}
+        <p>
+            <a href="{% url 'admin_panel:academy_result_create' enrollment.pk assessment.pk %}">
+                Record {{ assessment.title }} result
+            </a>
+        </p>
+    {% endfor %}
+</div>
+
+<div class="adm-card">
+    <h3>Attendance History</h3>
+
+    {% for item in attendance %}
+        <p>
+            {{ item.attendance_date }} —
+            {{ item.get_status_display }}
+        </p>
+    {% empty %}
+        <p>No attendance records.</p>
+    {% endfor %}
+</div>
+
+<div class="adm-card">
+    <h3>Certificate Eligibility</h3>
+
+    <p>{{ eligibility_message }}</p>
+
+    {% if certificate %}
+        <p>Certificate issued: {{ certificate.certificate_number }}</p>
+    {% elif certificate_eligible %}
+        <form method="post"
+              action="{% url 'admin_panel:academy_certificate_issue' enrollment.pk %}">
+            {% csrf_token %}
+            <button class="adm-btn adm-btn-primary">
+                Issue Certificate
+            </button>
+        </form>
+    {% endif %}
+</div>
+</div>
+{% endblock %}

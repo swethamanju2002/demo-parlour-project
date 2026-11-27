@@ -1,0 +1,11 @@
+{% extends "admin_panel/academy/base.html" %}
+{% block academy_heading %}Courses{% endblock %}
+{% block academy_subtitle %}Create and maintain the programmes offered by your academy.{% endblock %}
+{% block academy_content %}
+<div class="adm-toolbar"><form method="get"><input class="adm-input" name="q" value="{{ search }}" placeholder="Search courses"><select class="adm-input" name="category"><option value="">All categories</option>{% for c in categories %}<option value="{{ c.pk }}" {% if selected_category == c.pk|stringformat:"s" %}selected{% endif %}>{{ c.name }}</option>{% endfor %}</select><button class="adm-btn adm-btn-ghost">Filter</button></form><a class="adm-btn adm-btn-primary" href="{% url 'admin_panel:academy_course_create' %}">＋ Add course</a></div>
+<div class="adm-panel adm-table-wrap"><table class="adm-table"><thead><tr><th>Course</th><th>Category</th><th>Level</th><th>Duration</th><th>Fee</th><th>Batches</th><th>Status</th><th>Actions</th></tr></thead><tbody>
+{% for item in page %}<tr><td><strong>{{ item.title }}</strong><small>{{ item.short_description|default:"—" }}</small></td><td>{{ item.category.name }}</td><td>{{ item.get_level_display }}</td><td>{{ item.duration_weeks }} weeks</td><td>₹{{ item.fee }}</td><td>{{ item.batch_count }}</td><td><span class="adm-pill">{{ item.is_active|yesno:"Active,Inactive" }}</span></td><td class="adm-actions"><a href="{% url 'admin_panel:academy_course_edit' item.pk %}">Edit</a><form method="post" action="{% url 'admin_panel:academy_course_toggle' item.pk %}">{% csrf_token %}<button type="submit">{{ item.is_active|yesno:"Deactivate,Activate" }}</button></form></td></tr>
+{% empty %}<tr><td colspan="8" class="adm-empty">No courses found. Add your first academy course.</td></tr>{% endfor %}
+</tbody></table></div>
+{% include "admin_panel/academy/pagination.html" %}
+{% endblock %}

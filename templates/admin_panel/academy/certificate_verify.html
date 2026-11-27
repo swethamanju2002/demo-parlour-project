@@ -1,0 +1,17 @@
+
+{% extends "admin_panel/academy/base.html" %}
+
+{% block academy_heading %}Certificate Verification{% endblock %}
+
+{% block academy_content %}
+<div class="adm-card adm-certificate-verification">
+    <h2>Certificate Verified</h2>
+
+    <p><strong>Certificate:</strong> {{ certificate.certificate_number }}</p>
+    <p><strong>Student:</strong> {{ certificate.enrollment.student }}</p>
+    <p><strong>Course:</strong> {{ certificate.enrollment.batch.course.title }}</p>
+    <p><strong>Batch:</strong> {{ certificate.enrollment.batch.name }}</p>
+    <p><strong>Issued:</strong> {{ certificate.issued_on }}</p>
+</div>
+{% endblock %}
+x

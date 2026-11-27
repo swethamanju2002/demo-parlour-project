@@ -1,0 +1,11 @@
+{% extends "admin_panel/academy/base.html" %}
+{% block academy_heading %}Course batches{% endblock %}
+{% block academy_subtitle %}Schedule training cohorts and assign an academy trainer.{% endblock %}
+{% block academy_content %}
+<div class="adm-toolbar"><form method="get"><input class="adm-input" name="q" value="{{ search }}" placeholder="Search batch, code or course"><select class="adm-input" name="status"><option value="">All statuses</option>{% for value,label in statuses %}<option value="{{ value }}" {% if selected_status == value %}selected{% endif %}>{{ label }}</option>{% endfor %}</select><button class="adm-btn adm-btn-ghost">Filter</button></form><a class="adm-btn adm-btn-primary" href="{% url 'admin_panel:academy_batch_create' %}">＋ Create batch</a></div>
+<div class="adm-panel adm-table-wrap"><table class="adm-table"><thead><tr><th>Batch</th><th>Course</th><th>Trainer</th><th>Dates</th><th>Students</th><th>Capacity</th><th>Status</th><th>Actions</th></tr></thead><tbody>
+{% for item in page %}<tr><td><strong>{{ item.name }}</strong><small>{{ item.code }}</small></td><td>{{ item.course.title }}</td><td>{{ item.trainer }}</td><td>{{ item.start_date|date:"d M Y" }} – {{ item.end_date|date:"d M Y" }}</td><td>{{ item.active_enrollments }}</td><td>{{ item.capacity }}</td><td><span class="adm-pill">{{ item.get_status_display }}</span></td><td class="adm-actions"><a href="{% url 'admin_panel:academy_batch_edit' item.pk %}">Edit</a>{% if item.status != "completed" and item.status != "cancelled" %}<form method="post" action="{% url 'admin_panel:academy_batch_advance' item.pk %}">{% csrf_token %}<button type="submit">Advance status</button></form>{% endif %}</td></tr>
+{% empty %}<tr><td colspan="8" class="adm-empty">No batches created yet. Create a batch after adding a course and trainer.</td></tr>{% endfor %}
+</tbody></table></div>
+{% include "admin_panel/academy/pagination.html" %}
+{% endblock %}

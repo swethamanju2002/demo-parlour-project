@@ -1,0 +1,96 @@
+
+{% extends "admin_panel/academy/base.html" %}
+
+{% block academy_heading %}Student Admissions{% endblock %}
+
+{% block academy_content %}
+
+<div class="adm-academy-toolbar">
+    <form method="get">
+        <input class="adm-input"
+               name="q"
+               value="{{ search }}"
+               placeholder="Search student, course or batch">
+
+        <select class="adm-input" name="status">
+            <option value="">All statuses</option>
+
+            {% for value,label in statuses %}
+                <option value="{{ value }}"
+                    {% if selected_status == value %}selected{% endif %}>
+                    {{ label }}
+                </option>
+            {% endfor %}
+        </select>
+
+        <button class="adm-btn adm-btn-ghost">Search</button>
+    </form>
+
+    <a href="{% url 'admin_panel:academy_admission_create' %}"
+       class="adm-btn adm-btn-primary">
+        New Admission
+    </a>
+
+    <a href="{% url 'admin_panel:academy_enrollment_export' %}"
+       class="adm-btn adm-btn-ghost">
+        Export CSV
+    </a>
+</div>
+
+<div class="adm-table-wrap">
+<table class="adm-table">
+    <thead>
+        <tr>
+            <th>Student</th>
+            <th>Course</th>
+            <th>Batch</th>
+            <th>Admission Date</th>
+            <th>Agreed Fee</th>
+            <th>Status</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        {% for e in page %}
+        <tr>
+            <td>{{ e.student.get_full_name|default:e.student.username }}</td>
+            <td>{{ e.batch.course.title }}</td>
+            <td>{{ e.batch.name }}</td>
+            <td>{{ e.enrolled_on }}</td>
+            <td>{{ e.fee_agreed }}</td>
+            <td>{{ e.get_status_display }}</td>
+            <td>
+                <a href="{% url 'admin_panel:academy_enrollment_detail' e.pk %}">
+                    View
+                </a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="7">No admissions found.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+</div>
+
+{% if page.has_other_pages %}
+<div class="adm-pagination">
+    {% if page.has_previous %}
+        <a href="?page={{ page.previous_page_number }}&q={{ search|urlencode }}">
+            Previous
+        </a>
+    {% endif %}
+
+    <span>Page {{ page.number }} of {{ page.paginator.num_pages }}</span>
+
+    {% if page.has_next %}
+        <a href="?page={{ page.next_page_number }}&q={{ search|urlencode }}">
+            Next
+        </a>
+    {% endif %}
+</div>
+{% endif %}
+
+{% endblock %}

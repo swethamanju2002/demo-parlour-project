@@ -1,0 +1,31 @@
+{% extends "base/public.html" %}
+{% load static %}
+{% block title %}{{ page_title|default:"Academy Management" }} | DQ Aesthetic{% endblock %}
+{% block css %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/admin/academy.css' %}">
+{% endblock %}
+{% block content %}
+<section class="adm-academy">
+  <div class="adm-academy-head">
+    <div><span class="adm-eyebrow">DQ AESTHETIC · ACADEMY</span><h1>{% block academy_heading %}Academy Management{% endblock %}</h1>
+    <p>{% block academy_subtitle %}Manage courses, trainers, batches and student learning.{% endblock %}</p></div>
+    <a class="adm-btn adm-btn-ghost" href="{% url 'admin_panel:academy_dashboard' %}">Academy overview</a>
+  </div>
+  <nav class="adm-academy-tabs">
+    <a href="{% url 'admin_panel:academy_dashboard' %}">Overview</a>
+    <a href="{% url 'admin_panel:academy_categories' %}">Categories</a>
+    <a href="{% url 'admin_panel:academy_courses' %}">Courses</a>
+    <a href="{% url 'admin_panel:academy_trainers' %}">Trainers</a>
+    <a href="{% url 'admin_panel:academy_batches' %}">Batches</a>
+    <a href="{% url 'admin_panel:academy_enrollments' %}">Admissions</a>
+    <a href="{% url 'admin_panel:academy_attendance' %}">Attendance</a>
+    <a href="{% url 'admin_panel:academy_modules' %}">Modules</a>
+    <a href="{% url 'admin_panel:academy_assessments' %}">Assessments</a>
+    <a href="{% url 'admin_panel:academy_certificates' %}">Certificates</a>
+    <a href="{% url 'admin_panel:academy_reports' %}">Reports</a>
+  </nav>
+  {% if messages %}<div class="adm-messages">{% for message in messages %}<div class="adm-message {{ message.tags }}">{{ message }}</div>{% endfor %}</div>{% endif %}
+  {% block academy_content %}{% endblock %}
+</section>
+{% endblock %}

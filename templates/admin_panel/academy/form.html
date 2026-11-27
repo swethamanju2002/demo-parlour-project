@@ -1,0 +1,21 @@
+{% extends "admin_panel/academy/base.html" %}
+{% block academy_heading %}{{ page_title }}{% endblock %}
+{% block academy_subtitle %}Enter the details below. Required fields are marked by the form.{% endblock %}
+{% block academy_content %}
+<div class="adm-panel adm-form-panel">
+  <form method="post" novalidate>{% csrf_token %}
+    {% if form.non_field_errors %}<div class="adm-form-errors">{{ form.non_field_errors }}</div>{% endif %}
+    <div class="adm-form-grid">
+    {% for field in form %}
+      <div class="adm-field {% if field.field.widget.input_type == 'checkbox' %}adm-field-check{% endif %}">
+        {% if field.field.widget.input_type == 'checkbox' %}<label class="adm-check">{{ field }}<span>{{ field.label }}</span></label>
+        {% else %}<label for="{{ field.id_for_label }}">{{ field.label }}{% if field.field.required %}<i>*</i>{% endif %}</label>{{ field }}{% endif %}
+        {% if field.help_text %}<small class="adm-help">{{ field.help_text }}</small>{% endif %}
+        {% for error in field.errors %}<small class="adm-error">{{ error }}</small>{% endfor %}
+      </div>
+    {% endfor %}
+    </div>
+    <div class="adm-form-actions"><a class="adm-btn adm-btn-ghost" href="{{ cancel_url }}">Cancel</a><button class="adm-btn adm-btn-primary" type="submit">Save changes</button></div>
+  </form>
+</div>
+{% endblock %}

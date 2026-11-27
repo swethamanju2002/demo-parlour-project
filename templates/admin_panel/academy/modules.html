@@ -1,0 +1,30 @@
+
+{% extends "admin_panel/academy/base.html" %}
+
+{% block academy_heading %}Course Modules{% endblock %}
+
+{% block academy_content %}
+<a href="{% url 'admin_panel:academy_module_create' %}"
+   class="adm-btn adm-btn-primary">Add Module</a>
+
+<div class="adm-table-wrap">
+<table class="adm-table">
+<thead>
+<tr><th>Course</th><th>Module</th><th>Sequence</th><th>Required</th><th>Action</th></tr>
+</thead>
+<tbody>
+{% for m in page %}
+<tr>
+<td>{{ m.course.title }}</td>
+<td>{{ m.title }}</td>
+<td>{{ m.sequence }}</td>
+<td>{{ m.is_required|yesno:"Yes,No" }}</td>
+<td><a href="{% url 'admin_panel:academy_module_edit' m.pk %}">Edit</a></td>
+</tr>
+{% empty %}
+<tr><td colspan="5">No modules created.</td></tr>
+{% endfor %}
+</tbody>
+</table>
+</div>
+{% endblock %}

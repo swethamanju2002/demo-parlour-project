@@ -1,0 +1,71 @@
+
+{% extends "admin_panel/academy/base.html" %}
+
+{% block academy_heading %}
+    {{ heading|default:page_title }}
+{% endblock %}
+
+{% block academy_content %}
+
+<div class="adm-panel adm-form-panel adm-p7-form">
+
+    <div class="adm-p7-form-heading">
+        <span class="adm-eyebrow">DQ AESTHETIC ACADEMY</span>
+        <h2>{{ heading|default:page_title }}</h2>
+        <p>Complete the information below and save your changes.</p>
+    </div>
+
+    <form method="post" novalidate>
+        {% csrf_token %}
+
+        {% if form.non_field_errors %}
+            <div class="adm-form-errors">
+                {% for error in form.non_field_errors %}
+                    <p>{{ error }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <div class="adm-form-grid">
+
+            {% for field in form %}
+                <div class="adm-field {% if field.errors %}has-error{% endif %}">
+
+                    <label for="{{ field.id_for_label }}">
+                        {{ field.label }}
+                        {% if field.field.required %}
+                            <i>*</i>
+                        {% endif %}
+                    </label>
+
+                    {{ field }}
+
+                    {% if field.help_text %}
+                        <small class="adm-help">
+                            {{ field.help_text }}
+                        </small>
+                    {% endif %}
+
+                    {% for error in field.errors %}
+                        <small class="adm-error">{{ error }}</small>
+                    {% endfor %}
+
+                </div>
+            {% endfor %}
+
+        </div>
+
+        <div class="adm-form-actions">
+            <a href="{% url cancel_url %}" class="adm-btn adm-btn-ghost">
+                Cancel
+            </a>
+
+            <button type="submit" class="adm-btn adm-btn-primary">
+                Save Changes
+            </button>
+        </div>
+
+    </form>
+</div>
+
+{% endblock %}

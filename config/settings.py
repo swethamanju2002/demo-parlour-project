@@ -26,6 +26,9 @@ INSTALLED_APPS = [
     "offers",
     "enquiries",
     "inventory",
+    "academy.apps.AcademyConfig",
+    "expenses",
+    "business_analytics",
 ]
 
 MIDDLEWARE = [

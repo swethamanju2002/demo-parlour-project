@@ -1,0 +1,45 @@
+
+{% extends "admin_panel/academy/base.html" %}
+
+{% block academy_heading %}Academy Reports{% endblock %}
+
+{% block academy_content %}
+<div class="adm-academy-stats">
+
+    <div class="adm-card">
+        <small>Total Enrollments</small>
+        <h2>{{ total_enrollments }}</h2>
+    </div>
+
+    <div class="adm-card">
+        <small>Active Students</small>
+        <h2>{{ active_enrollments }}</h2>
+    </div>
+
+    <div class="adm-card">
+        <small>Completed</small>
+        <h2>{{ completed_enrollments }}</h2>
+    </div>
+
+    <div class="adm-card">
+        <small>Withdrawn</small>
+        <h2>{{ withdrawn_enrollments }}</h2>
+    </div>
+
+    <div class="adm-card">
+        <small>Certificates</small>
+        <h2>{{ certificates }}</h2>
+    </div>
+
+    <div class="adm-card">
+        <small>Attendance Records</small>
+        <h2>{{ attendance_records }}</h2>
+    </div>
+
+</div>
+
+<a href="{% url 'admin_panel:academy_enrollment_export' %}"
+   class="adm-btn adm-btn-primary">
+    Download Enrollment CSV
+</a>
+{% endblock %}

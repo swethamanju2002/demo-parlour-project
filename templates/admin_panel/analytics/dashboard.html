@@ -1,0 +1,253 @@
+
+{% extends "base/public.html" %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/admin/services.css' %}?v=1">
+<link rel="stylesheet" href="{% static 'css/admin/analytics.css' %}?v=3">
+<section class="adm-management analytics-page">
+
+    <div class="adm-page-heading">
+        <div>
+            <span class="adm-eyebrow">BUSINESS INTELLIGENCE / REPORTS</span>
+            <h1>Business Analytics</h1>
+            <p>Monitor salon performance, revenue, expenses and operations.</p>
+        </div>
+
+        <div class="analytics-heading-actions">
+            <a href="{% url 'admin_panel:analytics_export' %}?period={{ period }}&{{ start_date|date:"d M Y" }} &ndash; {{ end_date|date:"d M Y" }}"
+               class="adm-primary-btn">
+                Export CSV
+            </a>
+        </div>
+    </div>
+
+    <form method="get" class="analytics-filter">
+        <div class="analytics-filter-field">
+            <label for="period">Reporting period</label>
+            <select name="period" id="period">
+                <option value="today" {% if period == "today" %}selected{% endif %}>Today</option>
+                <option value="month" {% if period == "month" %}selected{% endif %}>This month</option>
+                <option value="last_month" {% if period == "last_month" %}selected{% endif %}>Last month</option>
+                <option value="year" {% if period == "year" %}selected{% endif %}>This year</option>
+                <option value="custom" {% if period == "custom" %}selected{% endif %}>Custom range</option>
+            </select>
+        </div>
+
+        <div class="analytics-filter-field">
+            <label for="start">From</label>
+            <input type="date" id="start" name="start" value="{{ start_date|date:'Y-m-d' }}">
+        </div>
+
+        <div class="analytics-filter-field">
+            <label for="end">To</label>
+            <input type="date" id="end" name="end" value="{{ end_date|date:'Y-m-d' }}">
+        </div>
+
+        <button type="submit" class="adm-primary-btn">Apply Filter</button>
+        <a href="{% url 'admin_panel:analytics_dashboard' %}" class="adm-reset-btn">Reset</a>
+    </form>
+
+    <div class="analytics-section-heading">
+        <div>
+            <span class="adm-eyebrow">PERFORMANCE OVERVIEW</span>
+            <h2>Business Summary</h2>
+        </div>
+        <span class="analytics-period-label">
+            {{ start_date|date:"d M Y" }} – {{ end_date|date:"d M Y" }}
+        </span>
+    </div>
+
+    <div class="analytics-stat-grid">
+        <article class="analytics-stat-card">
+            <span>Total Bookings</span>
+            <strong>{{ total_bookings }}</strong>
+            <small>Appointments in selected period</small>
+        </article>
+
+        <article class="analytics-stat-card">
+            <span>Completed</span>
+            <strong>{{ completed_bookings }}</strong>
+            <small>Completed appointments</small>
+        </article>
+
+        <article class="analytics-stat-card">
+            <span>Pending</span>
+            <strong>{{ pending_bookings }}</strong>
+            <small>Awaiting action</small>
+        </article>
+
+        <article class="analytics-stat-card">
+            <span>Confirmed</span>
+            <strong>{{ confirmed_bookings }}</strong>
+            <small>Confirmed appointments</small>
+        </article>
+
+        <article class="analytics-stat-card">
+            <span>Cancelled</span>
+            <strong>{{ cancelled_bookings }}</strong>
+            <small>Cancelled appointments</small>
+        </article>
+
+        <article class="analytics-stat-card">
+            <span>Rejected</span>
+            <strong>{{ rejected_bookings }}</strong>
+            <small>Rejected appointments</small>
+        </article>
+    </div>
+
+    <div class="analytics-section-heading">
+        <div>
+            <span class="adm-eyebrow">FINANCIAL PERFORMANCE</span>
+            <h2>Revenue & Expenses</h2>
+        </div>
+    </div>
+
+    <div class="analytics-finance-grid">
+        <article class="analytics-finance-card">
+            <span>Collected Revenue</span>
+            <strong>&#8377;{{ collected_revenue|floatformat:2 }}</strong>
+            <small>Completed payments in selected period</small>
+        </article>
+
+        <article class="analytics-finance-card">
+            <span>Paid Expenses</span>
+            <strong>&#8377;{{ pending_expenses|floatformat:2 }}</strong>
+            <small>Expenses paid in selected period</small>
+        </article>
+
+        <article class="analytics-finance-card">
+            <span>Pending Expenses</span>
+            <strong>₹{{ pending_expenses|floatformat:2 }}</strong>
+            <small>Expenses awaiting payment</small>
+        </article>
+
+        <article class="analytics-finance-card">
+            <span>Outstanding Invoice Balance</span>
+            <strong>&#8377;{{ outstanding_balance|floatformat:2 }}</strong>
+            <small>{{ outstanding_invoice_count }} issued invoices with balances, all dates</small>
+        </article>
+
+        <article class="analytics-finance-card analytics-profit-card">
+            <span>Operating Estimate</span>
+            <strong>&#8377;{{ operating_estimate|floatformat:2 }}</strong>
+            <small>Collected revenue minus paid expenses</small>
+        </article>
+    </div>
+
+    <p class="analytics-disclaimer">
+        Operating estimate is a simple management indicator, not audited profit.
+        It excludes taxes, inventory valuation, unpaid expenses and other possible costs.
+    </p>
+
+    <div class="analytics-two-column">
+
+        <section class="analytics-panel">
+            <div class="analytics-panel-heading">
+                <div>
+                    <span class="adm-eyebrow">APPOINTMENTS</span>
+                    <h2>Booking Status</h2>
+                </div>
+            </div>
+
+            {% for row in status_rows %}
+            <div class="analytics-status-row">
+                <span>{{ row.label }}</span>
+                <strong>{{ row.count }}</strong>
+            </div>
+            {% empty %}
+            <p class="analytics-empty">No booking data available.</p>
+            {% endfor %}
+        </section>
+
+        <section class="analytics-panel">
+            <div class="analytics-panel-heading">
+                <div>
+                    <span class="adm-eyebrow">CUSTOMER INSIGHTS</span>
+                    <h2>Customer Activity</h2>
+                </div>
+            </div>
+
+            <div class="analytics-customer-stat">
+                <span>Customers with bookings</span>
+                <strong>{{ unique_customers }}</strong>
+            </div>
+            <div class="analytics-customer-stat">
+                <span>Customers with repeat bookings</span>
+                <strong>{{ repeat_customers }}</strong>
+            </div>
+            <p class="analytics-note">
+                Repeat customers have more than one booking within the selected period.
+            </p>
+        </section>
+
+    </div>
+
+    <div class="analytics-two-column">
+
+        <section class="analytics-panel">
+            <div class="analytics-panel-heading">
+                <div>
+                    <span class="adm-eyebrow">SERVICE PERFORMANCE</span>
+                    <h2>Top Booked Services</h2>
+                </div>
+            </div>
+
+            {% for service in top_services %}
+            <div class="analytics-service-row">
+                <span>{{ service.service_name }}</span>
+                <strong>{{ service.bookings_count }}</strong>
+            </div>
+            {% empty %}
+            <p class="analytics-empty">No service bookings in this period.</p>
+            {% endfor %}
+        </section>
+
+        <section class="analytics-panel">
+            <div class="analytics-panel-heading">
+                <div>
+                    <span class="adm-eyebrow">ACADEMY OVERVIEW</span>
+                    <h2>Training Operations</h2>
+                </div>
+            </div>
+
+            <div class="analytics-customer-stat">
+                <span>Ongoing batches</span>
+                <strong>{{ academy_summary.active_batches }}</strong>
+            </div>
+            <div class="analytics-customer-stat">
+                <span>Active enrollments</span>
+                <strong>{{ academy_summary.active_enrollments }}</strong>
+            </div>
+            <div class="analytics-customer-stat">
+                <span>Total enrollments</span>
+                <strong>{{ academy_summary.total_enrollments }}</strong>
+            </div>
+            <p class="analytics-note">Current academy status across all dates.</p>
+        </section>
+
+    </div>
+
+    <section class="analytics-panel analytics-inventory-panel">
+        <div class="analytics-panel-heading">
+            <div>
+                <span class="adm-eyebrow">STOCK OVERVIEW</span>
+                <h2>Inventory Snapshot</h2>
+            </div>
+        </div>
+
+        <div class="analytics-inventory-stats">
+            <div>
+                <span>Total products</span>
+                <strong>{{ inventory_summary.products }}</strong>
+            </div>
+            <div>
+                <span>Low-stock products</span>
+                <strong>{{ inventory_summary.low_stock }}</strong>
+            </div>
+        </div>
+        <p class="analytics-note">Current inventory position across all dates.</p>
+    </section>
+
+</section>
+{% endblock %}

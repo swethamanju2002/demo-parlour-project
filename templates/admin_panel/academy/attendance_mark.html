@@ -1,0 +1,66 @@
+
+{% extends "admin_panel/academy/base.html" %}
+
+{% block academy_heading %}
+Mark Attendance — {{ batch.name }}
+{% endblock %}
+
+{% block academy_content %}
+
+<form method="post" class="adm-card">
+    {% csrf_token %}
+
+    <label>Attendance Date</label>
+    <input class="adm-input"
+           type="date"
+           name="attendance_date"
+           value="{{ today|date:'Y-m-d' }}"
+           required>
+
+    <div class="adm-table-wrap">
+        <table class="adm-table">
+            <thead>
+                <tr>
+                    <th>Student</th>
+                    <th>Attendance</th>
+                    <th>Remarks</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for e in enrollments %}
+                <tr>
+                    <td>{{ e.student }}</td>
+
+                    <td>
+                        <select class="adm-input"
+                                name="status_{{ e.pk }}">
+                            {% for value,label in statuses %}
+                                <option value="{{ value }}"
+                                    {% if value == "present" %}selected{% endif %}>
+                                    {{ label }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </td>
+
+                    <td>
+                        <input class="adm-input"
+                               name="remarks_{{ e.pk }}">
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="3">No active students.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <button class="adm-btn adm-btn-primary">
+        Save Attendance
+    </button>
+</form>
+
+{% endblock %}

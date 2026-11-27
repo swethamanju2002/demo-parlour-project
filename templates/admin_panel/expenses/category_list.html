@@ -1,0 +1,111 @@
+
+{% extends "base/public.html" %}
+{% load static %}
+
+{% block css %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/admin/expenses.css' %}">
+<link rel="stylesheet" href="{% static 'css/admin/services.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="adm-management">
+
+    <div class="adm-page-heading">
+        <div>
+            <span class="adm-eyebrow">FINANCE MANAGEMENT / CATEGORIES</span>
+            <h1>Expense Categories</h1>
+            <p>Organise and manage your salon's operating expense categories.</p>
+        </div>
+        <div class="adm-actions">
+            <a href="{% url 'admin_panel:expense_category_create' %}"
+           class="adm-primary-btn">
+            <span>＋</span> Add Category
+            </a>
+            <a href="{% url 'admin_panel:expense_dashboard' %}"
+            class="adm-reset-btn">
+                &larr; Back to Expenses
+            </a>
+        </div>
+    </div>
+
+    <div class="adm-table-card">
+
+        <div class="adm-table-heading">
+            <div>
+                <h2>Category directory</h2>
+                <p>Manage the categories used to classify expenses.</p>
+            </div>
+        </div>
+
+        <div class="adm-table-scroll">
+            <table class="adm-table">
+                <thead>
+                    <tr>
+                        <th>Category</th>
+                        <th>Description</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for category in categories %}
+                    <tr>
+                        <td><strong>{{ category.name }}</strong></td>
+
+                        <td>{{ category.description|default:"—" }}</td>
+
+                        <td>
+                            {% if category.is_active %}
+                                <span class="adm-status adm-status-active">Active</span>
+                            {% else %}
+                                <span class="adm-status adm-status-inactive">Inactive</span>
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            <div class="adm-actions">
+
+                                <a href="{% url 'admin_panel:expense_category_edit' category.pk %}"
+                                   class="adm-action-link">
+                                    Edit
+                                </a>
+
+                                <form method="post"
+                                      action="{% url 'admin_panel:expense_category_delete' category.pk %}"
+                                      onsubmit="return confirm('Delete this category?');">
+                                    {% csrf_token %}
+                                    <button type="submit"
+                                            class="adm-action-link adm-action-danger">
+                                        Delete
+                                    </button>
+                                </form>
+
+                            </div>
+                        </td>
+                    </tr>
+
+                    {% empty %}
+                    <tr>
+                        <td colspan="4">
+                            <div class="adm-empty-state">
+                                <span>✦</span>
+                                <h3>No categories created yet</h3>
+                                <p>Create categories to organise your salon expenses.</p>
+                                <a href="{% url 'admin_panel:expense_category_create' %}"
+                                   class="adm-primary-btn">
+                                    Add Category
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+</section>
+{% endblock %}

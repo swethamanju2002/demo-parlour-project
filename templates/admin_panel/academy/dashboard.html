@@ -1,0 +1,30 @@
+{% extends "admin_panel/academy/base.html" %}
+{% block academy_heading %}Academy overview{% endblock %}
+{% block academy_subtitle %}A clear view of your training programmes and student activity.{% endblock %}
+{% block academy_content %}
+<div class="adm-academy-stats">
+  <article><span>Active courses</span><strong>{{ course_count }}</strong></article>
+  <article><span>Course categories</span><strong>{{ category_count }}</strong></article>
+  <article><span>Active trainers</span><strong>{{ trainer_count }}</strong></article>
+  <article><span>Running / enrolling batches</span><strong>{{ active_batches }}</strong></article>
+  <article><span>Enrolled students</span><strong>{{ student_count }}</strong></article>
+  <article><span>Active enrollments</span><strong>{{ enrollment_count }}</strong></article>
+  <article><span>Certificates issued</span><strong>{{ certificate_count }}</strong></article>
+</div>
+<div class="adm-academy-shortcuts">
+  <a href="{% url 'admin_panel:academy_category_create' %}"><b>＋</b><span><strong>New category</strong><small>Organise your programmes</small></span></a>
+  <a href="{% url 'admin_panel:academy_course_create' %}"><b>＋</b><span><strong>New course</strong><small>Add a training programme</small></span></a>
+  <a href="{% url 'admin_panel:academy_trainer_create' %}"><b>＋</b><span><strong>Add trainer</strong><small>Assign an existing team account</small></span></a>
+  <a href="{% url 'admin_panel:academy_batch_create' %}"><b>＋</b><span><strong>Create batch</strong><small>Schedule a course batch</small></span></a>
+</div>
+<div class="adm-academy-columns">
+  <section class="adm-panel"><div class="adm-panel-head"><h2>Recent batches</h2><a href="{% url 'admin_panel:academy_batches' %}">View all</a></div>
+    {% for batch in recent_batches %}<div class="adm-mini-row"><div><strong>{{ batch.name }}</strong><small>{{ batch.course.title }} · {{ batch.trainer }}</small></div><span class="adm-pill">{{ batch.get_status_display }}</span></div>
+    {% empty %}<p class="adm-empty">No batches created yet.</p>{% endfor %}
+  </section>
+  <section class="adm-panel"><div class="adm-panel-head"><h2>Recent enrollments</h2><span class="adm-muted">Latest records</span></div>
+    {% for enrollment in recent_enrollments %}<div class="adm-mini-row"><div><strong>{{ enrollment.student.display_name }}</strong><small>{{ enrollment.batch.name }} · {{ enrollment.batch.course.title }}</small></div><span class="adm-pill">{{ enrollment.get_status_display }}</span></div>
+    {% empty %}<p class="adm-empty">No students enrolled yet.</p>{% endfor %}
+  </section>
+</div>
+{% endblock %}

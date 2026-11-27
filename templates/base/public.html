@@ -78,6 +78,18 @@
            class="admin-nav-link {% if 'categor' in request.resolver_match.url_name and 'inventory' not in request.resolver_match.url_name %}active{% endif %}">
             Inventory
         </a>
+        <a href="{% url 'admin_panel:academy_dashboard' %}"
+          class="admin-nav-link {% if 'academy' in request.resolver_match.url_name %}active{% endif %}">
+            Academy
+        </a>
+        <a href="{% url 'admin_panel:expense_dashboard' %}"
+          class="admin-nav-link {% if 'expense' in request.resolver_match.url_name %}active{% endif %}">
+            Expenses
+        </a>
+        <a href="{% url 'admin_panel:analytics_dashboard' %}"
+          class="admin-nav-link {% if 'analytics' in request.resolver_match.url_name %}active{% endif %}">
+            Analytics
+        </a>
         <div class="admin-nav-account">
             <span>{{ request.user.first_name|default:request.user.username }}</span>
 

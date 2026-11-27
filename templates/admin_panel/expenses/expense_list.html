@@ -1,0 +1,187 @@
+
+{% extends "base/public.html" %}
+{% load static %}
+
+{% block css %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/admin/expenses.css' %}">
+<link rel="stylesheet" href="{% static 'css/admin/services.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="adm-management">
+
+    <div class="adm-page-heading">
+        <div>
+            <span class="adm-eyebrow">FINANCE MANAGEMENT</span>
+            <h1>Expenses</h1>
+            <p>View, filter and manage salon expense records.</p>
+        </div>
+
+        <div class="adm-actions">
+            <a href="{% url 'admin_panel:expense_dashboard' %}" class="adm-reset-btn">
+                Dashboard
+            </a>
+            <a href="{% url 'admin_panel:expense_create' %}" class="adm-primary-btn">
+                <span>＋</span> Add Expense
+            </a>
+        </div>
+    </div>
+
+    <div class="adm-filter-panel">
+
+        <form method="get" class="adm-filter-panel" style="width:100%; padding:0; margin:0; border:0;">
+
+            <div>
+                <label for="expense-start">From date</label>
+                <input id="expense-start" type="date" name="start_date"
+                       value="{{ start_date }}">
+            </div>
+
+            <div>
+                <label for="expense-end">To date</label>
+                <input id="expense-end" type="date" name="end_date"
+                       value="{{ end_date }}">
+            </div>
+
+            <div>
+                <label for="expense-category">Category</label>
+                <select id="expense-category" name="category">
+                    <option value="">All categories</option>
+                    {% for item in categories %}
+                        <option value="{{ item.pk }}"
+                            {% if selected_category == item.pk|stringformat:"s" %}selected{% endif %}>
+                            {{ item.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div>
+                <label for="expense-status">Payment status</label>
+                <select id="expense-status" name="status">
+                    <option value="">All statuses</option>
+                    <option value="paid" {% if selected_status == "paid" %}selected{% endif %}>Paid</option>
+                    <option value="pending" {% if selected_status == "pending" %}selected{% endif %}>Pending</option>
+                </select>
+            </div>
+
+            <button type="submit" class="adm-filter-btn">Apply filters</button>
+
+            <a href="{% url 'admin_panel:expense_list' %}" class="adm-reset-btn">
+                Reset
+            </a>
+
+            <button type="submit" class="adm-filter-btn"
+                    formaction="{% url 'admin_panel:expense_export' %}">
+                Export CSV
+            </button>
+
+        </form>
+    </div>
+
+    <div class="adm-table-card">
+
+        <div class="adm-table-heading">
+            <div>
+                <h2>Expense directory</h2>
+                <p>Review recorded expenses and payment details.</p>
+            </div>
+        </div>
+
+        <div class="adm-table-scroll">
+            <table class="adm-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Title</th>
+                        <th>Category</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                        <th>Method</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for expense in expenses %}
+                    <tr>
+                        <td>{{ expense.expense_date|date:"d M Y" }}</td>
+                        <td><strong>{{ expense.title }}</strong></td>
+                        <td>{{ expense.category.name }}</td>
+                        <td class="adm-price">₹{{ expense.amount|floatformat:2 }}</td>
+
+                        <td>
+                            {% if expense.payment_status == "PAID" %}
+                                <span class="adm-status adm-status-active">Paid</span>
+                            {% else %}
+                                <span class="adm-status adm-status-inactive">Pending</span>
+                            {% endif %}
+                        </td>
+
+                        <td>{{ expense.get_payment_method_display|default:"—" }}</td>
+
+                        <td>
+                            <div class="adm-actions">
+                                <a href="{% url 'admin_panel:expense_edit' expense.pk %}"
+                                   class="adm-action-link">
+                                    Edit
+                                </a>
+
+                                <form method="post"
+                                      action="{% url 'admin_panel:expense_delete' expense.pk %}"
+                                      onsubmit="return confirm('Delete this expense?');">
+                                    {% csrf_token %}
+                                    <button type="submit"
+                                            class="adm-action-link adm-action-danger">
+                                        Delete
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+
+                    {% empty %}
+                    <tr>
+                        <td colspan="7">
+                            <div class="adm-empty-state">
+                                <span>✦</span>
+                                <h3>No expenses found</h3>
+                                <p>Try changing your filters or add your first expense.</p>
+                                <a href="{% url 'admin_panel:expense_create' %}"
+                                   class="adm-primary-btn">
+                                    Add Expense
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        {% if expenses.has_other_pages %}
+        <div class="adm-pagination">
+            <span>
+                Page {{ expenses.number }} of {{ expenses.paginator.num_pages }}
+            </span>
+
+            <div>
+                {% if expenses.has_previous %}
+                    <a href="?page={{ expenses.previous_page_number }}&start_date={{ start_date|urlencode }}&end_date={{ end_date|urlencode }}&category={{ selected_category }}&status={{ selected_status }}">
+                        Previous
+                    </a>
+                {% endif %}
+
+                {% if expenses.has_next %}
+                    <a href="?page={{ expenses.next_page_number }}&start_date={{ start_date|urlencode }}&end_date={{ end_date|urlencode }}&category={{ selected_category }}&status={{ selected_status }}">
+                        Next
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+
+    </div>
+</section>
+{% endblock %}

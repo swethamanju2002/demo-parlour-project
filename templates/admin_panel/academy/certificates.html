@@ -1,0 +1,37 @@
+
+{% extends "admin_panel/academy/base.html" %}
+
+{% block academy_heading %}Academy Certificates{% endblock %}
+
+{% block academy_content %}
+<div class="adm-table-wrap">
+<table class="adm-table">
+<thead>
+<tr>
+<th>Certificate Number</th>
+<th>Student</th>
+<th>Course</th>
+<th>Issued Date</th>
+<th>Verification</th>
+</tr>
+</thead>
+<tbody>
+{% for c in page %}
+<tr>
+<td>{{ c.certificate_number }}</td>
+<td>{{ c.enrollment.student }}</td>
+<td>{{ c.enrollment.batch.course.title }}</td>
+<td>{{ c.issued_on }}</td>
+<td>
+<a href="{% url 'admin_panel:academy_certificate_verify' c.verification_code %}">
+Verify
+</a>
+</td>
+</tr>
+{% empty %}
+<tr><td colspan="5">No certificates issued.</td></tr>
+{% endfor %}
+</tbody>
+</table>
+</div>
+{% endblock %}

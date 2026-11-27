@@ -1,0 +1,93 @@
+
+{% extends "base/public.html" %}
+{% load static %}
+
+{% block css %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/admin/expenses.css' %}">
+<link rel="stylesheet" href="{% static 'css/admin/services.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="adm-management">
+
+    <div class="adm-page-heading">
+        <div>
+            <span class="adm-eyebrow">FINANCE MANAGEMENT / REPORTS</span>
+            <h1>Monthly Expense Report</h1>
+            <p>Review paid and pending expenses month by month.</p>
+        </div>
+
+        <a href="{% url 'admin_panel:expense_dashboard' %}"
+           class="adm-reset-btn">
+            ← Back to Dashboard
+        </a>
+    </div>
+
+    <div class="adm-filter-panel">
+        <form method="get" class="adm-filter-panel"
+              style="width:100%; padding:0; margin:0; border:0;">
+
+            <div>
+                <label for="report-year">Select financial year</label>
+                <select name="year" id="report-year">
+                    {% for item in years %}
+                        <option value="{{ item }}"
+                            {% if item == year %}selected{% endif %}>
+                            {{ item }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <button class="adm-filter-btn" type="submit">
+                View Report
+            </button>
+        </form>
+    </div>
+
+    <div class="adm-table-card">
+
+        <div class="adm-table-heading">
+            <div>
+                <h2>Monthly breakdown</h2>
+                <p>Paid and pending expense totals for {{ year }}.</p>
+            </div>
+        </div>
+
+        <div class="adm-table-scroll">
+            <table class="adm-table">
+                <thead>
+                    <tr>
+                        <th>Month</th>
+                        <th>Paid Expenses</th>
+                        <th>Pending Expenses</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for row in rows %}
+                    <tr>
+                        <td><strong>{{ row.month }}</strong></td>
+                        <td class="adm-price">₹{{ row.paid|floatformat:2 }}</td>
+                        <td class="adm-price">₹{{ row.pending|floatformat:2 }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="3">
+                            <div class="adm-empty-state">
+                                <span>✦</span>
+                                <h3>No report data available</h3>
+                                <p>No expense records were found for this period.</p>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+</section>
+{% endblock %}

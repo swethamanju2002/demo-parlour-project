@@ -1,0 +1,95 @@
+
+{% extends "base/public.html" %}
+{% load static %}
+
+{% block css %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/admin/services.css' %}">
+<link rel="stylesheet" href="{% static 'css/admin/expenses.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="adm-management">
+
+    <div class="adm-page-heading">
+        <div>
+            <span class="adm-eyebrow">FINANCE MANAGEMENT / EXPENSES</span>
+            <h1>{{ page_title }}</h1>
+            <p>Maintain accurate salon expense records and payment details.</p>
+        </div>
+
+        <a href="{% if 'Category' in page_title %}{% url 'admin_panel:expense_categories' %}{% else %}{% url 'admin_panel:expense_list' %}{% endif %}"
+           class="adm-reset-btn">
+            ← Back
+        </a>
+    </div>
+
+    <form method="post" class="adm-edit-form">
+        {% csrf_token %}
+
+        {% if form.non_field_errors %}
+            <div class="adm-form-errors">
+                {{ form.non_field_errors }}
+            </div>
+        {% endif %}
+
+        <div class="adm-form-section">
+
+            <div class="adm-form-section-heading">
+                <span>01</span>
+                <div>
+                    <h2>{% if 'Category' in page_title %}Category information{% else %}Expense information{% endif %}</h2>
+                    <p>Enter the basic information required to maintain this record.</p>
+                </div>
+            </div>
+
+            <div class="adm-form-grid">
+
+                {% for field in form %}
+                    <div class="adm-form-field {% if field.name == 'notes' or field.name == 'description' %}adm-form-full{% endif %}">
+
+                        {% if field.field.widget.input_type == "checkbox" %}
+                            <label class="adm-checkbox-item">
+                                {{ field }}
+                                <span>
+                                    <strong>{{ field.label }}</strong>
+                                    {% if field.help_text %}
+                                        <small>{{ field.help_text }}</small>
+                                    {% endif %}
+                                </span>
+                            </label>
+                        {% else %}
+                            <label for="{{ field.id_for_label }}">
+                                {{ field.label }}
+                            </label>
+
+                            {{ field }}
+
+                            {% if field.help_text %}
+                                <small>{{ field.help_text }}</small>
+                            {% endif %}
+                        {% endif %}
+
+                        {{ field.errors }}
+
+                    </div>
+                {% endfor %}
+
+            </div>
+        </div>
+
+        <div class="adm-form-footer">
+            <a href="{% if 'Category' in page_title %}{% url 'admin_panel:expense_categories' %}{% else %}{% url 'admin_panel:expense_list' %}{% endif %}"
+               class="adm-cancel-btn">
+                Cancel
+            </a>
+
+            <button type="submit" class="adm-primary-btn">
+                Save changes
+            </button>
+        </div>
+
+    </form>
+
+</section>
+{% endblock %}
