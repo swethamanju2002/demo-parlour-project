@@ -128,16 +128,18 @@
             </a>
 
             <a href="{% url 'admin_panel:offers' %}" class="management-card">
-                <div class="management-card-icon">✧</div>
-                <div class="management-card-content">
-                    <h3>Offer Management</h3>
-                    <p>Create promotional offers, configure discounts, manage coupon codes and validity periods.</p>
-                </div>
-                <span class="management-card-arrow">→</span>
+                <span class="management-number">06</span>
+                <div class="management-icon">✧</div>
+                <h3>Offer Management</h3>
+                <p>Create promotional offers, configure discounts, manage coupon codes and validity periods.</p>
+                <span class="management-link">Manage offers →</span>
             </a>
-            <a href="{% url 'admin_panel:billing' %}" class="management-card">
-                <span>Billing & Invoices</span>
+           <a href="{% url 'admin_panel:billing' %}" class="management-card">
+                <span class="management-number">07</span>
+                <div class="management-icon">₹</div>
+                <h3>Billing &amp; Invoices</h3>
                 <p>Manage invoices, payments and financial reports.</p>
+                <span class="management-link">Manage billing →</span>
             </a>
             <a href="{% url 'admin_panel:academy_dashboard' %}" class="management-card">
             <span class="management-number">08</span>
@@ -146,11 +148,12 @@
             <p>Manage courses, trainers, batches and student training programmes.</p>
             <span class="management-link">Manage academy →</span>
             </a>
-            <a href="{% url 'admin_panel:expense_dashboard' %}" class="adm-management-card">
-                <div>
-                    <h3>Expense Management</h3>
-                    <p>Track operating expenses, pending payments and monthly reports.</p>
-                </div>
+            <a href="{% url 'admin_panel:expense_dashboard' %}" class="management-card">
+                <span class="management-number">09</span>
+                <div class="management-icon">₹</div>
+                <h3>Expense Management</h3>
+                <p>Track operating expenses, pending payments and monthly reports.</p>
+                <span class="management-link">Manage expenses →</span>
             </a>
         </div>
     </section>

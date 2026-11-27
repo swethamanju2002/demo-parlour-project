@@ -27,7 +27,12 @@
       {% else %}
         <a href="{% url 'accounts:login' %}">Sign in</a>
       {% endif %}
-      <a class="btn btn-primary btn-small" href="{% url 'client:dashboard' %}">Book an appointment</a>
+      {% if user.is_authenticated and user.role == "customer" %}
+          <a class="btn btn-primary btn-small"
+            href="{% url 'client:dashboard' %}">
+              Book an appointment
+          </a>
+      {% endif %}
     </nav>
   </div>
 </header>
@@ -75,7 +80,7 @@
         Billing
       </a>
         <a href="{% url 'admin_panel:inventory_products' %}"
-           class="admin-nav-link {% if 'categor' in request.resolver_match.url_name and 'inventory' not in request.resolver_match.url_name %}active{% endif %}">
+          class="admin-nav-link {% if 'inventory' in request.resolver_match.url_name %}active{% endif %}">
             Inventory
         </a>
         <a href="{% url 'admin_panel:academy_dashboard' %}"
@@ -123,5 +128,6 @@
   </div>
   {% if BRAND.demo_mode %}<p class="fine">Demonstration build. Sample services, prices and customers are placeholders until the salon confirms its own.</p>{% endif %}
 </footer>
+
 {% endblock %}
 {% block js %}<script src="{% static 'js/public/nav.js' %}"></script><script src="{% static 'js/public/motion.js' %}"></script>{% endblock %}

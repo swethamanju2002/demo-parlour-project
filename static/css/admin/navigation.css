@@ -4,9 +4,8 @@
 ========================================== */
 
 .admin-navigation {
-    position: sticky;
-    top: 0;
-    z-index: 1000;
+    position: relative;
+    z-index: 100;
     width: 100%;
     background: #1F2740;
     border-top: 1px solid rgba(255,255,255,0.08);
@@ -14,27 +13,41 @@
 }
 
 .admin-navigation-inner {
-    max-width: 1440px;
+    width: 100%;
+    max-width: 1600px;
     min-height: 62px;
     margin: 0 auto;
-    padding: 0 5%;
+    padding: 0 28px;
+
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 2px;
+
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255,255,255,0.25) transparent;
 }
 
 .admin-nav-link {
     position: relative;
     display: inline-flex;
+    flex: 0 0 auto;
     align-items: center;
+    justify-content: center;
+
     min-height: 62px;
-    padding: 0 15px;
+    padding: 0 12px;
+
     color: rgba(255,255,255,0.72);
     text-decoration: none;
+    white-space: nowrap;
+
     font-size: 11px;
-    font-weight: 500;
-    letter-spacing: 0.5px;
-    transition: color 0.25s ease;
+    font-weight: 600;
+    letter-spacing: 0.2px;
+
+    transition: color 0.25s ease, background 0.25s ease;
 }
 
 .admin-nav-link:hover,
@@ -42,38 +55,61 @@
     color: #fff;
 }
 
+.admin-nav-link:hover {
+    background: rgba(255,255,255,0.04);
+}
+
 .admin-nav-link.active::after {
     content: "";
     position: absolute;
     bottom: 0;
-    left: 15px;
-    right: 15px;
-    height: 2px;
+    left: 12px;
+    right: 12px;
+    height: 3px;
     background: #8FB2C9;
+    border-radius: 3px 3px 0 0;
 }
 
 .admin-nav-account {
+    flex: 0 0 auto;
     margin-left: auto;
+
     display: flex;
     align-items: center;
-    gap: 16px;
+    justify-content: center;
+    gap: 14px;
+
+    padding-left: 16px;
     color: #fff;
+    white-space: nowrap;
     font-size: 11px;
+    font-weight: 600;
+}
+
+.admin-nav-account span {
+    white-space: nowrap;
 }
 
 .admin-nav-account form {
+    flex: 0 0 auto;
     margin: 0;
 }
 
 .admin-nav-account button {
-    padding: 9px 16px;
+    min-height: 36px;
+    padding: 0 17px;
+
     background: transparent;
     border: 1px solid rgba(255,255,255,0.35);
-    border-radius: 3px;
+    border-radius: 4px;
+
     color: #fff;
     font-size: 10px;
+    font-weight: 600;
+    white-space: nowrap;
+
     cursor: pointer;
-    transition: background 0.25s ease;
+    transition: background 0.25s ease, border-color 0.25s ease;
 }
 
 .admin-nav-account button:hover {
@@ -81,20 +117,44 @@
     border-color: #D2364E;
 }
 
-@media (max-width: 850px) {
+/* Tablet and smaller desktop */
+@media (max-width: 1100px) {
     .admin-navigation-inner {
-        overflow-x: auto;
         padding: 0 16px;
-        gap: 2px;
     }
 
     .admin-nav-link {
-        flex-shrink: 0;
-        padding: 0 12px;
+        padding: 0 10px;
+        font-size: 10px;
     }
 
     .admin-nav-account {
-        flex-shrink: 0;
+        gap: 10px;
         padding-left: 12px;
+    }
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+    .admin-navigation-inner {
+        min-height: 54px;
+        padding: 0 10px;
+    }
+
+    .admin-nav-link {
+        min-height: 54px;
+        padding: 0 11px;
+        font-size: 10px;
+    }
+
+    .admin-nav-account {
+        min-height: 54px;
+        gap: 10px;
+        padding-left: 10px;
+    }
+
+    .admin-nav-account button {
+        min-height: 33px;
+        padding: 0 12px;
     }
 }
