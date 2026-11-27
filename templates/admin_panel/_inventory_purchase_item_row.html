@@ -1,0 +1,8 @@
+<div class="inv-item-row">
+    {% for hidden in form.hidden_fields %}{{ hidden }}{% endfor %}
+    <div>{{ form.product }}{{ form.product.errors }}</div>
+    <div>{{ form.quantity }}{{ form.quantity.errors }}</div>
+    <div>{{ form.unit_cost }}{{ form.unit_cost.errors }}</div>
+    <span class="inv-line">₹0.00</span>
+    <span><span hidden>{{ form.DELETE }}</span><button type="button" class="inv-remove">Remove</button></span>
+</div>

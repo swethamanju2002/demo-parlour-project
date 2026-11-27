@@ -12,8 +12,8 @@ class InventoryAdminCase(TestCase):
     @classmethod
     def setUpTestData(cls):
         U = get_user_model()
-        cls.admin = U.objects.create_user("boss", password="x", is_superuser=True)
-        cls.plain = U.objects.create_user("cust", password="x")
+        cls.admin = U.objects.create_user("boss", "boss@x.com", "x", is_superuser=True)
+        cls.plain = U.objects.create_user("cust", "cust@x.com", "x")
         cls.cat = ProductCategory.objects.create(name="Hair care")
         cls.p = Product.objects.create(category=cls.cat, name="Serum", sku="SRM-1", cost_price=Decimal("100"),
                                        selling_price=Decimal("250"), reorder_level=2)

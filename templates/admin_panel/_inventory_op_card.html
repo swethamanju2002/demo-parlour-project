@@ -1,0 +1,15 @@
+<form method="post" action="{{ action }}" class="inv-op">
+    {% csrf_token %}
+    <h2>{{ title }}</h2>
+    <p>{{ hint }}</p>
+    {% if form.non_field_errors %}<div class="adm-form-errors" style="margin:0 0 14px">{{ form.non_field_errors }}</div>{% endif %}
+    <fieldset {% if not product.is_active %}disabled{% endif %}>
+        {% for f in form %}
+        <div class="adm-form-field">
+            <label for="{{ f.id_for_label }}">{{ f.label }}</label>
+            {{ f }}{{ f.errors }}
+        </div>
+        {% endfor %}
+        <button type="submit" class="adm-primary-btn">{{ button }}</button>
+    </fieldset>
+</form>

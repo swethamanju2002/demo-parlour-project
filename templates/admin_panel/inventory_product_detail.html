@@ -1,0 +1,59 @@
+{% extends "base/public.html" %}
+{% load static %}
+{% block title %}{{ product.name }} | Inventory | DQ Aesthetic{% endblock %}
+
+{% block css %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/admin/services.css' %}">
+<link rel="stylesheet" href="{% static 'css/admin/inventory.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="adm-management">
+    <div class="adm-page-heading">
+        <div>
+            <span class="adm-eyebrow">INVENTORY MANAGEMENT / STOCK</span>
+            <h1>{{ product.name }}</h1>
+            <p>{{ product.sku }} · {{ product.category.name }}</p>
+        </div>
+        <div class="adm-actions">
+            <a href="{% url 'admin_panel:inventory_products' %}" class="adm-reset-btn">← Back to products</a>
+            <a href="{% url 'admin_panel:inventory_product_edit' product.pk %}" class="adm-primary-btn">Edit product</a>
+        </div>
+    </div>
+
+    <div class="inv-kpis">
+        <div><span class="adm-summary-label">IN STOCK</span><strong>{{ product.quantity_on_hand }}</strong><small>{{ product.unit }}</small></div>
+        <div><span class="adm-summary-label">ALERT LEVEL</span><strong>{{ product.reorder_level }}</strong>
+            <small>{% if not product.quantity_on_hand %}Out of stock{% elif product.is_low_stock %}Low stock{% else %}Healthy{% endif %}</small></div>
+        <div><span class="adm-summary-label">COST</span><strong>₹{{ product.cost_price|floatformat:2 }}</strong><small>per {{ product.unit }}</small></div>
+        <div><span class="adm-summary-label">SELLING PRICE</span><strong>₹{{ product.selling_price|floatformat:2 }}</strong><small>per {{ product.unit }}</small></div>
+        <div><span class="adm-summary-label">STOCK VALUE</span><strong>₹{{ product.stock_value|floatformat:2 }}</strong><small>at cost</small></div>
+    </div>
+
+    {% if not product.is_active %}<div class="inv-notice">This product is inactive. Activate it before recording stock changes.</div>{% endif %}
+
+    <div class="inv-ops">
+        {% url 'admin_panel:inventory_stock_in' product.pk as in_url %}
+        {% url 'admin_panel:inventory_stock_out' product.pk as out_url %}
+        {% url 'admin_panel:inventory_stock_adjust' product.pk as adj_url %}
+        {% include "admin_panel/_inventory_op_card.html" with form=in_form action=in_url title="Stock in" hint="Record products received." button="Add stock" %}
+        {% include "admin_panel/_inventory_op_card.html" with form=out_form action=out_url title="Stock out" hint="Record products sold, used, damaged or returned. Stock cannot go below zero." button="Remove stock" %}
+        {% include "admin_panel/_inventory_op_card.html" with form=adjust_form action=adj_url title="Adjust count" hint="After a physical count, enter what is actually on the shelf. The difference is recorded." button="Correct stock" %}
+    </div>
+
+    <div class="adm-table-card">
+        <div class="adm-table-heading"><div><h2>Stock history</h2><p>{{ page.paginator.count }} movement{{ page.paginator.count|pluralize }}. Records are permanent.</p></div></div>
+        {% include "admin_panel/_inventory_movement_table.html" with show_product=False %}
+        {% if page.has_other_pages %}
+        <div class="adm-pagination">
+            <span>Page {{ page.number }} of {{ page.paginator.num_pages }}</span>
+            <div>
+                {% if page.has_previous %}<a href="?page={{ page.previous_page_number }}">Previous</a>{% endif %}
+                {% if page.has_next %}<a href="?page={{ page.next_page_number }}">Next</a>{% endif %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

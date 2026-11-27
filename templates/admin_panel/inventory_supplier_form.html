@@ -1,0 +1,45 @@
+{% extends "base/public.html" %}
+{% load static %}
+{% block title %}{{ page_title }} | DQ Aesthetic{% endblock %}
+
+{% block css %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/admin/services.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="adm-management">
+    <div class="adm-page-heading">
+        <div>
+            <span class="adm-eyebrow">INVENTORY MANAGEMENT / SUPPLIERS</span>
+            <h1>{{ page_title }}</h1>
+            <p>{{ form_description }}</p>
+        </div>
+        <a href="{% url 'admin_panel:inventory_suppliers' %}" class="adm-reset-btn">← Back to suppliers</a>
+    </div>
+
+    <form method="post" class="adm-edit-form">
+        {% csrf_token %}
+        {% if form.non_field_errors %}<div class="adm-form-errors">{{ form.non_field_errors }}</div>{% endif %}
+        <div class="adm-form-section">
+            <div class="adm-form-section-heading"><span>01</span><div><h2>Supplier details</h2><p>Who they are and how to reach them.</p></div></div>
+            <div class="adm-form-grid">
+                <div class="adm-form-field adm-form-full"><label for="{{ form.name.id_for_label }}">Supplier name *</label>{{ form.name }}{{ form.name.errors }}</div>
+                <div class="adm-form-field"><label for="{{ form.contact_person.id_for_label }}">Contact person</label>{{ form.contact_person }}{{ form.contact_person.errors }}</div>
+                <div class="adm-form-field"><label for="{{ form.phone.id_for_label }}">Phone</label>{{ form.phone }}{{ form.phone.errors }}</div>
+                <div class="adm-form-field adm-form-full"><label for="{{ form.email.id_for_label }}">Email</label>{{ form.email }}{{ form.email.errors }}</div>
+                <div class="adm-form-field adm-form-full"><label for="{{ form.address.id_for_label }}">Address</label>{{ form.address }}{{ form.address.errors }}</div>
+                <div class="adm-form-field adm-form-full"><label for="{{ form.notes.id_for_label }}">Notes</label>{{ form.notes }}{{ form.notes.errors }}</div>
+            </div>
+        </div>
+        <div class="adm-form-section">
+            <div class="adm-form-section-heading"><span>02</span><div><h2>Status</h2><p>Inactive suppliers cannot be chosen for new purchases.</p></div></div>
+            <div class="adm-checkbox-item adm-single-checkbox">{{ form.is_active }}<span><strong>Active supplier</strong><small>Available when recording purchases.</small></span></div>
+        </div>
+        <div class="adm-form-footer">
+            <a href="{% url 'admin_panel:inventory_suppliers' %}" class="adm-cancel-btn">Cancel</a>
+            <button type="submit" class="adm-primary-btn">{{ submit_label }}</button>
+        </div>
+    </form>
+</section>
+{% endblock %}

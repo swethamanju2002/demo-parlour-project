@@ -5,6 +5,7 @@ from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.db.models import F, Q
+from django.utils import timezone
 from django.utils.text import slugify
 
 
@@ -126,6 +127,8 @@ class StockMovement(models.Model):
     unit_cost = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     reference = models.CharField(max_length=80, blank=True)
     notes = models.TextField(blank=True)
+    purchase = models.ForeignKey("inventory.Purchase", null=True, blank=True, editable=False,
+                                 on_delete=models.PROTECT, related_name="stock_movements")
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True,
                                    on_delete=models.SET_NULL, related_name="stock_movements")
     created_at = models.DateTimeField(auto_now_add=True, db_index=True)
@@ -137,6 +140,9 @@ class StockMovement(models.Model):
             models.CheckConstraint(condition=~Q(change=0), name="stockmovement_change_nonzero"),
             models.CheckConstraint(condition=Q(quantity_after=F("quantity_before") + F("change")),
                                    name="stockmovement_balance_consistent"),
+            # a purchase line can add stock to a product only once, so a repeated receipt cannot double-count
+            models.UniqueConstraint(fields=["purchase", "product"], condition=Q(purchase__isnull=False),
+                                    name="stockmovement_one_per_purchase_product"),
         ]
 
     def save(self, *a, **kw):
@@ -149,3 +155,71 @@ class StockMovement(models.Model):
 
     def __str__(self):
         return f"{self.product.sku} {self.change:+d} ({self.get_movement_type_display()})"
+
+
+class Purchase(models.Model):
+    """Stock bought from a supplier. Stock changes only when the purchase is received (inventory.purchasing)."""
+
+    class Status(models.TextChoices):
+        DRAFT = "draft", "Draft"
+        ORDERED = "ordered", "Ordered"
+        RECEIVED = "received", "Received"
+        CANCELLED = "cancelled", "Cancelled"
+
+    purchase_number = models.CharField(max_length=20, unique=True, editable=False)
+    supplier = models.ForeignKey(Supplier, on_delete=models.PROTECT, related_name="purchases")
+    invoice_number = models.CharField("Supplier invoice no.", max_length=60, blank=True)
+    purchase_date = models.DateField(default=timezone.localdate)
+    status = models.CharField(max_length=10, choices=Status.choices, default=Status.DRAFT, db_index=True)
+    total_amount = models.DecimalField(max_digits=12, decimal_places=2, default=Decimal("0.00"), editable=False)
+    notes = models.TextField(blank=True)
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET_NULL,
+                                   related_name="purchases_created")
+    received_by = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET_NULL,
+                                    related_name="purchases_received")
+    received_at = models.DateTimeField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-purchase_date", "-id"]
+        constraints = [
+            models.CheckConstraint(condition=Q(total_amount__gte=0), name="purchase_total_nonnegative"),
+            models.CheckConstraint(condition=~Q(status="received") | Q(received_at__isnull=False),
+                                   name="purchase_received_has_timestamp"),
+        ]
+
+    @property
+    def is_editable(self):
+        return self.status in (self.Status.DRAFT, self.Status.ORDERED)
+
+    can_receive = is_editable
+    can_cancel = is_editable
+
+    def __str__(self):
+        return self.purchase_number
+
+
+class PurchaseItem(models.Model):
+    purchase = models.ForeignKey(Purchase, on_delete=models.CASCADE, related_name="items")
+    product = models.ForeignKey(Product, on_delete=models.PROTECT, related_name="purchase_items")
+    product_name = models.CharField(max_length=140, editable=False)   # snapshot, survives later renames
+    quantity = models.PositiveIntegerField()
+    unit_cost = models.DecimalField(max_digits=10, decimal_places=2, validators=[MinValueValidator(Decimal("0.00"))])
+    line_total = models.DecimalField(max_digits=12, decimal_places=2, editable=False, default=Decimal("0.00"))
+
+    class Meta:
+        ordering = ["id"]
+        constraints = [
+            models.CheckConstraint(condition=Q(quantity__gt=0), name="purchaseitem_quantity_positive"),
+            models.CheckConstraint(condition=Q(unit_cost__gte=0), name="purchaseitem_cost_nonnegative"),
+            models.UniqueConstraint(fields=["purchase", "product"], name="purchaseitem_one_line_per_product"),
+        ]
+
+    def save(self, *a, **kw):
+        self.product_name = self.product.name
+        self.line_total = (Decimal(self.quantity) * self.unit_cost).quantize(Decimal("0.01"))
+        super().save(*a, **kw)
+
+    def __str__(self):
+        return f"{self.purchase_id} · {self.product_name} x{self.quantity}"

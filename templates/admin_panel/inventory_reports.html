@@ -1,0 +1,30 @@
+{% extends "base/public.html" %}
+{% load static %}
+{% block title %}Inventory Reports | DQ Aesthetic{% endblock %}
+
+{% block css %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/admin/services.css' %}">
+<link rel="stylesheet" href="{% static 'css/admin/inventory.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="adm-management">
+    <div class="adm-page-heading">
+        <div>
+            <span class="adm-eyebrow">INVENTORY MANAGEMENT</span>
+            <h1>Reports</h1>
+            <p>Live reports from your stock, purchase and movement records. Each can be exported as CSV.</p>
+        </div>
+        <a href="{% url 'admin_panel:inventory_dashboard' %}" class="adm-reset-btn">← Overview</a>
+    </div>
+    <div class="inv-report-cards">
+        <a class="inv-report-card" href="{% url 'admin_panel:inventory_report_stock' %}"><span>01</span><h2>Current stock</h2><p>Every product with quantity, cost and retail value.</p></a>
+        <a class="inv-report-card" href="{% url 'admin_panel:inventory_report_low_stock' %}"><span>02</span><h2>Low stock</h2><p>Products at or below their alert level.</p></a>
+        <a class="inv-report-card" href="{% url 'admin_panel:inventory_report_out_of_stock' %}"><span>03</span><h2>Out of stock</h2><p>Products with nothing on hand.</p></a>
+        <a class="inv-report-card" href="{% url 'admin_panel:inventory_report_movements' %}"><span>04</span><h2>Stock movements</h2><p>All stock changes with in, out and net totals.</p></a>
+        <a class="inv-report-card" href="{% url 'admin_panel:inventory_report_purchases' %}"><span>05</span><h2>Purchases</h2><p>Purchases by supplier, status and date.</p></a>
+        <a class="inv-report-card" href="{% url 'admin_panel:inventory_report_product_history' %}"><span>06</span><h2>Product stock history</h2><p>One product's movements with opening and closing balance.</p></a>
+    </div>
+</section>
+{% endblock %}

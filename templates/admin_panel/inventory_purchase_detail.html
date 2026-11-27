@@ -1,0 +1,68 @@
+{% extends "base/public.html" %}
+{% load static %}
+{% block title %}{{ purchase.purchase_number }} | Purchases | DQ Aesthetic{% endblock %}
+
+{% block css %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/admin/services.css' %}">
+<link rel="stylesheet" href="{% static 'css/admin/inventory.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="adm-management">
+    <div class="adm-page-heading">
+        <div>
+            <span class="adm-eyebrow">INVENTORY MANAGEMENT / PURCHASE</span>
+            <h1>{{ purchase.purchase_number }}</h1>
+            <p>{% include "admin_panel/_inventory_purchase_status.html" %} &nbsp; {{ purchase.supplier.name }} · {{ purchase.purchase_date|date:"d M Y" }}</p>
+        </div>
+        <a href="{% url 'admin_panel:inventory_purchases' %}" class="adm-reset-btn">← All purchases</a>
+    </div>
+
+    {% if purchase.is_editable %}
+    <div class="inv-actions-bar">
+        <a href="{% url 'admin_panel:inventory_purchase_edit' purchase.pk %}" class="adm-reset-btn">Edit purchase</a>
+        {% if purchase.status == "draft" %}
+        <form method="post" action="{% url 'admin_panel:inventory_purchase_order' purchase.pk %}">{% csrf_token %}<button type="submit" class="adm-reset-btn">Mark as ordered</button></form>
+        {% endif %}
+        <form method="post" action="{% url 'admin_panel:inventory_purchase_receive' purchase.pk %}"
+              onsubmit="return confirm('Receive this purchase? Stock will be added for every product on it.');">{% csrf_token %}<button type="submit" class="adm-primary-btn">Receive stock</button></form>
+        <form method="post" action="{% url 'admin_panel:inventory_purchase_cancel' purchase.pk %}"
+              onsubmit="return confirm('Cancel this purchase?');">{% csrf_token %}<button type="submit" class="adm-reset-btn">Cancel purchase</button></form>
+    </div>
+    {% endif %}
+
+    <div class="inv-detail-grid">
+        <div class="inv-op"><h2>Supplier</h2><dl>
+            <div><dt>Name</dt><dd>{{ purchase.supplier.name }}</dd></div>
+            <div><dt>Contact</dt><dd>{{ purchase.supplier.contact_person|default:"—" }}</dd></div>
+            <div><dt>Phone</dt><dd>{{ purchase.supplier.phone|default:"—" }}</dd></div>
+            <div><dt>Email</dt><dd>{{ purchase.supplier.email|default:"—" }}</dd></div>
+        </dl></div>
+        <div class="inv-op"><h2>Purchase</h2><dl>
+            <div><dt>Supplier invoice no.</dt><dd>{{ purchase.invoice_number|default:"—" }}</dd></div>
+            <div><dt>Created by</dt><dd>{% if purchase.created_by %}{{ purchase.created_by.first_name|default:purchase.created_by.username }}{% else %}—{% endif %}</dd></div>
+            <div><dt>Received</dt><dd>{% if purchase.received_at %}{{ purchase.received_at|date:"d M Y, h:i A" }}{% else %}Not yet{% endif %}</dd></div>
+            <div><dt>Notes</dt><dd>{{ purchase.notes|default:"—" }}</dd></div>
+        </dl></div>
+    </div>
+
+    <div class="adm-table-card" style="margin-bottom:28px">
+        <div class="adm-table-heading"><div><h2>Products</h2><p>{{ items|length }} line{{ items|length|pluralize }}</p></div></div>
+        <div class="adm-table-scroll"><table class="adm-table">
+            <thead><tr><th>Product</th><th>Quantity</th><th>Unit cost</th><th>Line total</th></tr></thead>
+            <tbody>
+                {% for i in items %}<tr><td><strong>{{ i.product_name }}</strong><small>{{ i.product.sku }}</small></td><td>{{ i.quantity }} {{ i.product.unit }}</td>
+                    <td>₹{{ i.unit_cost|floatformat:2 }}</td><td class="adm-price">₹{{ i.line_total|floatformat:2 }}</td></tr>{% endfor %}
+                <tr><td colspan="3" style="text-align:right"><strong>Total</strong></td><td class="adm-price">₹{{ purchase.total_amount|floatformat:2 }}</td></tr>
+            </tbody></table></div>
+    </div>
+
+    {% if movements %}
+    <div class="adm-table-card">
+        <div class="adm-table-heading"><div><h2>Stock added</h2><p>Ledger entries created when this purchase was received.</p></div></div>
+        {% include "admin_panel/_inventory_movement_table.html" with page=movements show_product=True %}
+    </div>
+    {% endif %}
+</section>
+{% endblock %}

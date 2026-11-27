@@ -1,0 +1,84 @@
+{% extends "base/public.html" %}
+{% load static %}
+{% block title %}Suppliers | DQ Aesthetic{% endblock %}
+
+{% block css %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/admin/services.css' %}">
+<link rel="stylesheet" href="{% static 'css/admin/inventory.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="adm-management">
+    <div class="adm-page-heading">
+        <div>
+            <span class="adm-eyebrow">INVENTORY MANAGEMENT</span>
+            <h1>Suppliers</h1>
+            <p>The businesses you buy products from.</p>
+        </div>
+        <div class="adm-actions">
+            <a href="{% url 'admin_panel:inventory_products' %}" class="adm-reset-btn">← Products</a>
+            <a href="{% url 'admin_panel:inventory_purchases' %}" class="adm-reset-btn">Purchases</a>
+            <a href="{% url 'admin_panel:inventory_supplier_create' %}" class="adm-primary-btn"><span>＋</span> Add supplier</a>
+        </div>
+    </div>
+
+    <div class="adm-summary">
+        <div><span class="adm-summary-label">TOTAL SUPPLIERS</span><strong>{{ total_count }}</strong></div>
+        <div><span class="adm-summary-label">CURRENT PAGE</span><strong>{{ page.number }} / {{ page.paginator.num_pages|default:1 }}</strong></div>
+    </div>
+
+    <form method="get" class="adm-filter-panel">
+        <div class="adm-filter-search">
+            <label for="sp-search">Search suppliers</label>
+            <input id="sp-search" type="search" name="q" value="{{ search }}" placeholder="Name, contact, phone or email">
+        </div>
+        <div>
+            <label for="sp-status">Status</label>
+            <select id="sp-status" name="status">
+                <option value="">All statuses</option>
+                <option value="active" {% if selected_status == "active" %}selected{% endif %}>Active</option>
+                <option value="inactive" {% if selected_status == "inactive" %}selected{% endif %}>Inactive</option>
+            </select>
+        </div>
+        <button type="submit" class="adm-filter-btn">Apply filters</button>
+        <a href="{% url 'admin_panel:inventory_suppliers' %}" class="adm-reset-btn">Reset</a>
+    </form>
+
+    <div class="adm-table-card">
+        <div class="adm-table-scroll">
+            <table class="adm-table">
+                <thead><tr><th>Supplier</th><th>Contact</th><th>Purchases</th><th>Status</th><th>Actions</th></tr></thead>
+                <tbody>
+                    {% for supplier in page %}
+                    <tr>
+                        <td><div class="adm-service-cell"><div><strong>{{ supplier.name }}</strong><small>{{ supplier.address|default:"No address"|truncatechars:60 }}</small></div></div></td>
+                        <td>{{ supplier.contact_person|default:"—" }}<small>{{ supplier.phone|default:"" }}{% if supplier.phone and supplier.email %} · {% endif %}{{ supplier.email|default:"" }}</small></td>
+                        <td><a class="adm-action-link" href="{% url 'admin_panel:inventory_purchases' %}?supplier={{ supplier.pk }}">{{ supplier.purchase_count }}</a></td>
+                        <td>{% if supplier.is_active %}<span class="adm-status adm-status-active">Active</span>{% else %}<span class="adm-status adm-status-inactive">Inactive</span>{% endif %}</td>
+                        <td>
+                            <div class="adm-actions">
+                                <a href="{% url 'admin_panel:inventory_supplier_edit' supplier.pk %}" class="adm-action-link">Edit</a>
+                                <form method="post" action="{% url 'admin_panel:inventory_supplier_toggle' supplier.pk %}">
+                                    {% csrf_token %}
+                                    <button type="submit" class="adm-action-link {% if supplier.is_active %}adm-action-danger{% endif %}">{% if supplier.is_active %}Deactivate{% else %}Activate{% endif %}</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="5"><div class="adm-empty-state"><span>✦</span><h3>No suppliers found</h3><p>Add a supplier before recording a purchase.</p>
+                        <a href="{% url 'admin_panel:inventory_supplier_create' %}" class="adm-primary-btn">Add supplier</a></div></td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% if page.has_other_pages %}
+        <div class="adm-pagination"><span>Page {{ page.number }} of {{ page.paginator.num_pages }}</span><div>
+            {% if page.has_previous %}<a href="?q={{ search|urlencode }}&status={{ selected_status }}&page={{ page.previous_page_number }}">Previous</a>{% endif %}
+            {% if page.has_next %}<a href="?q={{ search|urlencode }}&status={{ selected_status }}&page={{ page.next_page_number }}">Next</a>{% endif %}
+        </div></div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,54 @@
+{% extends "base/public.html" %}
+{% load static %}
+{% block title %}Stock History | DQ Aesthetic{% endblock %}
+
+{% block css %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/admin/services.css' %}">
+<link rel="stylesheet" href="{% static 'css/admin/inventory.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="adm-management">
+    <div class="adm-page-heading">
+        <div>
+            <span class="adm-eyebrow">INVENTORY MANAGEMENT</span>
+            <h1>Stock History</h1>
+            <p>Every stock change across all products, newest first.</p>
+        </div>
+        <a href="{% url 'admin_panel:inventory_products' %}" class="adm-reset-btn">← Products</a>
+    </div>
+
+    <form method="get" class="adm-filter-panel">
+        <div class="adm-filter-search">
+            <label for="mv-search">Search</label>
+            <input id="mv-search" type="search" name="q" value="{{ search }}" placeholder="Product, SKU, reference or note">
+        </div>
+        <div>
+            <label for="mv-type">Type</label>
+            <select id="mv-type" name="type">
+                <option value="">All types</option>
+                {% for value, label in type_choices %}<option value="{{ value }}" {% if selected_type == value %}selected{% endif %}>{{ label }}</option>{% endfor %}
+            </select>
+        </div>
+        <div><label for="mv-from">From</label><input id="mv-from" type="date" name="date_from" value="{{ date_from }}"></div>
+        <div><label for="mv-to">To</label><input id="mv-to" type="date" name="date_to" value="{{ date_to }}"></div>
+        <button type="submit" class="adm-filter-btn">Apply filters</button>
+        <a href="{% url 'admin_panel:inventory_movements' %}" class="adm-reset-btn">Reset</a>
+    </form>
+
+    <div class="adm-table-card">
+        <div class="adm-table-heading"><div><h2>Movements</h2><p>{{ total_count }} record{{ total_count|pluralize }}</p></div></div>
+        {% include "admin_panel/_inventory_movement_table.html" with show_product=True %}
+        {% if page.has_other_pages %}
+        <div class="adm-pagination">
+            <span>Page {{ page.number }} of {{ page.paginator.num_pages }}</span>
+            <div>
+                {% if page.has_previous %}<a href="?q={{ search|urlencode }}&type={{ selected_type }}&date_from={{ date_from }}&date_to={{ date_to }}&page={{ page.previous_page_number }}">Previous</a>{% endif %}
+                {% if page.has_next %}<a href="?q={{ search|urlencode }}&type={{ selected_type }}&date_from={{ date_from }}&date_to={{ date_to }}&page={{ page.next_page_number }}">Next</a>{% endif %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,4 @@
+{% if purchase.status == "received" %}<span class="adm-status adm-status-active">Received</span>
+{% elif purchase.status == "ordered" %}<span class="adm-status inv-status-ordered">Ordered</span>
+{% elif purchase.status == "cancelled" %}<span class="adm-status adm-status-inactive">Cancelled</span>
+{% else %}<span class="adm-status adm-status-muted">Draft</span>{% endif %}

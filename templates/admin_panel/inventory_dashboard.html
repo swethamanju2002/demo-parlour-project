@@ -1,0 +1,77 @@
+{% extends "base/public.html" %}
+{% load static %}
+{% block title %}Inventory Overview | DQ Aesthetic{% endblock %}
+
+{% block css %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/admin/services.css' %}">
+<link rel="stylesheet" href="{% static 'css/admin/inventory.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="adm-management">
+    <div class="adm-page-heading">
+        <div>
+            <span class="adm-eyebrow">INVENTORY MANAGEMENT</span>
+            <h1>Inventory Overview</h1>
+            <p>Stock levels, purchases and alerts, calculated live from your records.</p>
+        </div>
+        <div class="adm-actions">
+            <a href="{% url 'admin_panel:inventory_products' %}" class="adm-reset-btn">Products</a>
+            <a href="{% url 'admin_panel:inventory_purchases' %}" class="adm-reset-btn">Purchases</a>
+            <a href="{% url 'admin_panel:inventory_suppliers' %}" class="adm-reset-btn">Suppliers</a>
+            <a href="{% url 'admin_panel:inventory_reports' %}" class="adm-primary-btn">Reports</a>
+        </div>
+    </div>
+
+    <div class="inv-kpis">
+        <div><span class="adm-summary-label">ACTIVE PRODUCTS</span><strong>{{ stats.active_products }}</strong><small>{{ stats.units }} units on hand</small></div>
+        <div><span class="adm-summary-label">CATEGORIES</span><strong>{{ stats.categories }}</strong><small>active</small></div>
+        <div><span class="adm-summary-label">SUPPLIERS</span><strong>{{ stats.suppliers }}</strong><small>active</small></div>
+        <div><span class="adm-summary-label">LOW STOCK</span><strong><a class="adm-action-link {% if stats.low_stock %}adm-action-danger{% endif %}" href="{% url 'admin_panel:inventory_report_low_stock' %}">{{ stats.low_stock }}</a></strong><small>at or below alert level</small></div>
+        <div><span class="adm-summary-label">OUT OF STOCK</span><strong><a class="adm-action-link {% if stats.out_of_stock %}adm-action-danger{% endif %}" href="{% url 'admin_panel:inventory_report_out_of_stock' %}">{{ stats.out_of_stock }}</a></strong><small>no stock on hand</small></div>
+    </div>
+    <div class="inv-kpis">
+        <div><span class="adm-summary-label">STOCK VALUE (COST)</span><strong>₹{{ stats.stock_value|floatformat:2 }}</strong><small>active products</small></div>
+        <div><span class="adm-summary-label">STOCK VALUE (RETAIL)</span><strong>₹{{ stats.retail_value|floatformat:2 }}</strong><small>at selling price</small></div>
+        <div><span class="adm-summary-label">RECEIVED, LAST 30 DAYS</span><strong>₹{{ stats.received_30|floatformat:2 }}</strong><small>purchase value</small></div>
+        <div><span class="adm-summary-label">RECEIVED, ALL TIME</span><strong>₹{{ stats.received_total|floatformat:2 }}</strong><small>purchase value</small></div>
+        <div><span class="adm-summary-label">AWAITING RECEIPT</span><strong>{{ stats.awaiting_count }}</strong><small>₹{{ stats.awaiting_value|floatformat:2 }} ordered or draft</small></div>
+    </div>
+
+    <div class="adm-table-card" style="margin-bottom:28px">
+        <div class="adm-table-heading"><div><h2>Low-stock alerts</h2><p>Products that need attention, lowest stock first.</p></div></div>
+        <div class="adm-table-scroll"><table class="adm-table">
+            <thead><tr><th>Product</th><th>Category</th><th>In stock</th><th>Alert level</th><th></th></tr></thead>
+            <tbody>
+                {% for p in alerts %}
+                <tr><td><strong>{{ p.name }}</strong><small>{{ p.sku }}</small></td><td>{{ p.category.name }}</td>
+                    <td><strong>{{ p.quantity_on_hand }}</strong> {{ p.unit }}{% if not p.quantity_on_hand %} <span class="adm-mini-tag">Out of stock</span>{% else %} <span class="adm-mini-tag">Low stock</span>{% endif %}</td>
+                    <td>{{ p.reorder_level }}</td><td><a class="adm-action-link" href="{% url 'admin_panel:inventory_product_detail' p.pk %}">Stock</a></td></tr>
+                {% empty %}
+                <tr><td colspan="5"><div class="adm-empty-state"><span>✦</span><h3>Everything is stocked</h3><p>No product is at or below its alert level.</p></div></td></tr>
+                {% endfor %}
+            </tbody></table></div>
+    </div>
+
+    <div class="adm-table-card" style="margin-bottom:28px">
+        <div class="adm-table-heading"><div><h2>Recent purchases</h2><p>Latest five. <a class="adm-action-link" href="{% url 'admin_panel:inventory_purchases' %}">All purchases</a></p></div></div>
+        <div class="adm-table-scroll"><table class="adm-table">
+            <thead><tr><th>Purchase</th><th>Supplier</th><th>Date</th><th>Total</th><th>Status</th></tr></thead>
+            <tbody>
+                {% for p in recent_purchases %}
+                <tr><td><a class="adm-action-link" href="{% url 'admin_panel:inventory_purchase_detail' p.pk %}">{{ p.purchase_number }}</a></td><td>{{ p.supplier.name }}</td>
+                    <td>{{ p.purchase_date|date:"d M Y" }}</td><td class="adm-price">₹{{ p.total_amount|floatformat:2 }}</td>
+                    <td>{% include "admin_panel/_inventory_purchase_status.html" with purchase=p %}</td></tr>
+                {% empty %}
+                <tr><td colspan="5"><div class="adm-empty-state"><span>✦</span><h3>No purchases yet</h3><p>Record a purchase to see it here.</p></div></td></tr>
+                {% endfor %}
+            </tbody></table></div>
+    </div>
+
+    <div class="adm-table-card">
+        <div class="adm-table-heading"><div><h2>Recent stock movements</h2><p>Latest eight. <a class="adm-action-link" href="{% url 'admin_panel:inventory_movements' %}">Full history</a></p></div></div>
+        {% include "admin_panel/_inventory_movement_table.html" with page=recent_movements show_product=True %}
+    </div>
+</section>
+{% endblock %}

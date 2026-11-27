@@ -1,0 +1,56 @@
+{% extends "base/public.html" %}
+{% load static %}
+{% block title %}{{ page_title }} | DQ Aesthetic{% endblock %}
+
+{% block css %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/admin/services.css' %}">
+<link rel="stylesheet" href="{% static 'css/admin/inventory.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="adm-management">
+    <div class="adm-page-heading">
+        <div>
+            <span class="adm-eyebrow">INVENTORY MANAGEMENT / PURCHASES</span>
+            <h1>{{ page_title }}</h1>
+            <p>{{ form_description }}</p>
+        </div>
+        <a href="{% if purchase %}{% url 'admin_panel:inventory_purchase_detail' purchase.pk %}{% else %}{% url 'admin_panel:inventory_purchases' %}{% endif %}" class="adm-reset-btn">← Back</a>
+    </div>
+
+    <form method="post" class="adm-edit-form">
+        {% csrf_token %}
+        {% if form.non_field_errors %}<div class="adm-form-errors">{{ form.non_field_errors }}</div>{% endif %}
+
+        <div class="adm-form-section">
+            <div class="adm-form-section-heading"><span>01</span><div><h2>Purchase details</h2><p>Who supplied the stock and when.</p></div></div>
+            <div class="adm-form-grid">
+                <div class="adm-form-field"><label for="{{ form.supplier.id_for_label }}">Supplier *</label>{{ form.supplier }}{{ form.supplier.errors }}</div>
+                <div class="adm-form-field"><label for="{{ form.purchase_date.id_for_label }}">Purchase date *</label>{{ form.purchase_date }}{{ form.purchase_date.errors }}</div>
+                <div class="adm-form-field adm-form-full"><label for="{{ form.invoice_number.id_for_label }}">Supplier invoice no.</label>{{ form.invoice_number }}{{ form.invoice_number.errors }}</div>
+                <div class="adm-form-field adm-form-full"><label for="{{ form.notes.id_for_label }}">Notes</label>{{ form.notes }}{{ form.notes.errors }}</div>
+            </div>
+        </div>
+
+        <div class="adm-form-section">
+            <div class="adm-form-section-heading"><span>02</span><div><h2>Products</h2><p>Quantities and the unit cost you are paying. The total is calculated by the system when you save.</p></div></div>
+            {{ formset.management_form }}
+            {% if formset.non_form_errors %}<div class="adm-form-errors" style="margin:0 0 16px">{{ formset.non_form_errors }}</div>{% endif %}
+            <div class="inv-item-head"><span>Product</span><span>Quantity</span><span>Unit cost (₹)</span><span>Line total</span><span>Remove</span></div>
+            <div id="item-rows">
+                {% for item_form in formset %}{% include "admin_panel/_inventory_purchase_item_row.html" with form=item_form %}{% endfor %}
+            </div>
+            <template id="item-empty">{% include "admin_panel/_inventory_purchase_item_row.html" with form=formset.empty_form %}</template>
+            <button type="button" class="inv-add" id="add-item">＋ Add another product</button>
+            <div class="inv-items-total"><span>Estimated total</span><strong id="items-total">₹0.00</strong></div>
+        </div>
+
+        <div class="adm-form-footer">
+            <a href="{% if purchase %}{% url 'admin_panel:inventory_purchase_detail' purchase.pk %}{% else %}{% url 'admin_panel:inventory_purchases' %}{% endif %}" class="adm-cancel-btn">Cancel</a>
+            <button type="submit" class="adm-primary-btn">{{ submit_label }}</button>
+        </div>
+    </form>
+</section>
+{% endblock %}
+{% block js %}{{ block.super }}<script src="{% static 'js/admin/purchase_form.js' %}"></script>{% endblock %}

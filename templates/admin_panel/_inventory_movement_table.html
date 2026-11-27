@@ -1,0 +1,23 @@
+<div class="adm-table-scroll">
+    <table class="adm-table">
+        <thead>
+            <tr><th>When</th>{% if show_product %}<th>Product</th>{% endif %}<th>Type</th><th>Reason</th><th>Change</th><th>Balance</th><th>Reference</th><th>By</th></tr>
+        </thead>
+        <tbody>
+            {% for m in page %}
+            <tr>
+                <td>{{ m.created_at|date:"d M Y" }}<small>{{ m.created_at|time:"h:i A" }}</small></td>
+                {% if show_product %}<td><a class="adm-action-link" href="{% url 'admin_panel:inventory_product_detail' m.product_id %}">{{ m.product.name }}</a><small>{{ m.product.sku }}</small></td>{% endif %}
+                <td>{{ m.get_movement_type_display }}</td>
+                <td>{{ m.get_reason_display }}{% if m.notes %}<small>{{ m.notes|truncatechars:60 }}</small>{% endif %}</td>
+                <td>{% if m.change > 0 %}<span class="inv-in-tag">+{{ m.change }}</span>{% else %}<span class="inv-out-tag">{{ m.change }}</span>{% endif %}</td>
+                <td>{{ m.quantity_before }} → <strong>{{ m.quantity_after }}</strong></td>
+                <td>{{ m.reference|default:"—" }}{% if m.unit_cost is not None %}<small>@ ₹{{ m.unit_cost|floatformat:2 }}</small>{% endif %}</td>
+                <td>{% if m.created_by %}{{ m.created_by.first_name|default:m.created_by.username }}{% else %}—{% endif %}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="8"><div class="adm-empty-state"><span>✦</span><h3>No stock movements yet</h3><p>Every stock change will be listed here permanently.</p></div></td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>

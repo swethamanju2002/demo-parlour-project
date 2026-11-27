@@ -49,7 +49,7 @@ def _unit_cost(value):
     return cost.quantize(Decimal("0.01"))
 
 
-def _apply(product_id, movement_type, reason, change_fn, *, unit_cost=None, reference="", notes="", user=None):
+def _apply(product_id, movement_type, reason, change_fn, *, unit_cost=None, reference="", notes="", user=None, purchase=None):
     with transaction.atomic():
         try:
             product = Product.objects.select_for_update().get(pk=product_id)
@@ -67,14 +67,14 @@ def _apply(product_id, movement_type, reason, change_fn, *, unit_cost=None, refe
         return StockMovement.objects.create(
             product=product, movement_type=movement_type, reason=reason, change=change,
             quantity_before=before, quantity_after=after, unit_cost=unit_cost,
-            reference=(reference or "").strip()[:80], notes=(notes or "").strip(), created_by=user,
+            reference=(reference or "").strip()[:80], notes=(notes or "").strip(), created_by=user, purchase=purchase,
         )
 
 
-def stock_in(product_id, quantity, *, reason=R.PURCHASE, unit_cost=None, reference="", notes="", user=None):
+def stock_in(product_id, quantity, *, reason=R.PURCHASE, unit_cost=None, reference="", notes="", user=None, purchase=None):
     qty = _whole_number(quantity, "Quantity", minimum=1)
     return _apply(product_id, T.IN, _reason(T.IN, reason), lambda before: qty,
-                  unit_cost=_unit_cost(unit_cost), reference=reference, notes=notes, user=user)
+                  unit_cost=_unit_cost(unit_cost), reference=reference, notes=notes, user=user, purchase=purchase)
 
 
 def stock_out(product_id, quantity, *, reason=R.SALE, reference="", notes="", user=None):

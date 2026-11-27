@@ -75,7 +75,7 @@
         Billing
       </a>
         <a href="{% url 'admin_panel:inventory_products' %}"
-           class="admin-nav-link {% if 'inventory' in request.resolver_match.url_name %}active{% endif %}">
+           class="admin-nav-link {% if 'categor' in request.resolver_match.url_name and 'inventory' not in request.resolver_match.url_name %}active{% endif %}">
             Inventory
         </a>
         <div class="admin-nav-account">

@@ -1,0 +1,76 @@
+{% extends "base/public.html" %}
+{% load static %}
+{% block title %}Purchases | DQ Aesthetic{% endblock %}
+
+{% block css %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/admin/services.css' %}">
+<link rel="stylesheet" href="{% static 'css/admin/inventory.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="adm-management">
+    <div class="adm-page-heading">
+        <div>
+            <span class="adm-eyebrow">INVENTORY MANAGEMENT</span>
+            <h1>Purchases</h1>
+            <p>Stock bought from suppliers. Stock is added when a purchase is received.</p>
+        </div>
+        <div class="adm-actions">
+            <a href="{% url 'admin_panel:inventory_products' %}" class="adm-reset-btn">← Products</a>
+            <a href="{% url 'admin_panel:inventory_suppliers' %}" class="adm-reset-btn">Suppliers</a>
+            <a href="{% url 'admin_panel:inventory_purchase_create' %}" class="adm-primary-btn"><span>＋</span> New purchase</a>
+        </div>
+    </div>
+
+    <div class="adm-summary">
+        <div><span class="adm-summary-label">MATCHING PURCHASES</span><strong>{{ total_count }}</strong></div>
+        <div><span class="adm-summary-label">AWAITING RECEIPT</span><strong>{{ awaiting_count }}</strong></div>
+        <div><span class="adm-summary-label">CURRENT PAGE</span><strong>{{ page.number }} / {{ page.paginator.num_pages|default:1 }}</strong></div>
+    </div>
+
+    <form method="get" class="adm-filter-panel">
+        <div class="adm-filter-search"><label for="pu-search">Search</label>
+            <input id="pu-search" type="search" name="q" value="{{ search }}" placeholder="Purchase no., invoice no. or supplier"></div>
+        <div><label for="pu-status">Status</label>
+            <select id="pu-status" name="status"><option value="">All statuses</option>
+                {% for value, label in status_choices %}<option value="{{ value }}" {% if selected_status == value %}selected{% endif %}>{{ label }}</option>{% endfor %}</select></div>
+        <div><label for="pu-supplier">Supplier</label>
+            <select id="pu-supplier" name="supplier"><option value="">All suppliers</option>
+                {% for s in suppliers %}<option value="{{ s.pk }}" {% if selected_supplier == s.pk|stringformat:"s" %}selected{% endif %}>{{ s.name }}</option>{% endfor %}</select></div>
+        <div><label for="pu-from">From</label><input id="pu-from" type="date" name="date_from" value="{{ date_from }}"></div>
+        <div><label for="pu-to">To</label><input id="pu-to" type="date" name="date_to" value="{{ date_to }}"></div>
+        <button type="submit" class="adm-filter-btn">Apply filters</button>
+        <a href="{% url 'admin_panel:inventory_purchases' %}" class="adm-reset-btn">Reset</a>
+    </form>
+
+    <div class="adm-table-card">
+        <div class="adm-table-scroll">
+            <table class="adm-table">
+                <thead><tr><th>Purchase</th><th>Supplier</th><th>Date</th><th>Total</th><th>Status</th><th></th></tr></thead>
+                <tbody>
+                    {% for p in page %}
+                    <tr>
+                        <td><strong>{{ p.purchase_number }}</strong><small>{% if p.invoice_number %}Invoice {{ p.invoice_number }}{% else %}No supplier invoice no.{% endif %}</small></td>
+                        <td>{{ p.supplier.name }}</td>
+                        <td>{{ p.purchase_date|date:"d M Y" }}</td>
+                        <td class="adm-price">₹{{ p.total_amount|floatformat:2 }}</td>
+                        <td>{% include "admin_panel/_inventory_purchase_status.html" with purchase=p %}</td>
+                        <td><a class="adm-action-link" href="{% url 'admin_panel:inventory_purchase_detail' p.pk %}">View</a></td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="6"><div class="adm-empty-state"><span>✦</span><h3>No purchases found</h3><p>Try changing your filters or record your first purchase.</p>
+                        <a href="{% url 'admin_panel:inventory_purchase_create' %}" class="adm-primary-btn">New purchase</a></div></td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% if page.has_other_pages %}
+        <div class="adm-pagination"><span>Page {{ page.number }} of {{ page.paginator.num_pages }}</span><div>
+            {% if page.has_previous %}<a href="?q={{ search|urlencode }}&status={{ selected_status }}&supplier={{ selected_supplier }}&date_from={{ date_from }}&date_to={{ date_to }}&page={{ page.previous_page_number }}">Previous</a>{% endif %}
+            {% if page.has_next %}<a href="?q={{ search|urlencode }}&status={{ selected_status }}&supplier={{ selected_supplier }}&date_from={{ date_from }}&date_to={{ date_to }}&page={{ page.next_page_number }}">Next</a>{% endif %}
+        </div></div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

@@ -16,6 +16,11 @@
             <p>Track retail and consumable products, pricing and stock levels.</p>
         </div>
         <div class="adm-actions">
+            <a href="{% url 'admin_panel:inventory_dashboard' %}" class="adm-reset-btn">Overview</a>
+            <a href="{% url 'admin_panel:inventory_reports' %}" class="adm-reset-btn">Reports</a>
+            <a href="{% url 'admin_panel:inventory_purchases' %}" class="adm-reset-btn">Purchases</a>
+            <a href="{% url 'admin_panel:inventory_suppliers' %}" class="adm-reset-btn">Suppliers</a>
+            <a href="{% url 'admin_panel:inventory_movements' %}" class="adm-reset-btn">Stock history</a>
             <a href="{% url 'admin_panel:inventory_categories' %}" class="adm-reset-btn">Categories</a>
             <a href="{% url 'admin_panel:inventory_product_create' %}" class="adm-primary-btn"><span>＋</span> Add product</a>
         </div>
@@ -88,7 +93,7 @@
                         <td>
                             <div class="adm-service-cell">
                                 <div>
-                                    <strong>{{ product.name }}</strong>
+                                    <strong><a class="adm-action-link" href="{% url 'admin_panel:inventory_product_detail' product.pk %}">{{ product.name }}</a></strong>
                                     <small>{{ product.sku }}</small>
                                 </div>
                             </div>
@@ -108,6 +113,7 @@
                         </td>
                         <td>
                             <div class="adm-actions">
+                                <a href="{% url 'admin_panel:inventory_product_detail' product.pk %}" class="adm-action-link">Stock</a>
                                 <a href="{% url 'admin_panel:inventory_product_edit' product.pk %}" class="adm-action-link">Edit</a>
                                 <form method="post" action="{% url 'admin_panel:inventory_product_toggle' product.pk %}">
                                     {% csrf_token %}

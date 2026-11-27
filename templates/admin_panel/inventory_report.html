@@ -1,0 +1,69 @@
+{% extends "base/public.html" %}
+{% load static %}
+{% block title %}{{ title }} | Inventory Reports | DQ Aesthetic{% endblock %}
+
+{% block css %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/admin/services.css' %}">
+<link rel="stylesheet" href="{% static 'css/admin/inventory.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="adm-management">
+    <div class="adm-page-heading">
+        <div>
+            <span class="adm-eyebrow">INVENTORY REPORTS</span>
+            <h1>{{ title }}</h1>
+            <p>{{ description }}</p>
+        </div>
+        <div class="adm-actions">
+            <a href="{% url 'admin_panel:inventory_reports' %}" class="adm-reset-btn">← All reports</a>
+            {% if total_rows %}<a href="?{{ export_qs }}" class="adm-primary-btn">Download CSV</a>{% endif %}
+        </div>
+    </div>
+
+    {% if summary %}
+    <div class="inv-kpis inv-kpis-auto">
+        {% for label, value in summary %}<div><span class="adm-summary-label">{{ label|upper }}</span><strong>{{ value }}</strong></div>{% endfor %}
+    </div>
+    {% endif %}
+
+    <form method="get" class="adm-filter-panel">
+        {% for f in filters %}
+        <div {% if f.kind == "search" %}class="adm-filter-search"{% endif %}>
+            <label for="f-{{ f.name }}">{{ f.label }}</label>
+            {% if f.kind == "select" %}
+            <select id="f-{{ f.name }}" name="{{ f.name }}"><option value="">All</option>
+                {% for value, label in f.options %}<option value="{{ value }}" {% if f.value == value|stringformat:"s" %}selected{% endif %}>{{ label }}</option>{% endfor %}
+            </select>
+            {% elif f.kind == "date" %}<input id="f-{{ f.name }}" type="date" name="{{ f.name }}" value="{{ f.value }}">
+            {% else %}<input id="f-{{ f.name }}" type="search" name="{{ f.name }}" value="{{ f.value }}" placeholder="Search">{% endif %}
+        </div>
+        {% endfor %}
+        <button type="submit" class="adm-filter-btn">Apply filters</button>
+        <a href="?" class="adm-reset-btn">Reset</a>
+    </form>
+
+    <div class="adm-table-card">
+        <div class="adm-table-heading"><div><h2>{{ total_rows }} row{{ total_rows|pluralize }}</h2></div></div>
+        <div class="adm-table-scroll">
+            <table class="adm-table">
+                <thead><tr>{% for c in columns %}<th>{{ c }}</th>{% endfor %}</tr></thead>
+                <tbody>
+                    {% for row in page %}
+                    <tr>{% for cell in row %}<td{% if cell.num %} style="white-space:nowrap"{% endif %}>{% if cell.url %}<a class="adm-action-link" href="{{ cell.url }}">{{ cell.text }}</a>{% else %}{{ cell.text }}{% endif %}</td>{% endfor %}</tr>
+                    {% empty %}
+                    <tr><td colspan="{{ columns|length }}"><div class="adm-empty-state"><span>✦</span><h3>Nothing to show</h3><p>Change the filters{% if title == "Product stock history" %} or choose a product{% endif %} to see results.</p></div></td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% if page.has_other_pages %}
+        <div class="adm-pagination"><span>Page {{ page.number }} of {{ page.paginator.num_pages }}</span><div>
+            {% if page.has_previous %}<a href="?{% if qs %}{{ qs }}&{% endif %}page={{ page.previous_page_number }}">Previous</a>{% endif %}
+            {% if page.has_next %}<a href="?{% if qs %}{{ qs }}&{% endif %}page={{ page.next_page_number }}">Next</a>{% endif %}
+        </div></div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}
